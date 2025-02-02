@@ -1,6 +1,6 @@
-# QubeSync
+# QUBESync
 
-TODO: Delete this and the text below, and describe your gem
+The QUBESync API is very simple, so this gem is not necessary if you need to use older versions of Ruby or if you prefer to write your own API client. However, if you are using Ruby 2.6 or later and you want to save time, this gem can help you.
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/qube_sync`. To experiment with that code, run `bin/console` for an interactive prompt.
 
@@ -28,4 +28,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/qube_sync.
+Bug reports and pull requests are welcome on GitHub at https://github.com/qubeintegrations/qube_sync.
