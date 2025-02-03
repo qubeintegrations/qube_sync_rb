@@ -51,7 +51,7 @@ QubeSync.generate_password(connection_id)
 QubeSync.get_qwc(connection_id)
 # "<?xml version=\"1.0\"?>\n<QBWCXML>...</QBWCXML>\n"
 
-QubeSync.verify_and_build_webhook!(body, signature)
+QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'])
 #=> {
 #  "id"=>"dd8db40a-5169-477a-b9d5-f1a6e5cc96f9",
 #  "timestamp"=>1738620998,
