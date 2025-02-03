@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative "qube_sync/version"
 require "faraday"
 
@@ -15,7 +13,6 @@ module QubeSync
     end
   
     def get(url, headers = {})
-      connection = Faraday.new(url: base_url)
       response = connection.get(url) do |request|
         request.headers = default_headers.merge(headers)
       end
@@ -76,7 +73,8 @@ module QubeSync
     def create_connection
       response = post("connections")
       connection_id = response.dig("data", "id") or raise "Connection ID not found: #{response.pretty_inspect}"
-      yield connection_id
+      yield connection_id if block_given?
+      connection_id
     end
   
     def delete_connection(id)
@@ -99,7 +97,11 @@ module QubeSync
   
       post(url, payload).fetch("data").with_indifferent_access
     end
-  
+
+    def get_request(id)
+      get("queued_requests/#{id}")
+    end
+
     def get_queued_requests(connection_id)
       get("connections/#{connection_id}/queued_requests")
     end
