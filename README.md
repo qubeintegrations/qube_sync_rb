@@ -58,6 +58,7 @@ QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Si
 #  "response_xml"=>
 #   "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>" 
 # }
+```
 
 ## Development
 
