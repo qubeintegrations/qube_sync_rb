@@ -1,6 +1,6 @@
 # QUBESync
 
-The QUBESync API is very simple, so this gem is not necessary if you need to use older versions of Ruby or if you prefer to write your own API client. However, if you are using Ruby 2.6 or later and you want to save time, this gem can help you.
+A simple wrapper around the QUBE Sync API.
 
 ## Installation
 

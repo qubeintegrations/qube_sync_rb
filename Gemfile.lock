@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    qube_sync (0.1.0)
+    qube_sync (0.1.1)
       faraday
 
 GEM
