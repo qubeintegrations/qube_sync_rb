@@ -4,6 +4,7 @@ require "faraday"
 module QubeSync
   class Error < StandardError; end
   class StaleWebhookError < Error; end
+  class InvalidWebhookSignatureError < Error; end
   class ConfigError < Error; end
   
   module_function
@@ -42,14 +43,13 @@ module QubeSync
       response = connection.post(url) do |request|
         request.headers = default_headers.merge(headers)
         request.body = body.to_json if body
-        puts "Request: #{request.inspect}"
       end
   
       case response.status
       when 200..299
         JSON.parse(response.body)
       else
-        raise <<~ERR
+        raise Error.new <<~ERR
         Unexpected QUBE response: #{response.status}\n#{response.body}
         ERR
       end
@@ -82,7 +82,7 @@ module QubeSync
     end
   
     def get_connection(connection_id)
-      get("connections/#{connection_id}")
+      get("connections/#{connection_id}").fetch("data")
     end
   
     def queue_request(connection_id, request_xml, webhook_url)
@@ -95,25 +95,19 @@ module QubeSync
         }
       }
   
-      post(url, payload).fetch("data").with_indifferent_access
+      post(url, payload).fetch("data")
     end
 
     def get_request(id)
-      get("queued_requests/#{id}")
+      get("queued_requests/#{id}").fetch("data")
     end
 
-    def get_queued_requests(connection_id)
-      get("connections/#{connection_id}/queued_requests")
+    def get_requests(connection_id)
+      get("connections/#{connection_id}/queued_requests").fetch("data")
     end
   
-    def delete_queued_request(connection_id, id)
-      delete("connections/#{connection_id}/queued_requests/#{id}")
-    end
-  
-    def queue_requests(connection_id, requests)
-      requests.each do |request|
-        queue_request(connection_id, request.to_xml)
-      end
+    def delete_request(id)
+      delete("queued_requests/#{id}")
     end
   
     def get_qwc(connection_id)
@@ -159,15 +153,18 @@ module QubeSync
       OpenSSL::HMAC.hexdigest('sha256', api_secret, payload)
     end
   
-    def verify_and_build_webhook!(body, signature)
+    def verify_and_build_webhook!(body, signature, max_age: 500)
       extract_signature_meta(signature) => { timestamp:, signatures:}
   
-      if timestamp < Time.now.to_i - 500
-        raise StaleWebhookError.new('Timestamp diff too high')
+      if timestamp < Time.now.to_i - max_age
+        raise StaleWebhookError.new('Timestamp more than #{max_age}ms old. To increase this, pass a different value for max_age.')
       end
       
-      matching_signature = signatures.detect { |sig| sign_payload(body) == sig } or raise 'No matching signature'
+      if signatures.detect { |sig| sign_payload(body) == sig }
+        JSON.parse(body)
+      else
+        raise InvalidWebhookSignatureError.new("Webhook signature mismatch")
+      end
   
-      JSON.parse(body).with_indifferent_access
     end
 end

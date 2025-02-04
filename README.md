@@ -24,20 +24,52 @@ You'll need to set two evironment variables in your application to use this gem:
 ```ruby
 require 'qube_sync'
 
-QubeSync.create_connection # creates a connection in QUBE on behalf of your user
-#=> "asdf-qwer-asdf-zxcv"
+connection_id = QubeSync.create_connection # creates a connection in QUBE on behalf of your user
+#=> "636d4750-0b07-45f6-a030-e3919c5741ff"
+
+# You can also pass a block to create_connection as a success callback
+QubeSync.create_connection do |connection_id|
+  QubeConnection.create!(qube_id: connection_id) # save the connection_id to your database
+end
 
 QubeSync.delete_connection("asdf-qwer-asdf-zxcv") # deletes the connection in QUBE
 #=> true
 
-QubeSync.get_connection("asdf-qwer-asdf-zxcv") # gets the connection in QUBE
-#=> {"data"=>{"id"=>"07ba16ed-5282-4622-aa68-c6e0f8ff5f5a"}}
+QubeSync.get_connection(connection_id) # gets the connection in QUBE
+#=> {"id"=>"636d4750-0b07-45f6-a030-e3919c5741ff"}
 
-QubeSync.queue_request(connection_id, request_xml, webhook_url)
+QubeSync.generate_password(connection_id)
+#=> "password123"
+
+QubeSync.get_qwc(connection_id)
+# "<?xml version=\"1.0\"?>\n<QBWCXML>...</QBWCXML>\n"
+
+
+
+request_xml = <<~XML
+  <?xml version="1.0"?>
+  <?qbxml version="16.0"?>
+  <QBXML>
+    <QBXMLMsgsRq onError="stopOnError">
+      <CustomerQueryRq requestID="1">
+        <MaxReturned>10</MaxReturned>
+      </CustomerQueryRq>
+    </QBXMLMsgsRq>
+  </QBXML>
+XML
+
+QubeSync.queue_request(connection_id, request_xml, webhook_url = "myapp.com/webhook")
+#=> {"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
+#    "state"=>"waiting",
+#    "response_xml"=>nil,
+#    "webhook_url"=>"myapp.com/webhook",
+#    "request_xml"=>
+#     "<?xml version=\"1.0\"?><?qbxml version=\"16.0\"?><QBXML>  ...  </QBXMLMsgsRq></QBXML>"}}
+
+request_id = _.fetch("id")
 
 QubeSync.get_request(request_id)
-#=> {"data"=>
-#   {"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
+#=> {"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
 #    "state"=>"webhook_succeeded",
 #    "response_xml"=>
 #     "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>",
@@ -45,11 +77,17 @@ QubeSync.get_request(request_id)
 #    "request_xml"=>
 #     "<?xml version=\"1.0\"?><?qbxml version=\"16.0\"?><QBXML>  ...  </QBXMLMsgsRq></QBXML>"}}
 
-QubeSync.generate_password(connection_id)
-#=> "password123"
+QubeSync.get_requests(connection_id)
+#=> [{"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
+#     "state"=>"webhook_succeeded",
+#     "response_xml"=>
+#      "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>",
+#     "webhook_url"=>"myapp.com/webhook",
+#     "request_xml"=>
+#      "<?xml version=\"1.0\"?><?qbxml version=\"16.0\"?><QBXML>  ...  </QBXMLMsgsRq></QBXML>"}]
 
-QubeSync.get_qwc(connection_id)
-# "<?xml version=\"1.0\"?>\n<QBWCXML>...</QBWCXML>\n"
+QubeSync.delete_request(request_id)
+#=> true
 
 QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'])
 #=> {
@@ -58,6 +96,9 @@ QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Si
 #  "response_xml"=>
 #   "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>" 
 # }
+
+# The default max age for a webhook is 500ms (0.5 seconds). You can change this by passing a max_age option:
+QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'], max_age: 1_000)
 ```
 
 ## Development
