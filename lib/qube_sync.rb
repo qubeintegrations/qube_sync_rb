@@ -116,8 +116,7 @@ module QubeSync
     end
   
     def generate_password(connection_id)
-      password = SecureRandom.hex(16)
-      response = post("connections/#{connection_id}/password", { password: password })
+      response = post("connections/#{connection_id}/password")
       response.dig("data", "password") or raise "Password not found: #{response.pretty_inspect}"
     end
   
