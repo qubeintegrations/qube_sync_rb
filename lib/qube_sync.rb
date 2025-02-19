@@ -85,14 +85,13 @@ module QubeSync
       get("connections/#{connection_id}").fetch("data")
     end
   
-    def queue_request(connection_id, request_xml, webhook_url)
+    def queue_request(connection_id, request)
       url = "connections/#{connection_id}/queued_requests"
-  
+
+      raise "must have either request_xml or request_json" unless request[:request_xml] || request[:request_json]
+      warn "no webhook_url provided" unless request[:webhook_url]
       payload = {
-        queued_request: {
-          request_xml: request_xml,
-          webhook_url: webhook_url,
-        }
+        queued_request: request
       }
   
       post(url, payload).fetch("data")
