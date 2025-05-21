@@ -1,4 +1,5 @@
 require_relative "qube_sync/version"
+require_relative "qube_sync/request_builder"
 require "faraday"
 
 module QubeSync
