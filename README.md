@@ -44,8 +44,20 @@ QubeSync.generate_password(connection_id)
 QubeSync.get_qwc(connection_id)
 # "<?xml version=\"1.0\"?>\n<QBWCXML>...</QBWCXML>\n"
 
+# Using the RequestBuilder to build a Quickbooks Request (generates JSON for QubeSync to translate)
+request_json = QubeSync::RequestBuilder.new do |b|
+  b.QBXML {
+    b.QBXMLMsgsRq(onError: "stopOnError") {
+      b.CustomerQueryRq(requestID: 1) {
+        b.MaxReturned(10)
+      }
+    }
+  }
+end
 
+QubeSync.queue_request(connection_id, {request_json: request_json, webhook_url: "myapp.com/webhook"})
 
+# Using XML directly
 request_xml = <<~XML
   <?xml version="1.0"?>
   <?qbxml version="16.0"?>
@@ -58,7 +70,7 @@ request_xml = <<~XML
   </QBXML>
 XML
 
-QubeSync.queue_request(connection_id, request_xml, webhook_url = "myapp.com/webhook")
+QubeSync.queue_request(connection_id, {request_xml: request_xml, webhook_url: "myapp.com/webhook"})
 #=> {"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
 #    "state"=>"waiting",
 #    "response_xml"=>nil,
@@ -69,13 +81,25 @@ QubeSync.queue_request(connection_id, request_xml, webhook_url = "myapp.com/webh
 request_id = _.fetch("id")
 
 QubeSync.get_request(request_id)
-#=> {"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
-#    "state"=>"webhook_succeeded",
-#    "response_xml"=>
-#     "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>",
-#    "webhook_url"=>"myapp.com/webhook",
-#    "request_xml"=>
-#     "<?xml version=\"1.0\"?><?qbxml version=\"16.0\"?><QBXML>  ...  </QBXMLMsgsRq></QBXML>"}}
+#=> {"id" => "d401228f-06d4-4981-95d8-bb735c0a2c76",
+#    "state" => "webhook_succeeded",
+#    "response_xml" =>
+#      "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>",
+#    "response_json" => [
+#      "CustomerQueryRs" => {
+#        "requestID"=>"1",
+#        "statusCode"=>"0",
+#        "statusSeverity"=>"Info",
+#        "statusMessage"=>"Status Message",
+#        "Results" => [
+#          {"Name"=>"Customer 1", "ListID"=>"123"},
+#          {"Name"=>"Customer 2", "ListID"=>"456"}
+#         ]
+#       },
+#    ],
+#    "webhook_url" => "myapp.com/webhook",
+#    "request_xml" =>
+#      "<?xml version=\"1.0\"?><?qbxml version=\"16.0\"?><QBXML>  ...  </QBXMLMsgsRq></QBXML>"}}
 
 QubeSync.get_requests(connection_id)
 #=> [{"id"=>"d401228f-06d4-4981-95d8-bb735c0a2c76",
