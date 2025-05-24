@@ -117,6 +117,7 @@ QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Si
 #=> {
 #  "id"=>"dd8db40a-5169-477a-b9d5-f1a6e5cc96f9",
 #  "timestamp"=>1738620998,
+#  "response_json"=> {...},
 #  "response_xml"=>
 #   "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>" 
 # }
