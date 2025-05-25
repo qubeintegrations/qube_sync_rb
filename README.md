@@ -27,10 +27,6 @@ require 'qube_sync'
 connection_id = QubeSync.create_connection # creates a connection in QUBE on behalf of your user
 #=> "636d4750-0b07-45f6-a030-e3919c5741ff"
 
-# You can also pass a block to create_connection as a success callback
-QubeSync.create_connection do |connection_id|
-  QubeConnection.create!(qube_id: connection_id) # save the connection_id to your database
-end
 
 QubeSync.delete_connection("asdf-qwer-asdf-zxcv") # deletes the connection in QUBE
 #=> true
