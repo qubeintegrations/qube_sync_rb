@@ -122,12 +122,15 @@ module QubeSync
   
   
     def extract_signature_meta(header)
-      header.split(',') => [ts, *signatures]
+      parts = header.split(',')
+      ts = parts.first
+      signatures = parts[1..-1]
       {
         timestamp: ts.split("=").last.to_i,
         signatures: signatures
       }
     end
+
   
     def default_headers
       {
@@ -153,13 +156,13 @@ module QubeSync
     end
   
     def verify_and_build_webhook!(body, signature, max_age: 500)
-      extract_signature_meta(signature) => { timestamp:, signatures:}
+      meta = extract_signature_meta(signature)
   
-      if timestamp < Time.now.to_i - max_age
+      if meta[:timestamp] < Time.now.to_i - max_age
         raise StaleWebhookError.new('Timestamp more than #{max_age}ms old. To increase this, pass a different value for max_age.')
       end
       
-      if signatures.detect { |sig| sign_payload(body) == sig }
+      if meta[:signatures].detect { |sig| sign_payload(body) == sig }
         JSON.parse(body)
       else
         raise InvalidWebhookSignatureError.new("Webhook signature mismatch")
