@@ -1,6 +1,8 @@
 require_relative "qube_sync/version"
 require_relative "qube_sync/request_builder"
 require "faraday"
+require "json"
+require "openssl"
 
 module QubeSync
   class Error < StandardError; end
@@ -85,6 +87,13 @@ module QubeSync
     def get_connection(connection_id)
       get("connections/#{connection_id}").fetch("data")
     end
+
+    def valid_connection?(connection_id)
+      get_connection(connection_id)
+      true
+    rescue Error => e
+      false
+    end
   
     def queue_request(connection_id, request)
       url = "connections/#{connection_id}/queued_requests"
@@ -121,12 +130,26 @@ module QubeSync
     end
   
   
+    # Parses an `X-QUBE-Signature` header, `t=<unix seconds>,v1=<hex>[,v1=<hex>]`,
+    # by key. There is one `v1` per active webhook secret while a secret rotates.
     def extract_signature_meta(header)
-      parts = header.split(',')
-      ts = parts.first
-      signatures = parts[1..-1]
+      timestamp = nil
+      signatures = []
+
+      header.to_s.split(",").each do |part|
+        key, value = part.strip.split("=", 2)
+        case key
+        when "t" then timestamp = value
+        when "v1" then signatures << value if value && !value.empty?
+        end
+      end
+
+      unless timestamp && timestamp.match?(/\A\d+\z/)
+        raise InvalidWebhookSignatureError.new("Invalid X-QUBE-Signature header: no t=<unix seconds>")
+      end
+
       {
-        timestamp: ts.split("=").last.to_i,
+        timestamp: timestamp.to_i,
         signatures: signatures
       }
     end
@@ -155,18 +178,36 @@ module QubeSync
       OpenSSL::HMAC.hexdigest('sha256', api_secret, payload)
     end
   
-    def verify_and_build_webhook!(body, signature, max_age: 500)
+    # Verifies a webhook against its `X-QUBE-Signature` header and returns the
+    # parsed body. `body` must be the raw request body, unparsed. The timestamp
+    # must be within `max_age` seconds of now, either way.
+    def verify_and_build_webhook!(body, signature, max_age: 300)
       meta = extract_signature_meta(signature)
-  
-      if meta[:timestamp] < Time.now.to_i - max_age
-        raise StaleWebhookError.new('Timestamp more than #{max_age}ms old. To increase this, pass a different value for max_age.')
+
+      age = Time.now.to_i - meta[:timestamp]
+      if age.abs > max_age
+        when_sent = age.positive? ? "#{age} seconds old" : "#{-age} seconds in the future"
+        raise StaleWebhookError.new("Webhook timestamp is #{when_sent}; it must be within #{max_age} seconds of now. Check this server's clock.")
       end
-      
-      if meta[:signatures].detect { |sig| sign_payload(body) == sig }
+
+      expected = sign_payload("#{meta[:timestamp]}.#{body}")
+      if meta[:signatures].any? { |sig| secure_compare(expected, sig) }
         JSON.parse(body)
       else
         raise InvalidWebhookSignatureError.new("Webhook signature mismatch")
       end
-  
+    end
+
+    # Constant-time string comparison, so a mismatch takes as long wherever it is.
+    def secure_compare(a, b)
+      return false unless a.bytesize == b.bytesize
+
+      if OpenSSL.respond_to?(:fixed_length_secure_compare)
+        OpenSSL.fixed_length_secure_compare(a, b)
+      else
+        result = 0
+        a.bytes.zip(b.bytes) { |x, y| result |= x ^ y }
+        result.zero?
+      end
     end
 end
