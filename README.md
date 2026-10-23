@@ -4,6 +4,8 @@ A simple wrapper around the QUBE Sync API.
 
 ## Installation
 
+Requires Ruby 3.3 or newer.
+
 Install the gem and add to the application's Gemfile by executing:
 
     $ bundle add qube_sync

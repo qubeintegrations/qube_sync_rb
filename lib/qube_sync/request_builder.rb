@@ -16,6 +16,8 @@ module QubeSync
         "name" => tag_name.to_s,
       }
       element["attributes"] = attributes unless attributes.empty?
+      # qbXML's booleans are the words true and false.
+      text = text.to_s if text == true || text == false
       element["text"] = text if text.is_a?(String) || text.is_a?(Numeric)
 
       if block_given?

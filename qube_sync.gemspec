@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   Manage connections, queued requests, and more with the QUBE Sync API.
   """
   spec.homepage = "https://github.com/qubeintegrations/qube_sync_rb"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.3.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency "faraday", "~> 2.0"
+  spec.add_dependency "faraday", "~> 2.14", ">= 2.14.3"
 
 
   # For more information and examples about making a new gem, check out our
