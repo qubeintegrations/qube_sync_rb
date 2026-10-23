@@ -193,6 +193,18 @@ RSpec.describe QubeSync::RequestBuilder do
       ])
     end
 
+    it "sends true and false as qbXML's words for them" do
+      request = QubeSync::RequestBuilder.new(version: "16.0") do |b|
+        b.IsActive true
+        b.IncludeLineItems false
+      end
+
+      expect(request.as_json["request"]).to eq([
+        {"name" => "IsActive", "text" => "true"},
+        {"name" => "IncludeLineItems", "text" => "false"}
+      ])
+    end
+
     it "leaves out an empty hash and nil" do
       request = QubeSync::RequestBuilder.new(version: "16.0") do |b|
         b.Empty({})

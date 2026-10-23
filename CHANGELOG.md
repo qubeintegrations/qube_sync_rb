@@ -14,6 +14,8 @@ Security fixes for webhook verification. Upgrading needs no code change.
 - A missing or malformed header raises `InvalidWebhookSignatureError`, not `NoMethodError`.
 - The stale error says how old (or how far ahead) the timestamp was; it used to print
   `#{max_age}ms` literally.
+- `RequestBuilder` sends `true` and `false` as the text `"true"` and `"false"`. 0.2.3 dropped
+  them, so `b.IsActive true` went out as an empty `<IsActive/>`.
 - Specs run against a delivery signed by the QuBe Sync server (`spec/fixtures/webhook_vectors.json`).
 
 ## [0.1.0] - 2025-01-31
