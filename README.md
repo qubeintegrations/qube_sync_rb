@@ -128,6 +128,78 @@ QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Si
 QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'], max_age: 120)
 ```
 
+## Webhooks
+
+`QubeSync::Webhooks` verifies a delivery's `X-QUBE-Signature` header and parses the body into a
+typed event. It doesn't need Rails or Rack, and never reads the environment: pass it the raw body,
+the header and your webhook secret.
+
+```ruby
+require "qube_sync"
+
+# raw_body: the request body exactly as received, before anything parses it.
+# header:   the X-QUBE-Signature header (nil when it's absent).
+def handle_qube_webhook(raw_body, header)
+  event = QubeSync::Webhooks.verify(raw_body, header, secrets: ENV.fetch("QUBE_WEBHOOK_SECRET"))
+
+  case event.type
+  when "request"
+    # A queued request's answer. Deduplicate on event.dedupe_key ("<page_request_id>:<state>").
+    # event.response_json, event.error, event.page, event.iteration_state
+  when "workflow_run"
+    # A run is waiting for an answer, or has ended. Skip it unless event.newer_than?(stored)
+    # for the revision stored with event.reference: deliveries can arrive out of order.
+    # event.awaiting_input? / completed? / failed? / cancelled?, event.prompt, event.output
+  when "notification"
+    # Data a running workflow sent. Deduplicate on event.dedupe_key (the delivery_id), and
+    # never skip one by revision. event.name, event.data
+  when "connection"
+    # Connected, setup cancelled, stalled or resumed. Deduplicate on event.dedupe_key, and skip
+    # it unless event.newer_than?(the revision stored for event.connection_id).
+  when "name_index"
+    # event.connection_id, event.name_index
+  else
+    # An event this version doesn't know yet: acknowledge it.
+  end
+
+  200
+rescue QubeSync::Webhooks::SignatureError => e
+  # e.reason is :missing, :malformed, :stale or :mismatch. The message is safe to log.
+  warn "QuBe Sync webhook refused: #{e.message}"
+  401
+end
+```
+
+- `secrets:` takes one secret or a list. While a secret rotates, a delivery carries one `v1`
+  signature per active secret, and either secret verifies it.
+- The timestamp must be within 300 seconds of now, either way. `tolerance:` (seconds) sets
+  another window, and `now:` (unix seconds or a `Time`) sets the clock, for tests.
+- Every event has `type`, `event`, `timestamp`, `app_id`, `sandbox`, `dedupe_key` and `to_h`
+  (the whole body). A missing key reads as `nil`, and `event["any_key"]` reads any other key.
+- `QubeSync::Webhooks.parse(raw_body)` builds the event without verifying it, for tests or for
+  code that verified the delivery elsewhere.
+
+In Rails, read the raw body with `request.raw_post`:
+
+```ruby
+class QubeWebhooksController < ActionController::API
+  def create
+    event = QubeSync::Webhooks.verify(
+      request.raw_post,
+      request.headers[QubeSync::Webhooks::HEADER],
+      secrets: Rails.application.credentials.qube_webhook_secret
+    )
+    QubeWebhookJob.perform_later(event.to_h) # route by type in the job, as above
+    head :ok
+  rescue QubeSync::Webhooks::SignatureError => e
+    Rails.logger.warn("QuBe Sync webhook refused: #{e.message}")
+    head :unauthorized
+  end
+end
+```
+
+`QubeSync.verify_and_build_webhook!` (0.2.4) still works, and still returns the parsed Hash.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
