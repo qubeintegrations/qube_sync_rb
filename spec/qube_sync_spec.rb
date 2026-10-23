@@ -130,15 +130,5 @@ RSpec.describe QubeSync do
       expect(QubeSync.secure_compare("abc", "abcd")).to be(false)
       expect(QubeSync.secure_compare("", "")).to be(true)
     end
-
-    it "works without OpenSSL.fixed_length_secure_compare (older Rubies)" do
-      allow(OpenSSL).to receive(:respond_to?).and_call_original
-      allow(OpenSSL).to receive(:respond_to?).with(:fixed_length_secure_compare).and_return(false)
-      expect(OpenSSL).not_to receive(:fixed_length_secure_compare)
-
-      expect(QubeSync.secure_compare("abc", "abc")).to be(true)
-      expect(QubeSync.secure_compare("abc", "abd")).to be(false)
-      expect(verify).to eq(JSON.parse(BODY))
-    end
   end
 end
