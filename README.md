@@ -118,8 +118,12 @@ QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Si
 #   "<?xml version=\"1.0\" ?> <QBXML> <QBXMLMsgsRs> ... </QBXMLMsgsRs> </QBXML>" 
 # }
 
-# The default max age for a webhook is 500ms (0.5 seconds). You can change this by passing a max_age option:
-QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'], max_age: 1_000)
+# Pass the raw request body, before anything parses it. A bad or missing signature raises
+# QubeSync::InvalidWebhookSignatureError; answer 401.
+#
+# The timestamp must be within 300 seconds (5 minutes) of now, either way, or it raises
+# QubeSync::StaleWebhookError. max_age (in seconds) sets another window:
+QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'], max_age: 120)
 ```
 
 ## Development
