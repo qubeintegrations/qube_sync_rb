@@ -1,0 +1,34 @@
+name: release
+# Pushing a tag vX.Y.Z publishes qube_sync X.Y.Z to rubygems.org, once the
+# specs pass and the tag matches lib/qube_sync/version.rb.
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - run: bundle exec rspec
+      - name: Tag matches the gem version
+        run: |
+          version=$(ruby -r ./lib/qube_sync/version -e 'print QubeSync::VERSION')
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match QubeSync::VERSION $version"
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+      # The gemspec packages `git ls-files`, so the gem is exactly the tagged commit.
+      - run: gem build qube_sync.gemspec
+      - run: gem push "qube_sync-$VERSION.gem"
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      - run: gh release create "$GITHUB_REF_NAME" "qube_sync-$VERSION.gem" --title "$GITHUB_REF_NAME" --notes "See [CHANGELOG.md](CHANGELOG.md)."
+        env:
+          GH_TOKEN: ${{ github.token }}
