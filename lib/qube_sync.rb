@@ -85,6 +85,13 @@ module QubeSync
     def get_connection(connection_id)
       get("connections/#{connection_id}").fetch("data")
     end
+
+    def valid_connection?(connection_id)
+      get_connection(connection_id)
+      true
+    rescue Error => e
+      false
+    end
   
     def queue_request(connection_id, request)
       url = "connections/#{connection_id}/queued_requests"

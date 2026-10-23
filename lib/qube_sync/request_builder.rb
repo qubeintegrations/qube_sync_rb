@@ -5,7 +5,7 @@ module QubeSync
     def initialize(version:, &block)
       @version = version
       @stack = []
-      instance_eval(&block) if block_given?
+      yield self if block_given?
     end
 
     def method_missing(tag_name, *args, &block)
@@ -21,7 +21,7 @@ module QubeSync
       if block_given?
         element["children"] = []
         @stack.push(element)
-        instance_eval(&block)
+        block.call
         @stack.pop
       end
 
