@@ -6,6 +6,9 @@ on:
     tags: ["v*"]
 permissions:
   contents: write
+  # Trusted publishing: rubygems.org takes this workflow's OIDC token, so no
+  # API key is stored. The trusted publisher is set on the gem's page there.
+  id-token: write
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -26,9 +29,8 @@ jobs:
           echo "VERSION=$version" >> "$GITHUB_ENV"
       # The gemspec packages `git ls-files`, so the gem is exactly the tagged commit.
       - run: gem build qube_sync.gemspec
+      - uses: rubygems/configure-rubygems-credentials@v2.1.0
       - run: gem push "qube_sync-$VERSION.gem"
-        env:
-          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
       - run: gh release create "$GITHUB_REF_NAME" "qube_sync-$VERSION.gem" --title "$GITHUB_REF_NAME" --notes "See [CHANGELOG.md](CHANGELOG.md)."
         env:
           GH_TOKEN: ${{ github.token }}

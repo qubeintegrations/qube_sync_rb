@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+- Releases publish through RubyGems trusted publishing, from `release.yml`'s OIDC token; no
+  API key is stored.
+
 ## [0.3.0] - 2026-10-23
 
 Adds `QubeSync::Webhooks`, which verifies a delivery and parses it into a typed event. Nothing
