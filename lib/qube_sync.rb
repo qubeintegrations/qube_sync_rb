@@ -1,6 +1,7 @@
 require_relative "qube_sync/version"
 require_relative "qube_sync/request_builder"
 require_relative "qube_sync/webhooks"
+require_relative "qube_sync/client"
 require "faraday"
 require "json"
 require "openssl"

@@ -3,6 +3,30 @@
 - Releases publish through RubyGems trusted publishing, from `release.yml`'s OIDC token; no
   API key is stored.
 
+## [0.4.0] - 2026-10-25
+
+Adds `QubeSync::Client`, a client for the v2 API. Nothing existing changes: the v1 module
+functions still call `/api/v1` and read `QUBE_API_KEY` and `QUBE_URL`, and are now documented as
+legacy (no runtime warning). New code should use the client.
+
+- `QubeSync::Client.new(api_key:, base_url: "https://qubesync.com", open_timeout: 5,
+  read_timeout: 30, max_retries: 2)`. It takes the key as an argument and never reads the
+  environment, sends it as Basic auth, and never shows it in `inspect`. `require
+  "qube_sync/client"` loads it alone, on the standard library (Net::HTTP), without Faraday.
+- Connections: `create_connection`, `get_connection`, `list_connections`, `update_connection`,
+  `delete_connection`, `regenerate_onboarding`, `set_password`, `get_qwc`.
+- Runs and questions: `start_run` (its `reference` is the Idempotency-Key), `get_run`,
+  `list_runs`, `cancel_run`, `run_events`, `answer`, `search`. Methods that take a link refuse
+  one on another scheme, host or port with `ArgumentError`, before any request.
+- Requests: `queue` (any operation, `method:` `:post`, `:get`, `:put` or `:delete`),
+  `queue_qbxml`, `get_request`, `request_pages`, `list_requests`, `each_request` (every page),
+  `discard_request`; and `request` for anything else. `queue` and `queue_qbxml` make an
+  Idempotency-Key per call when none is given, and reuse it on that call's retries.
+- Retries: a GET, PUT, DELETE or a request with an Idempotency-Key is retried twice (0.5 s, then
+  1 s) on a failed connection, a timeout, or a 429, 502, 503 or 504, honouring `Retry-After` up
+  to 30 s. Anything else outside 2xx raises `QubeSync::APIError` (a `QubeSync::Error`) with
+  `status`, `errors`, `code`, `message`, `body` and `request_id`.
+
 ## [0.3.0] - 2026-10-23
 
 Adds `QubeSync::Webhooks`, which verifies a delivery and parses it into a typed event. Nothing

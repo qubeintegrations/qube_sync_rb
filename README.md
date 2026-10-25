@@ -1,6 +1,7 @@
 # QUBESync
 
-A simple wrapper around the QUBE Sync API.
+The Ruby library for the [QuBe Sync](https://qubesync.com) API: a client for the v2 API, and
+webhook verification. The API's docs are at https://docs.qubesync.com.
 
 ## Installation
 
@@ -14,14 +15,193 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install qube_sync
 
-## Configuration
+## The v2 client
+
+`QubeSync::Client` calls the v2 API. Make one from your app's configuration: it never reads the
+environment itself, so one app can hold a sandbox and a production client at once.
+
+```ruby
+require "qube_sync" # or require "qube_sync/client" alone: it uses only the standard library
+
+QUBE = QubeSync::Client.new(api_key: ENV.fetch("QUBE_API_KEY"))
+```
+
+`base_url:` (default `"https://qubesync.com"`), `open_timeout:` (5 s), `read_timeout:` (30 s) and
+`max_retries:` (2) are options. Every method returns the response's `data`, a plain Hash or Array
+with String keys, and nil for an empty answer.
+
+### Onboarding a customer
+
+```ruby
+connection = QUBE.create_connection(webhook_url: "https://myapp.example/qube/connections", name: "Acme Ltd")
+customer.update!(qube_connection_id: connection["id"])
+
+redirect_to connection["links"]["onboarding"], allow_other_host: true
+```
+
+QuBe Sync sends `connection.connected` to the connection's `webhook_url` once the customer's Web
+Connector first checks in. `regenerate_onboarding(id)` makes a fresh onboarding link, and
+`update_connection(id, webhook_url:, name:)` changes either. `get_connection`,
+`list_connections`, `delete_connection`, `set_password(id, password: nil)` and `get_qwc(id)` (the
+QWC file's XML) are there for setup without hosted onboarding.
+
+### Starting a run and answering its question
+
+```ruby
+run = QUBE.start_run(
+  connection_id, "sync_customer", {"customer" => {"name" => "Acme Ltd"}},
+  reference: "customer-#{customer.id}",          # also sent as the Idempotency-Key
+  webhook_url: "https://myapp.example/qube/runs"
+)
+
+# Later, a workflow_run webhook says the run is awaiting input. Its links are the run's own:
+event = QubeSync::Webhooks.verify(raw_body, header, secrets: ENV.fetch("QUBE_WEBHOOK_SECRET"))
+if event.awaiting_input?
+  matches = QUBE.search(event.links["search"], field: "customer", q: "Acme") # a record field's choices
+  QUBE.answer(event.links["decisions"], choice: "rename", data: {"name" => "Acme Ltd (2)"})
+end
+```
+
+`get_run(run_url)` or `get_run(connection_id, run_id)` reads a run, `list_runs(connection_id,
+reference:, state:, outcome:)` finds runs, `cancel_run(cancel_url, reason: nil)` cancels one, and
+`run_events(connection_id, run_id, after:, limit:)` returns a page of its event log whole
+(`{"data" => [...], "next_after" => ...}`). A method that takes a link takes it from a webhook's
+or a run's `links`, or a path under `/api/v2`. A link on any other scheme, host or port raises
+`ArgumentError` before a request is made, so the API key only ever goes to QuBe Sync.
+
+### Queueing an operation
+
+```ruby
+request = QUBE.queue(connection_id, "customers", {name: "Acme Ltd"},
+  webhook_url: "https://myapp.example/qube/requests")
+
+# A query: method: :get sends the filters as the query string.
+QUBE.queue(connection_id, "invoices", {max_returned: 100, iterator: "Start"},
+  webhook_url: "https://myapp.example/qube/requests", method: :get)
+
+# qbXML as written.
+QUBE.queue_qbxml(connection_id, request_xml, webhook_url: "https://myapp.example/qube/requests")
+```
+
+The answer comes to `webhook_url` (see Webhooks below). `get_request(connection_id, id)`,
+`request_pages(connection_id, id)` and `discard_request(connection_id, id)` act on one request.
+`list_requests(connection_id, page:, page_size:, state:, ...)` returns a page whole (`{"data" =>
+[...], "meta" => {"page" => 1, "total_pages" => 3}}`), and `each_request(connection_id, **filters)`
+yields every request on every page (an Enumerator without a block).
+
+`request(method, path_or_url, body = nil, query: {}, headers: {})` calls anything else and returns
+the whole parsed body.
+
+### Retries, idempotency and errors
+
+- A GET, PUT or DELETE, or any request with an `Idempotency-Key`, is retried up to `max_retries`
+  times (after 0.5 s, then 1 s) when the connection fails or times out, or QuBe Sync answers 429,
+  502, 503 or 504. A `Retry-After` on a 429 or 503 is honoured, up to 30 s. Other requests
+  (`create_connection`, `answer`, `cancel_run`...) are sent once.
+- `start_run` sends `reference` as the Idempotency-Key. `queue` and `queue_qbxml` take
+  `idempotency_key:`; without one the client makes a UUID per call and sends it again on that
+  call's retries, so a retry never queues a request twice.
+- Any other answer outside 2xx raises `QubeSync::APIError` (a `QubeSync::Error`): `status`,
+  `errors` (the body's `errors` as parsed), `code` (`errors["code"]`, such as `prompt_changed`, or
+  nil), `message` (one line, safe to log), `body` and `request_id` (the `x-request-id` header, for
+  support). A connection that still fails after the retries raises Ruby's own error
+  (`Net::OpenTimeout`, `Net::ReadTimeout`, `Errno::ECONNREFUSED`...).
+- The API key never appears in an error or in `inspect`.
+
+```ruby
+begin
+  QUBE.answer(decisions_url, choice: "rename")
+rescue QubeSync::APIError => e
+  raise unless e.code == "prompt_changed" # the question changed: show the new one
+  refresh_question(run)
+end
+```
+
+## Webhooks
+
+`QubeSync::Webhooks` verifies a delivery's `X-QUBE-Signature` header and parses the body into a
+typed event. It doesn't need Rails or Rack, and never reads the environment: pass it the raw body,
+the header and your webhook secret.
+
+```ruby
+require "qube_sync"
+
+# raw_body: the request body exactly as received, before anything parses it.
+# header:   the X-QUBE-Signature header (nil when it's absent).
+def handle_qube_webhook(raw_body, header)
+  event = QubeSync::Webhooks.verify(raw_body, header, secrets: ENV.fetch("QUBE_WEBHOOK_SECRET"))
+
+  case event.type
+  when "request"
+    # A queued request's answer. Deduplicate on event.dedupe_key ("<page_request_id>:<state>").
+    # event.response_json, event.error, event.page, event.iteration_state
+  when "workflow_run"
+    # A run is waiting for an answer, or has ended. Skip it unless event.newer_than?(stored)
+    # for the revision stored with event.reference: deliveries can arrive out of order.
+    # event.awaiting_input? / completed? / failed? / cancelled?, event.prompt, event.output
+  when "notification"
+    # Data a running workflow sent. Deduplicate on event.dedupe_key (the delivery_id), and
+    # never skip one by revision. event.name, event.data
+  when "connection"
+    # Connected, setup cancelled, stalled or resumed. Deduplicate on event.dedupe_key, and skip
+    # it unless event.newer_than?(the revision stored for event.connection_id).
+  when "name_index"
+    # event.connection_id, event.name_index
+  else
+    # An event this version doesn't know yet: acknowledge it.
+  end
+
+  200
+rescue QubeSync::Webhooks::SignatureError => e
+  # e.reason is :missing, :malformed, :stale or :mismatch. The message is safe to log.
+  warn "QuBe Sync webhook refused: #{e.message}"
+  401
+end
+```
+
+- `secrets:` takes one secret or a list. While a secret rotates, a delivery carries one `v1`
+  signature per active secret, and either secret verifies it.
+- The timestamp must be within 300 seconds of now, either way. `tolerance:` (seconds) sets
+  another window, and `now:` (unix seconds or a `Time`) sets the clock, for tests.
+- Every event has `type`, `event`, `timestamp`, `app_id`, `sandbox`, `dedupe_key` and `to_h`
+  (the whole body). A missing key reads as `nil`, and `event["any_key"]` reads any other key.
+- `QubeSync::Webhooks.parse(raw_body)` builds the event without verifying it, for tests or for
+  code that verified the delivery elsewhere.
+
+In Rails, read the raw body with `request.raw_post`:
+
+```ruby
+class QubeWebhooksController < ActionController::API
+  def create
+    event = QubeSync::Webhooks.verify(
+      request.raw_post,
+      request.headers[QubeSync::Webhooks::HEADER],
+      secrets: Rails.application.credentials.qube_webhook_secret
+    )
+    QubeWebhookJob.perform_later(event.to_h) # route by type in the job, as above
+    head :ok
+  rescue QubeSync::Webhooks::SignatureError => e
+    Rails.logger.warn("QuBe Sync webhook refused: #{e.message}")
+    head :unauthorized
+  end
+end
+```
+
+`QubeSync.verify_and_build_webhook!` (0.2.4) still works, and still returns the parsed Hash.
+
+## v1 (legacy)
+
+The v1 module functions below call `/api/v1` and still work, but the v2 client above is the one to
+use for new code.
+
+### Configuration
 
 You'll need to set two evironment variables in your application to use this gem:
 
 `QUBE_API_KEY` - This is your API key, which you can find in your QUBE Sync application's settings.
 `QUBE_WEBHOOK_SECRET` - This is the secret key used to sign the webhook payloads. You can find this in your QUBE Sync application's settings.
 
-## Usage
+### Usage
 
 ```ruby
 require 'qube_sync'
@@ -127,78 +307,6 @@ QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Si
 # QubeSync::StaleWebhookError. max_age (in seconds) sets another window:
 QubeSync.verify_and_build_webhook!(request.body.read, request.headers['X-Qube-Signature'], max_age: 120)
 ```
-
-## Webhooks
-
-`QubeSync::Webhooks` verifies a delivery's `X-QUBE-Signature` header and parses the body into a
-typed event. It doesn't need Rails or Rack, and never reads the environment: pass it the raw body,
-the header and your webhook secret.
-
-```ruby
-require "qube_sync"
-
-# raw_body: the request body exactly as received, before anything parses it.
-# header:   the X-QUBE-Signature header (nil when it's absent).
-def handle_qube_webhook(raw_body, header)
-  event = QubeSync::Webhooks.verify(raw_body, header, secrets: ENV.fetch("QUBE_WEBHOOK_SECRET"))
-
-  case event.type
-  when "request"
-    # A queued request's answer. Deduplicate on event.dedupe_key ("<page_request_id>:<state>").
-    # event.response_json, event.error, event.page, event.iteration_state
-  when "workflow_run"
-    # A run is waiting for an answer, or has ended. Skip it unless event.newer_than?(stored)
-    # for the revision stored with event.reference: deliveries can arrive out of order.
-    # event.awaiting_input? / completed? / failed? / cancelled?, event.prompt, event.output
-  when "notification"
-    # Data a running workflow sent. Deduplicate on event.dedupe_key (the delivery_id), and
-    # never skip one by revision. event.name, event.data
-  when "connection"
-    # Connected, setup cancelled, stalled or resumed. Deduplicate on event.dedupe_key, and skip
-    # it unless event.newer_than?(the revision stored for event.connection_id).
-  when "name_index"
-    # event.connection_id, event.name_index
-  else
-    # An event this version doesn't know yet: acknowledge it.
-  end
-
-  200
-rescue QubeSync::Webhooks::SignatureError => e
-  # e.reason is :missing, :malformed, :stale or :mismatch. The message is safe to log.
-  warn "QuBe Sync webhook refused: #{e.message}"
-  401
-end
-```
-
-- `secrets:` takes one secret or a list. While a secret rotates, a delivery carries one `v1`
-  signature per active secret, and either secret verifies it.
-- The timestamp must be within 300 seconds of now, either way. `tolerance:` (seconds) sets
-  another window, and `now:` (unix seconds or a `Time`) sets the clock, for tests.
-- Every event has `type`, `event`, `timestamp`, `app_id`, `sandbox`, `dedupe_key` and `to_h`
-  (the whole body). A missing key reads as `nil`, and `event["any_key"]` reads any other key.
-- `QubeSync::Webhooks.parse(raw_body)` builds the event without verifying it, for tests or for
-  code that verified the delivery elsewhere.
-
-In Rails, read the raw body with `request.raw_post`:
-
-```ruby
-class QubeWebhooksController < ActionController::API
-  def create
-    event = QubeSync::Webhooks.verify(
-      request.raw_post,
-      request.headers[QubeSync::Webhooks::HEADER],
-      secrets: Rails.application.credentials.qube_webhook_secret
-    )
-    QubeWebhookJob.perform_later(event.to_h) # route by type in the job, as above
-    head :ok
-  rescue QubeSync::Webhooks::SignatureError => e
-    Rails.logger.warn("QuBe Sync webhook refused: #{e.message}")
-    head :unauthorized
-  end
-end
-```
-
-`QubeSync.verify_and_build_webhook!` (0.2.4) still works, and still returns the parsed Hash.
 
 ## Development
 
