@@ -26,8 +26,8 @@ require "qube_sync" # or require "qube_sync/client" alone: it uses only the stan
 QUBE = QubeSync::Client.new(api_key: ENV.fetch("QUBE_API_KEY"))
 ```
 
-`base_url:` (default `"https://qubesync.com"`), `open_timeout:` (5 s), `read_timeout:` (30 s) and
-`max_retries:` (2) are options. Every method returns the response's `data`, a plain Hash or Array
+`base_url:` (default `"https://qubesync.com"`), `open_timeout:` (5 s), `read_timeout:` (30 s),
+`max_retries:` (2), `total_timeout:` (60 s) and `on_retry:` are options (see Retries below). Every method returns the response's `data`, a plain Hash or Array
 with String keys, and nil for an empty answer.
 
 ### Onboarding a customer
@@ -97,7 +97,32 @@ the whole parsed body.
 - A GET, PUT or DELETE, or any request with an `Idempotency-Key`, is retried up to `max_retries`
   times (after 0.5 s, then 1 s) when the connection fails or times out, or QuBe Sync answers 429,
   502, 503 or 504. A `Retry-After` on a 429 or 503 is honoured, up to 30 s. Other requests
-  (`create_connection`, `answer`, `cancel_run`...) are sent once.
+  (`create_connection`, `cancel_run`...) are sent once.
+- A call returns or raises within `total_timeout` (60 s), retries and their waits included: each
+  attempt's timeouts are cut to the time left, and a retry is made only when at least a second
+  would be left after its wait (a `Retry-After` that doesn't fit isn't waited, nor shortened; the
+  call raises what the last attempt got). Pass `max_retries: 0` for calls made while a user waits
+  on a page, if 60 s is too long.
+- `answer` is retried when its link has a `prompt_token`, as a run's `links.decisions` always
+  does while it asks. A retry after a lost answer may raise a 409 with code `prompt_changed`:
+  the question has been answered, by the first attempt or by someone else. Without a
+  `prompt_token` it's sent once, since an answer sent again could be taken for the run's next
+  question.
+- A retried DELETE (`delete_connection`, or `request(:delete, ...)`) that gets a 404 returns nil,
+  as a 204 would, when an earlier attempt's answer was lost after the request could have reached
+  QuBe Sync (a read timeout, a connection reset or closed, a 502 or 504): that attempt deleted it.
+  Any other 404 raises, including a retry's after a refused connection, a connect timeout, a 429
+  or a 503.
+- `on_retry:` takes a callable, called before each retry's wait with a frozen Hash: `attempt`
+  (1, 2...), `max_retries`, `delay` and `elapsed` (seconds), `method`, `url` (without its query
+  string), `status` (for a status retry) and `error` (for a network failure), and never the key,
+  headers or body. It isn't called when no retry is made. An exception it raises stops the call
+  and reaches the caller.
+
+  ```ruby
+  QubeSync::Client.new(api_key: ENV.fetch("QUBE_API_KEY"),
+    on_retry: ->(r) { Rails.logger.warn("QuBe Sync retry #{r[:attempt]}/#{r[:max_retries]} #{r[:method]} #{r[:url]} #{r[:status] || r[:error].class}") })
+  ```
 - `start_run` sends `reference` as the Idempotency-Key. `queue` and `queue_qbxml` take
   `idempotency_key:`; without one the client makes a UUID per call and sends it again on that
   call's retries, so a retry never queues a request twice.

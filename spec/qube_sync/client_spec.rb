@@ -24,8 +24,8 @@ class FakeQubeServer
 
   attr_reader :requests, :port
 
-  def initialize
-    @server = TCPServer.new("127.0.0.1", 0)
+  def initialize(port = 0)
+    @server = TCPServer.new("127.0.0.1", port)
     @port = @server.addr[1]
     @requests = Queue.new
     @recorded = []
@@ -136,7 +136,7 @@ RSpec.describe QubeSync::Client do
 
     it "has the default timeouts and retries" do
       c = described_class.new(api_key: api_key)
-      expect([c.open_timeout, c.read_timeout, c.max_retries]).to eq([5, 30, 2])
+      expect([c.open_timeout, c.read_timeout, c.max_retries, c.total_timeout]).to eq([5, 30, 2, 60])
     end
 
     it "never shows the key in inspect, to_s or pp" do
@@ -544,6 +544,213 @@ RSpec.describe QubeSync::Client do
       c = described_class.new(api_key: api_key, base_url: server.url, max_retries: 0, sleep: ->(s) { sleeps << s })
       expect { c.list_connections }.to raise_error(QubeSync::APIError)
       expect(server.recorded.size).to eq(1)
+    end
+  end
+
+  describe "on_retry" do
+    let(:events) { [] }
+    let(:client) do
+      described_class.new(api_key: api_key, base_url: server.url, sleep: ->(s) { sleeps << s },
+        on_retry: ->(info) { events << info })
+    end
+
+    it "is called before each retry's wait, for a status, with the query stripped" do
+      server.respond([503, {}, ""], [503, {}, ""], data([]))
+      client.list_runs("c1", reference: "secret-search")
+      expect(events.size).to eq(2)
+      first = events.first
+      expect(first).to be_frozen
+      expect(first.keys).to eq(%i[attempt max_retries delay elapsed method url status error])
+      expect(first).to include(attempt: 1, max_retries: 2, method: "GET", status: 503, error: nil,
+        url: "#{server.url}/api/v2/connections/c1/workflow-runs")
+      expect(first[:delay]).to eq(sleeps.first)
+      expect(first[:delay]).to be_a(Float)
+      expect(first[:elapsed]).to be_a(Float)
+      expect(events[1][:attempt]).to eq(2)
+      expect(events.inspect).not_to include(api_key)
+      expect(events.inspect).not_to include(["#{api_key}:"].pack("m0"))
+      expect(events.inspect).not_to include("secret-search")
+    end
+
+    it "is called with the error for a refused connection" do
+      closed = TCPServer.new("127.0.0.1", 0)
+      port = closed.addr[1]
+      closed.close
+      c = described_class.new(api_key: api_key, base_url: "http://127.0.0.1:#{port}", sleep: ->(s) {},
+        on_retry: ->(info) { events << info })
+      expect { c.list_connections }.to raise_error(Errno::ECONNREFUSED)
+      expect(events.map { |e| e[:attempt] }).to eq([1, 2])
+      expect(events.first[:status]).to be_nil
+      expect(events.first[:error]).to be_a(Errno::ECONNREFUSED)
+    end
+
+    it "is called with the error for a reset connection" do
+      server.respond(:reset, data([]))
+      client.list_connections
+      expect(events.size).to eq(1)
+      expect(events.first[:error]).to be_a(StandardError)
+      expect(events.first[:status]).to be_nil
+    end
+
+    it "isn't called on success, a 4xx or once retries run out" do
+      server.respond(data([]), json(404, {"errors" => {"detail" => "Not Found"}}))
+      client.list_connections
+      expect { client.get_connection("c1") }.to raise_error(QubeSync::APIError)
+      expect(events).to be_empty
+
+      c = described_class.new(api_key: api_key, base_url: server.url, max_retries: 1, sleep: ->(s) {},
+        on_retry: ->(info) { events << info })
+      server.respond([503, {}, ""], [503, {}, ""])
+      expect { c.list_connections }.to raise_error(QubeSync::APIError)
+      expect(events.size).to eq(1)
+    end
+
+    it "stops the call when it raises" do
+      c = described_class.new(api_key: api_key, base_url: server.url, sleep: ->(s) { sleeps << s },
+        on_retry: ->(_info) { raise "stop" })
+      server.respond([503, {}, ""], data([]))
+      expect { c.list_connections }.to raise_error(RuntimeError, "stop")
+      expect(server.recorded.size).to eq(1)
+      expect(sleeps).to be_empty
+    end
+
+    it "must be callable" do
+      expect { described_class.new(api_key: api_key, on_retry: 1) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe "total_timeout" do
+    let(:now) { [0.0] }
+    let(:events) { [] }
+
+    # A clock that runs in real time and jumps forward by every injected sleep.
+    def timed_client(**options)
+      offset = 0.0
+      described_class.new(api_key: api_key, base_url: server.url,
+        sleep: ->(s) { sleeps << s; offset += s },
+        clock: -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) + offset },
+        on_retry: ->(info) { events << info }, **options)
+    end
+
+    it "defaults to 60 seconds" do
+      expect(described_class.new(api_key: api_key).total_timeout).to eq(60)
+      expect { described_class.new(api_key: api_key, total_timeout: 0) }.to raise_error(ArgumentError)
+    end
+
+    it "makes no retry whose wait leaves under a second" do
+      server.respond([503, {}, ""], data([]))
+      c = timed_client(total_timeout: 1.5)
+      expect { c.list_connections }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(503) }
+      expect(server.recorded.size).to eq(1)
+      expect(sleeps).to be_empty
+      expect(events).to be_empty
+    end
+
+    it "never waits a Retry-After beyond the limit, nor shortens it" do
+      server.respond([429, {"Retry-After" => "20"}, ""], data([]))
+      c = timed_client(total_timeout: 10)
+      expect { c.list_connections }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(429) }
+      expect(server.recorded.size).to eq(1)
+      expect(sleeps).to be_empty
+    end
+
+    it "raises the network error when the retry doesn't fit" do
+      server.respond(:reset)
+      c = timed_client(total_timeout: 1.2)
+      expect { c.list_connections }.to raise_error(StandardError) { |e| expect(e).not_to be_a(QubeSync::Error) }
+      expect(server.recorded.size).to eq(1)
+    end
+
+    it "cuts a later attempt's read timeout to the time left" do
+      slow = ->(_req) { sleep 5; data([]) }
+      server.respond([503, {}, ""], slow)
+      c = timed_client(total_timeout: 2.2, read_timeout: 30)
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      expect { c.list_connections }.to raise_error(Net::ReadTimeout)
+      real = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+      expect(server.recorded.size).to eq(2)
+      expect(events.size).to eq(1)
+      # 2.2 s less the first wait (0.5 to 0.625 s), and no third attempt.
+      expect(real).to be_between(1.4, 2.0)
+    end
+  end
+
+  describe "answer retries" do
+    it "retries on 503 when the link has a prompt_token" do
+      server.respond([503, {}, ""], data({"id" => "r1"}))
+      client.answer("/connections/c1/workflow-runs/r1/decisions?prompt_token=tok", choice: "a")
+      expect(server.recorded.size).to eq(2)
+      expect(server.recorded.map(&:query)).to eq(["prompt_token=tok", "prompt_token=tok"])
+      expect(sleeps.size).to eq(1)
+    end
+
+    it "is sent once without a prompt_token, or with an empty one" do
+      server.respond([503, {}, ""], [503, {}, ""])
+      expect { client.answer("/connections/c1/workflow-runs/r1/decisions", choice: "a") }.to raise_error(QubeSync::APIError)
+      expect { client.answer("/connections/c1/workflow-runs/r1/decisions?prompt_token=", choice: "a") }.to raise_error(QubeSync::APIError)
+      expect(server.recorded.size).to eq(2)
+      expect(sleeps).to be_empty
+    end
+
+    it "leaves other POSTs to a link with a prompt_token unretried" do
+      server.respond([503, {}, ""])
+      expect { client.request(:post, "/connections/c1/workflow-runs/r1/decisions?prompt_token=tok", {choice: "a"}) }
+        .to raise_error(QubeSync::APIError)
+      expect(server.recorded.size).to eq(1)
+    end
+  end
+
+  describe "a retried DELETE that finds nothing" do
+    let(:not_found) { json(404, {"errors" => {"detail" => "Not Found"}}) }
+
+    it "succeeds when the first attempt timed out after deleting" do
+      deleted = []
+      slow_delete = ->(req) { deleted << req.path; sleep 1; [204, {}, ""] }
+      server.respond(slow_delete, not_found)
+      c = described_class.new(api_key: api_key, base_url: server.url, read_timeout: 0.2, sleep: ->(s) { sleeps << s })
+      expect(c.delete_connection("c1")).to be_nil
+      expect(deleted).to eq(["/api/v2/connections/c1"])
+      expect(server.recorded.size).to eq(2)
+    end
+
+    it "succeeds after a reset or a 504" do
+      server.respond(:reset, not_found, [504, {}, ""], not_found)
+      expect(client.delete_connection("c1")).to be_nil
+      expect(client.request(:delete, "/workflows/w1")).to be_nil
+      expect(server.recorded.size).to eq(4)
+    end
+
+    it "raises a first attempt's 404" do
+      server.respond(not_found)
+      expect { client.delete_connection("c1") }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(404) }
+    end
+
+    it "raises a 404 after a 503 or a 429" do
+      server.respond([503, {}, ""], not_found, [429, {}, ""], not_found)
+      expect { client.delete_connection("c1") }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(404) }
+      expect { client.delete_connection("c1") }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(404) }
+    end
+
+    it "raises a 404 after a refused connection" do
+      closed = TCPServer.new("127.0.0.1", 0)
+      port = closed.addr[1]
+      closed.close
+      late = nil
+      # Nothing listens on the first attempt; the server starts during the wait before the retry.
+      starter = lambda do |s|
+        sleeps << s
+        late ||= FakeQubeServer.new(port).respond(not_found)
+      end
+      c = described_class.new(api_key: api_key, base_url: "http://127.0.0.1:#{port}", sleep: starter)
+      expect { c.delete_connection("c1") }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(404) }
+      expect(late.recorded.size).to eq(1)
+    ensure
+      late&.stop
+    end
+
+    it "raises a 404 for a GET after a lost answer" do
+      server.respond([504, {}, ""], not_found)
+      expect { client.get_connection("c1") }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(404) }
     end
   end
 

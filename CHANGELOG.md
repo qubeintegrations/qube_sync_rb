@@ -10,7 +10,7 @@ functions still call `/api/v1` and read `QUBE_API_KEY` and `QUBE_URL`, and are n
 legacy (no runtime warning). New code should use the client.
 
 - `QubeSync::Client.new(api_key:, base_url: "https://qubesync.com", open_timeout: 5,
-  read_timeout: 30, max_retries: 2)`. It takes the key as an argument and never reads the
+  read_timeout: 30, max_retries: 2, total_timeout: 60, on_retry: nil)`. It takes the key as an argument and never reads the
   environment, sends it as Basic auth, and never shows it in `inspect`. `require
   "qube_sync/client"` loads it alone, on the standard library (Net::HTTP), without Faraday.
 - Connections: `create_connection`, `get_connection`, `list_connections`, `update_connection`,
@@ -24,8 +24,17 @@ legacy (no runtime warning). New code should use the client.
   Idempotency-Key per call when none is given, and reuse it on that call's retries.
 - Retries: a GET, PUT, DELETE or a request with an Idempotency-Key is retried twice (0.5 s, then
   1 s) on a failed connection, a timeout, or a 429, 502, 503 or 504, honouring `Retry-After` up
-  to 30 s. Anything else outside 2xx raises `QubeSync::APIError` (a `QubeSync::Error`) with
-  `status`, `errors`, `code`, `message`, `body` and `request_id`.
+  to 30 s. `answer` is retried too when its link has a `prompt_token`. Anything else outside 2xx
+  raises `QubeSync::APIError` (a `QubeSync::Error`) with `status`, `errors`, `code`, `message`,
+  `body` and `request_id`.
+- A call returns or raises within `total_timeout` (60 s), retries and their waits included: each
+  attempt's timeouts are cut to the time left, and no retry is made unless a second is left after
+  its wait.
+- `on_retry:` is called before each retry's wait with a frozen Hash (`attempt`, `max_retries`,
+  `delay`, `elapsed`, `method`, `url` without its query, `status`, `error`); an exception it
+  raises stops the call.
+- A retried DELETE that gets a 404 after an earlier attempt's answer was lost (a read timeout, a
+  reset or closed connection, a 502 or 504) returns nil, as a 204 would.
 
 ## [0.3.0] - 2026-10-23
 
