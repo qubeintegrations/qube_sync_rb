@@ -1,0 +1,26 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ItemSites < Base
+      type item_site_filter = {
+        ?item_filter: Types::entity_filter,
+        ?site_filter: Types::currency_filter
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?include_ret_element: Array["AssemblyBuildPoint" | "EditSequence" | "InventorySiteLocationRef" | "InventorySiteRef" | "ItemInventoryAssemblyRef" | "ItemInventoryRef" | "ListID" | "QuantityOnHand" | "QuantityOnPendingTransfers" | "QuantityOnPurchaseOrders" | "QuantityOnSalesOrders" | "QuantityRequiredByPendingBuildTxns" | "QuantityToBeBuiltByPendingBuildTxns" | "ReorderLevel" | "TimeCreated" | "TimeModified"],
+        ?item_site_filter: item_site_filter,
+        ?item_type_filter: "AllExceptFixedAsset" | "Assembly" | "Discount" | "FixedAsset" | "Inventory" | "InventoryAndAssembly" | "NonInventory" | "OtherCharge" | "Payment" | "Sales" | "SalesTax" | "Service",
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

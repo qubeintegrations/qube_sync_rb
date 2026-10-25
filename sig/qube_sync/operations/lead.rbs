@@ -1,0 +1,91 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Lead < Base
+      type lead_address = {
+        ?addr1: String,
+        ?addr2: String,
+        ?addr3: String,
+        ?addr4: String,
+        ?addr5: String
+      }
+
+      type lead_contacts = {
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        first_name: String,
+        ?is_primary_contact: bool,
+        ?job_title: String,
+        ?last_name: String,
+        ?middle_name: String,
+        ?salutation: String
+      }
+
+      type lead_contacts_mod = {
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        first_name: String,
+        ?is_primary_contact: bool,
+        ?job_title: String,
+        ?last_name: String,
+        ?lead_contact_id: Integer,
+        ?middle_name: String,
+        ?salutation: String
+      }
+
+      type locations = {
+        ?lead_address: lead_address,
+        location: String
+      }
+
+      type locations_mod = {
+        ?lead_address: lead_address,
+        location: String,
+        location_id: Integer
+      }
+
+      type create_params = {
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?company_name: String,
+        full_name: String,
+        ?include_ret_element: Array["AdditionalContactRef" | "CompanyName" | "EditSequence" | "ExternalGUID" | "FullName" | "LeadContactsRet" | "ListID" | "LocationsRet" | "MainPhone" | "OwnerID" | "Status" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?lead_contacts: Array[lead_contacts],
+        ?locations: Array[locations],
+        ?main_phone: String,
+        ?request_id: String,
+        ?status: "Cold" | "Hot" | "Warm"
+      }
+
+      type query_params = {
+        ?from_modified_date: String,
+        ?include_ret_element: Array["AdditionalContactRef" | "CompanyName" | "EditSequence" | "FullName" | "LeadContactsRet" | "ListID" | "LocationsRet" | "MainPhone" | "Status" | "TimeCreated" | "TimeModified"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name: Array[String],
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?company_name: String,
+        edit_sequence: String,
+        full_name: String,
+        ?include_ret_element: Array["AdditionalContactRef" | "CompanyName" | "EditSequence" | "ExternalGUID" | "FullName" | "LeadContactsRet" | "ListID" | "LocationsRet" | "MainPhone" | "OwnerID" | "Status" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?lead_contacts_mod: Array[lead_contacts_mod],
+        list_id: String,
+        ?locations_mod: Array[locations_mod],
+        ?main_phone: String,
+        ?request_id: String,
+        ?status: "Cold" | "Hot" | "Warm"
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

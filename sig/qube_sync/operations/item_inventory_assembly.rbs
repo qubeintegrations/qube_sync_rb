@@ -1,0 +1,94 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ItemInventoryAssembly < Base
+      type item_inventory_assembly_line = {
+        item_inventory_ref: Types::ref,
+        ?quantity: Numeric
+      }
+
+      type create_params = {
+        ?asset_account_ref: Types::ref,
+        ?bar_code: Types::bar_code,
+        ?build_point: Numeric,
+        ?class_ref: Types::ref,
+        ?cogs_account_ref: Types::ref,
+        ?external_guid: String,
+        ?include_ret_element: Array["AssetAccountRef" | "AverageCost" | "BarCodeValue" | "BuildPoint" | "COGSAccountRef" | "ClassRef" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FullName" | "IncomeAccountRef" | "IsActive" | "IsTaxIncluded" | "ItemInventoryAssemblyLine" | "ListID" | "ManufacturerPartNumber" | "Max" | "Name" | "OwnerID" | "ParentRef" | "PrefVendorRef" | "PurchaseCost" | "PurchaseDesc" | "PurchaseTaxCodeRef" | "QuantityOnHand" | "QuantityOnOrder" | "QuantityOnSalesOrder" | "SalesDesc" | "SalesPrice" | "SalesTaxCodeRef" | "Sublevel" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "UnitOfMeasureSetRef"],
+        ?income_account_ref: Types::ref,
+        ?inventory_date: String,
+        ?is_active: bool,
+        ?is_tax_included: bool,
+        ?item_inventory_assembly_line: Array[item_inventory_assembly_line],
+        ?manufacturer_part_number: String,
+        ?max: Numeric,
+        name: String,
+        ?parent_ref: Types::ref,
+        ?pref_vendor_ref: Types::ref,
+        ?purchase_cost: Numeric,
+        ?purchase_desc: String,
+        ?purchase_tax_code_ref: Types::ref,
+        ?quantity_on_hand: Numeric,
+        ?request_id: String,
+        ?sales_desc: String,
+        ?sales_price: Numeric,
+        ?sales_tax_code_ref: Types::ref,
+        ?total_value: Numeric,
+        ?unit_of_measure_set_ref: Types::ref
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?class_filter: Types::entity_filter,
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AssetAccountRef" | "AverageCost" | "BarCodeValue" | "BuildPoint" | "COGSAccountRef" | "ClassRef" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FullName" | "IncomeAccountRef" | "IsActive" | "IsTaxIncluded" | "ItemInventoryAssemblyLine" | "ListID" | "ManufacturerPartNumber" | "Max" | "Name" | "ParentRef" | "PrefVendorRef" | "PurchaseCost" | "PurchaseDesc" | "PurchaseTaxCodeRef" | "QuantityOnHand" | "QuantityOnOrder" | "QuantityOnSalesOrder" | "SalesDesc" | "SalesPrice" | "SalesTaxCodeRef" | "Sublevel" | "TimeCreated" | "TimeModified" | "UnitOfMeasureSetRef"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?apply_income_account_ref_to_existing_txns: bool,
+        ?asset_account_ref: Types::ref,
+        ?bar_code: Types::bar_code,
+        ?build_point: Numeric,
+        ?class_ref: Types::ref,
+        ?clear_items_in_group: bool,
+        ?cogs_account_ref: Types::ref,
+        edit_sequence: String,
+        ?force_uom_change: bool,
+        ?include_ret_element: Array["AssetAccountRef" | "AverageCost" | "BarCodeValue" | "BuildPoint" | "COGSAccountRef" | "ClassRef" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FullName" | "IncomeAccountRef" | "IsActive" | "IsTaxIncluded" | "ItemInventoryAssemblyLine" | "ListID" | "ManufacturerPartNumber" | "Max" | "Name" | "OwnerID" | "ParentRef" | "PrefVendorRef" | "PurchaseCost" | "PurchaseDesc" | "PurchaseTaxCodeRef" | "QuantityOnHand" | "QuantityOnOrder" | "QuantityOnSalesOrder" | "SalesDesc" | "SalesPrice" | "SalesTaxCodeRef" | "Sublevel" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "UnitOfMeasureSetRef"],
+        ?income_account_ref: Types::ref,
+        ?is_active: bool,
+        ?is_tax_included: bool,
+        ?item_inventory_assembly_line: Array[item_inventory_assembly_line],
+        list_id: String,
+        ?manufacturer_part_number: String,
+        ?max: Numeric,
+        ?name: String,
+        ?parent_ref: Types::ref,
+        ?pref_vendor_ref: Types::ref,
+        ?purchase_cost: Numeric,
+        ?purchase_desc: String,
+        ?purchase_tax_code_ref: Types::ref,
+        ?request_id: String,
+        ?sales_desc: String,
+        ?sales_price: Numeric,
+        ?sales_tax_code_ref: Types::ref,
+        ?unit_of_measure_set_ref: Types::ref
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

@@ -1,0 +1,33 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Form1099CategoryAccountMapping < Base
+      type category_account_mapping_mod = {
+        ?mapping_account: Array[mapping_account],
+        mapping_category: "BOX1" | "BOX10" | "BOX13" | "BOX14" | "BOX2" | "BOX3" | "BOX4" | "BOX5" | "BOX6" | "BOX7" | "BOX8" | "BOX9",
+        ?threshold: Numeric
+      }
+
+      type mapping_account = {
+        account_ref: Types::ref,
+        ?force_mapping: bool
+      }
+
+      type query_params = {
+        ?form_type: String,
+        ?mapping_category: Array["BOX1" | "BOX10" | "BOX13" | "BOX14" | "BOX2" | "BOX3" | "BOX4" | "BOX5" | "BOX6" | "BOX7" | "BOX8" | "BOX9"],
+        ?request_id: String
+      }
+
+      type update_params = {
+        ?category_account_mapping_mod: Array[category_account_mapping_mod],
+        ?is_filing1099_misc: bool,
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

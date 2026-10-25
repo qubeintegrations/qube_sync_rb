@@ -1,0 +1,68 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class EmployeeDefault < Base
+      type employee_default_payroll_info_mod = {
+        ?class_ref: Types::ref,
+        ?clear_earnings: bool,
+        ?clear_non_earnings: bool,
+        ?earnings: Array[Types::earnings],
+        ?employee_tax_info: employee_tax_info,
+        ?is_covered_by_qualified_pension_plan: bool,
+        ?non_earnings: Array[non_earnings],
+        ?pay_period: "Biweekly" | "Daily" | "Monthly" | "Quarterly" | "Semimonthly" | "Weekly" | "Yearly",
+        ?sick_hours_default: hours_default,
+        ?use_time_data_to_create_paychecks: "DoNotUseTimeData" | "NotSet" | "UseTimeData",
+        ?vacation_hours_default: hours_default
+      }
+
+      type employee_tax = {
+        ?is_subject_to_tax: bool,
+        payroll_item_tax_ref: Types::ref,
+        ?tax_info: Array[tax_info],
+        ?tax_law_version: Integer
+      }
+
+      type employee_tax_info = {
+        ?employee_tax: Array[employee_tax],
+        ?is_standard_taxation_required: bool,
+        ?state_lived: String,
+        ?state_worked: String
+      }
+
+      type hours_default = {
+        ?accrual_period: "BeginningOfYear" | "EveryHourOnPaycheck" | "EveryPaycheck",
+        ?hours_accrued: String,
+        ?is_resetting_hours_each_new_year: bool,
+        ?maximum_hours: String
+      }
+
+      type non_earnings = {
+        ?amount: Numeric,
+        ?limit: Numeric,
+        payroll_item_non_wage_ref: Types::ref,
+        ?rate_percent: Numeric
+      }
+
+      type tax_info = {
+        tax_info_category: String,
+        tax_info_value: String
+      }
+
+      type query_params = {
+        ?include_ret_element: Array["EmployeeDefaultPayrollInfo"],
+        ?request_id: String
+      }
+
+      type update_params = {
+        ?employee_default_payroll_info_mod: employee_default_payroll_info_mod,
+        ?include_ret_element: Array["EmployeeDefaultPayrollInfo"],
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

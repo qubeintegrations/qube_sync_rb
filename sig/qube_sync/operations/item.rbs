@@ -1,0 +1,25 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Item < Base
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AccountRef" | "AcquiredAs" | "AssetAccountRef" | "AssetDesc" | "AssetNumber" | "AverageCost" | "BarCodeValue" | "BuildPoint" | "COGSAccountRef" | "ClassRef" | "CostBasis" | "DataExtRet" | "DepositToAccountRef" | "DiscountRate" | "DiscountRatePercent" | "EditSequence" | "ExternalGUID" | "FixedAssetSalesInfo" | "FullName" | "IncomeAccountRef" | "IsActive" | "IsPrintItemsInGroup" | "IsTaxIncluded" | "ItemDesc" | "ItemGroupLine" | "ItemInventoryAssemblyLine" | "ItemSalesTaxRef" | "ListID" | "Location" | "ManufacturerPartNumber" | "Max" | "Name" | "Notes" | "PONumber" | "ParentRef" | "PaymentMethodRef" | "PrefVendorRef" | "PurchaseCost" | "PurchaseDate" | "PurchaseDesc" | "PurchaseTaxCodeRef" | "QuantityOnHand" | "QuantityOnOrder" | "QuantityOnSalesOrder" | "ReorderPoint" | "SalesAndPurchase" | "SalesDesc" | "SalesOrPurchase" | "SalesPrice" | "SalesTaxCodeRef" | "SalesTaxReturnLineRef" | "SerialNumber" | "SpecialItemType" | "Sublevel" | "TaxRate" | "TaxVendorRef" | "TimeCreated" | "TimeModified" | "UnitOfMeasureSetRef" | "VendorOrPayeeName" | "WarrantyExpDate" | "YearEndAccumulatedDepreciation" | "YearEndBookValue"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

@@ -1,0 +1,48 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class PayrollItemAddition < Base
+      type create_params = {
+        ?calculated_based_on: "HoursAll" | "HoursWorked" | "Quantity" | "Rate",
+        expense_account_ref: Types::ref,
+        ?include_ret_element: Array["CalculatedBasedOn" | "EditSequence" | "ExpenseAccountRef" | "IsActive" | "IsTrackedByCustJob" | "Limit" | "LimitTimePeriod" | "ListID" | "Name" | "NetOrGross" | "PayrollItemDetailTypeValue" | "Rate" | "RatePercent" | "Taxability" | "TimeCreated" | "TimeModified" | "W2TrackingTypeValue"],
+        ?is_active: bool,
+        ?is_tracked_by_cust_job: bool,
+        ?limit: Numeric,
+        ?limit_time_period: "Annual" | "Forever",
+        name: String,
+        ?net_or_gross: "Gross" | "Net",
+        ?payroll_item_detail_type_value: Integer,
+        ?rate: Numeric,
+        ?rate_percent: Numeric,
+        ?request_id: String,
+        ?taxability: Array[Types::taxability],
+        ?w2_tracking_type_value: Integer
+      }
+
+      type update_params = {
+        ?calculated_based_on: "HoursAll" | "HoursWorked" | "Quantity" | "Rate",
+        edit_sequence: String,
+        ?expense_account_ref: Types::ref,
+        ?include_ret_element: Array["CalculatedBasedOn" | "EditSequence" | "ExpenseAccountRef" | "IsActive" | "IsTrackedByCustJob" | "Limit" | "LimitTimePeriod" | "ListID" | "Name" | "NetOrGross" | "PayrollItemDetailTypeValue" | "Rate" | "RatePercent" | "Taxability" | "TimeCreated" | "TimeModified" | "W2TrackingTypeValue"],
+        ?is_active: bool,
+        ?is_tracked_by_cust_job: bool,
+        ?limit: Numeric,
+        ?limit_time_period: "Annual" | "Forever",
+        list_id: String,
+        ?name: String,
+        ?net_or_gross: "Gross" | "Net",
+        ?payroll_item_detail_type_value: Integer,
+        ?rate: Numeric,
+        ?rate_percent: Numeric,
+        ?request_id: String,
+        ?taxability: Array[Types::taxability],
+        ?w2_tracking_type_value: Integer
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

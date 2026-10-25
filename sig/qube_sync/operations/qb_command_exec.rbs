@@ -1,0 +1,22 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class QbCommandExec < Base
+      type argument = {
+        arg_name: String,
+        ?arg_value: String,
+        ?list_id: String,
+        ?txn_id: String
+      }
+
+      type execute_params = {
+        ?argument: Array[argument],
+        qb_command: "Backup" | "ExportQBDT2QBO" | "ExportReport" | "IIFImport" | "MobiLinkSync" | "Restore" | "ScheduledReport",
+        ?request_id: String
+      }
+
+      def execute: (String connection_id, ?execute_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

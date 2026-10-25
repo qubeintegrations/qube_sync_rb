@@ -1,0 +1,30 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class PayrollSummaryReport < Base
+      type query_params = {
+        ?display_report: bool,
+        ?include_subcolumns: bool,
+        payroll_summary_report_type: "EmployeeEarningsSummary" | "PayrollLiabilityBalances" | "PayrollSummary",
+        ?report_account_filter: Types::account_filter,
+        ?report_calendar: "CalendarYear" | "FiscalYear" | "TaxYear",
+        ?report_class_filter: Types::entity_filter,
+        ?report_date_macro: "All" | "LastMonth" | "LastMonthToDate" | "LastQuarter" | "LastQuarterToDate" | "LastWeek" | "LastWeekToDate" | "LastYear" | "LastYearToDate" | "NextFourWeeks" | "NextMonth" | "NextQuarter" | "NextWeek" | "NextYear" | "ThisMonth" | "ThisMonthToDate" | "ThisQuarter" | "ThisQuarterToDate" | "ThisWeek" | "ThisWeekToDate" | "ThisYear" | "ThisYearToDate" | "Today" | "Yesterday",
+        ?report_detail_level_filter: "All" | "AllExceptSummary" | "SummaryOnly",
+        ?report_entity_filter: Types::entity_filter_aging_report,
+        ?report_item_filter: Types::item_filter,
+        ?report_modified_date_range_filter: Types::report_modified_date_range_filter,
+        ?report_modified_date_range_macro: "All" | "LastMonth" | "LastMonthToDate" | "LastQuarter" | "LastQuarterToDate" | "LastWeek" | "LastWeekToDate" | "LastYear" | "LastYearToDate" | "NextFourWeeks" | "NextMonth" | "NextQuarter" | "NextWeek" | "NextYear" | "ThisMonth" | "ThisMonthToDate" | "ThisQuarter" | "ThisQuarterToDate" | "ThisWeek" | "ThisWeekToDate" | "ThisYear" | "ThisYearToDate" | "Today" | "Yesterday",
+        ?report_period: Types::report_period,
+        ?report_posting_status_filter: "Either" | "NonPosting" | "Posting",
+        ?request_id: String,
+        ?return_columns: "ActiveOnly" | "All" | "NonZero",
+        ?return_rows: "ActiveOnly" | "All" | "NonZero",
+        ?summarize_columns_by: "Account" | "BalanceSheet" | "Class" | "Customer" | "CustomerType" | "Day" | "Employee" | "FourWeek" | "HalfMonth" | "IncomeStatement" | "ItemDetail" | "ItemType" | "Month" | "Payee" | "PaymentMethod" | "PayrollItemDetail" | "PayrollYtdDetail" | "Quarter" | "SalesRep" | "SalesTaxCode" | "ShipMethod" | "Terms" | "TotalOnly" | "TwoWeek" | "Vendor" | "VendorType" | "Week" | "Year"
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

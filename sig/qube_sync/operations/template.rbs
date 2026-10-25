@@ -1,0 +1,15 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Template < Base
+      type query_params = {
+        ?include_ret_element: Array["EditSequence" | "IsActive" | "ListID" | "Name" | "TemplateType" | "TimeCreated" | "TimeModified"],
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

@@ -1,0 +1,17 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class TxnDeleted < Base
+      type query_params = {
+        ?deleted_date_range_filter: Types::deleted_date_range_filter,
+        ?include_ret_element: Array["RefNumber" | "TimeCreated" | "TimeDeleted" | "TxnDelType" | "TxnID"],
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?request_id: String,
+        txn_del_type: Array["ARRefundCreditCard" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Deposit" | "Estimate" | "InventoryAdjustment" | "Invoice" | "ItemReceipt" | "JournalEntry" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "TimeTracking" | "TransferInventory" | "VehicleMileage" | "VendorCredit"]
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

@@ -71,17 +71,44 @@ or a run's `links`, or a path under `/api/v2`. A link on any other scheme, host 
 
 ### Queueing an operation
 
-```ruby
-request = QUBE.queue(connection_id, "customers", {name: "Acme Ltd"},
-  webhook_url: "https://myapp.example/qube/requests")
+Every QuickBooks operation is a method on its entity: `client.<entity>.<action>`, where the
+action is `create`, `update`, `query`, `delete` or `execute`.
 
-# A query: method: :get sends the filters as the query string.
-QUBE.queue(connection_id, "invoices", {max_returned: 100, iterator: "Start"},
-  webhook_url: "https://myapp.example/qube/requests", method: :get)
+```ruby
+hook = "https://myapp.example/qube/requests"
+
+request = QUBE.customer.create(connection_id, {
+  name: "Acme Ltd",
+  bill_address: {addr1: "1 Main St", city: "Austin", state: "TX"}
+}, webhook_url: hook)
+
+# A query sends its filters as the query string; nested filters are fine.
+QUBE.invoice.query(connection_id, {
+  modified_date_range_filter: {from_modified_date: "2026-10-01T00:00:00"},
+  include_line_items: true,
+  iterator: true, max_returned: 50 # pages of 50, each its own webhook
+}, webhook_url: hook)
+
+QUBE.txn_void.execute(connection_id, {txn_void_type: "Invoice", txn_id: "1A2-1700000000"}, webhook_url: hook)
 
 # qbXML as written.
-QUBE.queue_qbxml(connection_id, request_xml, webhook_url: "https://myapp.example/qube/requests")
+QUBE.queue_qbxml(connection_id, request_xml, webhook_url: hook)
 ```
+
+- Each method is `(connection_id, params = {}, webhook_url:, idempotency_key: nil)` and returns
+  the queued request. Its documentation (YARD, in `lib/qube_sync/operations/<entity>.rb`) lists
+  every field, nested ones included, says whether QuickBooks answers in pages, and links the API
+  reference. The params' types are RBS records in `sig/qube_sync/operations/`, for Steep or an
+  editor that reads RBS.
+- An entity's file loads the first time you use it, so `require "qube_sync/client"` stays quick.
+- QuickBooks' `class` entity is `client.class_` (`client.class` is Ruby's).
+- `queue(operation_id, connection_id, params = {}, webhook_url:, idempotency_key: nil)` queues one
+  by its id: `QUBE.queue("customer.create", connection_id, {name: "Acme Ltd"}, webhook_url: hook)`
+  sends the same request as `QUBE.customer.create`. For an operation newer than your version of
+  the gem, pass `method:` and `path:` (relative to the connection):
+  `QUBE.queue("widget.create", connection_id, params, webhook_url: hook, method: :post, path: "widgets")`.
+- A query string repeats an array's key (`list_id=1&list_id=2`) and brackets nested Hashes
+  (`name_range_filter[from_name]=A`, `currency_filter[list_id][]=1`), as the API reads them.
 
 The answer comes to `webhook_url` (see Webhooks below). `get_request(connection_id, id)`,
 `request_pages(connection_id, id)` and `discard_request(connection_id, id)` act on one request.

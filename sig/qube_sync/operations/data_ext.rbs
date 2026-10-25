@@ -1,0 +1,53 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class DataExt < Base
+      type data_ext_del = {
+        data_ext_name: String,
+        ?list_data_ext_type: "Account" | "Customer" | "Employee" | "Item" | "OtherName" | "Vendor",
+        ?list_obj_ref: Types::ref,
+        ?other_data_ext_type: "Company",
+        owner_id: String,
+        ?txn_data_ext_type: "ARRefundCreditCard" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Deposit" | "Estimate" | "InventoryAdjustment" | "Invoice" | "ItemReceipt" | "JournalEntry" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "VendorCredit",
+        ?txn_id: String,
+        ?txn_line_id: String
+      }
+
+      type create_params = {
+        data_ext_name: String,
+        data_ext_value: String,
+        ?list_data_ext_type: "Account" | "Customer" | "Employee" | "Item" | "OtherName" | "Vendor",
+        ?list_obj_ref: Types::ref,
+        ?other_data_ext_type: "Company",
+        owner_id: String,
+        ?request_id: String,
+        ?txn_data_ext_type: "ARRefundCreditCard" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Deposit" | "Estimate" | "InventoryAdjustment" | "Invoice" | "ItemReceipt" | "JournalEntry" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "VendorCredit",
+        ?txn_id: String,
+        ?txn_line_id: String
+      }
+
+      type delete_params = {
+        data_ext_del: data_ext_del,
+        ?request_id: String
+      }
+
+      type update_params = {
+        data_ext_name: String,
+        data_ext_value: String,
+        ?list_data_ext_type: "Account" | "Customer" | "Employee" | "Item" | "OtherName" | "Vendor",
+        ?list_obj_ref: Types::ref,
+        ?other_data_ext_type: "Company",
+        owner_id: String,
+        ?request_id: String,
+        ?txn_data_ext_type: "ARRefundCreditCard" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Deposit" | "Estimate" | "InventoryAdjustment" | "Invoice" | "ItemReceipt" | "JournalEntry" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "VendorCredit",
+        ?txn_id: String,
+        ?txn_line_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def delete: (String connection_id, ?delete_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

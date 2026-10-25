@@ -1,0 +1,22 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class BudgetSummaryReport < Base
+      type query_params = {
+        ?budget_criterion: "Accounts" | "AccountsAndClasses" | "AccountsAndCustomers",
+        budget_summary_report_type: "BalanceSheetBudgetOverview" | "BalanceSheetBudgetVsActual" | "ProfitAndLossBudgetOverview" | "ProfitAndLossBudgetPerformance" | "ProfitAndLossBudgetVsActual",
+        ?display_report: bool,
+        fiscal_year: Integer,
+        ?report_class_filter: Types::entity_filter,
+        ?report_date_macro: "All" | "LastMonth" | "LastMonthToDate" | "LastQuarter" | "LastQuarterToDate" | "LastWeek" | "LastWeekToDate" | "LastYear" | "LastYearToDate" | "NextFourWeeks" | "NextMonth" | "NextQuarter" | "NextWeek" | "NextYear" | "ThisMonth" | "ThisMonthToDate" | "ThisQuarter" | "ThisQuarterToDate" | "ThisWeek" | "ThisWeekToDate" | "ThisYear" | "ThisYearToDate" | "Today" | "Yesterday",
+        ?report_period: Types::report_period,
+        ?request_id: String,
+        ?summarize_budget_columns_by: "Class" | "Customer" | "Date",
+        ?summarize_budget_rows_by: "Account" | "Class" | "Customer"
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

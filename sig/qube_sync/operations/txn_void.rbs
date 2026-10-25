@@ -1,0 +1,15 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class TxnVoid < Base
+      type execute_params = {
+        ?request_id: String,
+        txn_id: String,
+        txn_void_type: "ARRefundCreditCard" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "Charge" | "Check" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Deposit" | "InventoryAdjustment" | "Invoice" | "ItemReceipt" | "JournalEntry" | "SalesReceipt" | "VendorCredit"
+      }
+
+      def execute: (String connection_id, ?execute_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

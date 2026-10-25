@@ -1,0 +1,21 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ListDisplay < Base
+      type create_params = {
+        list_display_add_type: "Account" | "Customer" | "Employee" | "Item" | "OtherName" | "Vendor",
+        ?request_id: String
+      }
+
+      type update_params = {
+        list_display_mod_type: "Account" | "Customer" | "Employee" | "Item" | "OtherName" | "Vendor",
+        list_id: String,
+        ?request_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

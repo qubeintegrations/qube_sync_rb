@@ -1,0 +1,147 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }
+
+    INDEX: Hash[String, entry]
+    ENTITIES: Hash[String, Symbol]
+
+    # One entity's operations, bound to a client.
+    class Base
+      def initialize: (Client client) -> void
+      def inspect: () -> String
+
+      private
+
+      def queue: (String operation_id, String connection_id, Hash[Symbol | String, untyped]? params, webhook_url: String, idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+
+  class Client
+    def account: () -> Operations::Account
+    def account_tax_line_info: () -> Operations::AccountTaxLineInfo
+    def aging_report: () -> Operations::AgingReport
+    def alert: () -> Operations::Alert
+    def ar_refund_credit_card: () -> Operations::ArRefundCreditCard
+    def bar_code: () -> Operations::BarCode
+    def bill: () -> Operations::Bill
+    def bill_payment_check: () -> Operations::BillPaymentCheck
+    def bill_payment_credit_card: () -> Operations::BillPaymentCreditCard
+    def bill_to_pay: () -> Operations::BillToPay
+    def billing_rate: () -> Operations::BillingRate
+    def budget_summary_report: () -> Operations::BudgetSummaryReport
+    def build_assembly: () -> Operations::BuildAssembly
+    def charge: () -> Operations::Charge
+    def check: () -> Operations::Check
+    def class_: () -> Operations::Class_
+    def cleared_status: () -> Operations::ClearedStatus
+    def company: () -> Operations::Company
+    def company_activity: () -> Operations::CompanyActivity
+    def credit_card_charge: () -> Operations::CreditCardCharge
+    def credit_card_credit: () -> Operations::CreditCardCredit
+    def credit_memo: () -> Operations::CreditMemo
+    def currency: () -> Operations::Currency
+    def custom_detail_report: () -> Operations::CustomDetailReport
+    def custom_summary_report: () -> Operations::CustomSummaryReport
+    def customer: () -> Operations::Customer
+    def customer_msg: () -> Operations::CustomerMsg
+    def customer_type: () -> Operations::CustomerType
+    def data_event_recovery_info: () -> Operations::DataEventRecoveryInfo
+    def data_ext: () -> Operations::DataExt
+    def data_ext_def: () -> Operations::DataExtDef
+    def date_driven_terms: () -> Operations::DateDrivenTerms
+    def deposit: () -> Operations::Deposit
+    def employee: () -> Operations::Employee
+    def employee_default: () -> Operations::EmployeeDefault
+    def entity: () -> Operations::Entity
+    def estimate: () -> Operations::Estimate
+    def form1099_category_account_mapping: () -> Operations::Form1099CategoryAccountMapping
+    def general_detail_report: () -> Operations::GeneralDetailReport
+    def general_summary_report: () -> Operations::GeneralSummaryReport
+    def host: () -> Operations::Host
+    def inventory_adjustment: () -> Operations::InventoryAdjustment
+    def inventory_site: () -> Operations::InventorySite
+    def invoice: () -> Operations::Invoice
+    def item: () -> Operations::Item
+    def item_assemblies_can_build: () -> Operations::ItemAssembliesCanBuild
+    def item_discount: () -> Operations::ItemDiscount
+    def item_fixed_asset: () -> Operations::ItemFixedAsset
+    def item_group: () -> Operations::ItemGroup
+    def item_inventory: () -> Operations::ItemInventory
+    def item_inventory_assembly: () -> Operations::ItemInventoryAssembly
+    def item_non_inventory: () -> Operations::ItemNonInventory
+    def item_other_charge: () -> Operations::ItemOtherCharge
+    def item_payment: () -> Operations::ItemPayment
+    def item_receipt: () -> Operations::ItemReceipt
+    def item_sales_tax: () -> Operations::ItemSalesTax
+    def item_sales_tax_group: () -> Operations::ItemSalesTaxGroup
+    def item_service: () -> Operations::ItemService
+    def item_sites: () -> Operations::ItemSites
+    def item_subtotal: () -> Operations::ItemSubtotal
+    def job_report: () -> Operations::JobReport
+    def job_type: () -> Operations::JobType
+    def journal_entry: () -> Operations::JournalEntry
+    def lead: () -> Operations::Lead
+    def list: () -> Operations::List
+    def list_deleted: () -> Operations::ListDeleted
+    def list_display: () -> Operations::ListDisplay
+    def list_merge: () -> Operations::ListMerge
+    def other_name: () -> Operations::OtherName
+    def paycheck: () -> Operations::Paycheck
+    def payment_method: () -> Operations::PaymentMethod
+    def payroll_detail_report: () -> Operations::PayrollDetailReport
+    def payroll_item: () -> Operations::PayrollItem
+    def payroll_item_addition: () -> Operations::PayrollItemAddition
+    def payroll_item_company_contribution: () -> Operations::PayrollItemCompanyContribution
+    def payroll_item_deduction: () -> Operations::PayrollItemDeduction
+    def payroll_item_direct_deposit: () -> Operations::PayrollItemDirectDeposit
+    def payroll_item_non_wage: () -> Operations::PayrollItemNonWage
+    def payroll_item_tax: () -> Operations::PayrollItemTax
+    def payroll_item_wage: () -> Operations::PayrollItemWage
+    def payroll_item_workers_compensation: () -> Operations::PayrollItemWorkersCompensation
+    def payroll_last_period: () -> Operations::PayrollLastPeriod
+    def payroll_liability_adjustment: () -> Operations::PayrollLiabilityAdjustment
+    def payroll_liability_check: () -> Operations::PayrollLiabilityCheck
+    def payroll_prior_payment: () -> Operations::PayrollPriorPayment
+    def payroll_summary_report: () -> Operations::PayrollSummaryReport
+    def payroll_year_to_date_adjustment: () -> Operations::PayrollYearToDateAdjustment
+    def preferences: () -> Operations::Preferences
+    def price_level: () -> Operations::PriceLevel
+    def purchase_order: () -> Operations::PurchaseOrder
+    def qb_command_exec: () -> Operations::QbCommandExec
+    def receive_payment: () -> Operations::ReceivePayment
+    def receive_payment_to_deposit: () -> Operations::ReceivePaymentToDeposit
+    def sales_order: () -> Operations::SalesOrder
+    def sales_receipt: () -> Operations::SalesReceipt
+    def sales_rep: () -> Operations::SalesRep
+    def sales_tax_code: () -> Operations::SalesTaxCode
+    def sales_tax_payable: () -> Operations::SalesTaxPayable
+    def sales_tax_payment_check: () -> Operations::SalesTaxPaymentCheck
+    def sales_tax_return: () -> Operations::SalesTaxReturn
+    def sales_tax_return_line: () -> Operations::SalesTaxReturnLine
+    def ship_method: () -> Operations::ShipMethod
+    def special_account: () -> Operations::SpecialAccount
+    def special_item: () -> Operations::SpecialItem
+    def standard_terms: () -> Operations::StandardTerms
+    def template: () -> Operations::Template
+    def terms: () -> Operations::Terms
+    def time_report: () -> Operations::TimeReport
+    def time_tracking: () -> Operations::TimeTracking
+    def to_do: () -> Operations::ToDo
+    def transaction: () -> Operations::Transaction
+    def transfer: () -> Operations::Transfer
+    def transfer_inventory: () -> Operations::TransferInventory
+    def txn: () -> Operations::Txn
+    def txn_deleted: () -> Operations::TxnDeleted
+    def txn_display: () -> Operations::TxnDisplay
+    def txn_void: () -> Operations::TxnVoid
+    def unit_of_measure_set: () -> Operations::UnitOfMeasureSet
+    def vehicle: () -> Operations::Vehicle
+    def vehicle_mileage: () -> Operations::VehicleMileage
+    def vendor: () -> Operations::Vendor
+    def vendor_credit: () -> Operations::VendorCredit
+    def vendor_type: () -> Operations::VendorType
+    def workers_comp_code: () -> Operations::WorkersCompCode
+  end
+end

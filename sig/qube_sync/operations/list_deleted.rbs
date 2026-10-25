@@ -1,0 +1,17 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ListDeleted < Base
+      type query_params = {
+        ?deleted_date_range_filter: Types::deleted_date_range_filter,
+        ?include_ret_element: Array["FullName" | "ListDelType" | "ListID" | "TimeCreated" | "TimeDeleted"],
+        list_del_type: Array["Account" | "BillingRate" | "Class" | "Currency" | "Customer" | "CustomerMsg" | "CustomerType" | "DateDrivenTerms" | "Employee" | "InventorySite" | "ItemDiscount" | "ItemFixedAsset" | "ItemGroup" | "ItemInventory" | "ItemInventoryAssembly" | "ItemNonInventory" | "ItemOtherCharge" | "ItemPayment" | "ItemSalesTax" | "ItemSalesTaxGroup" | "ItemService" | "ItemSubtotal" | "JobType" | "OtherName" | "PaymentMethod" | "PayrollItemNonWage" | "PayrollItemWage" | "PriceLevel" | "SalesRep" | "SalesTaxCode" | "ShipMethod" | "StandardTerms" | "ToDo" | "UnitOfMeasureSet" | "Vehicle" | "Vendor" | "VendorType" | "WorkersCompCode"],
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

@@ -1,0 +1,64 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class BuildAssembly < Base
+      type create_params = {
+        ?def_macro: String,
+        ?external_guid: String,
+        ?include_ret_element: Array["ComponentItemLineRet" | "DataExtRet" | "EditSequence" | "ExpirationDateForSerialLotNumber" | "ExternalGUID" | "InventorySiteLocationRef" | "InventorySiteRef" | "IsPending" | "ItemInventoryAssemblyRef" | "ListID" | "LotNumber" | "Memo" | "OwnerID" | "QuantityCanBuild" | "QuantityOnHand" | "QuantityOnSalesOrder" | "QuantityToBuild" | "RefNumber" | "SerialNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        item_inventory_assembly_ref: Types::ref,
+        ?lot_number: String,
+        ?mark_pending_if_required: bool,
+        ?memo: String,
+        quantity_to_build: Numeric,
+        ?ref_number: String,
+        ?request_id: String,
+        ?serial_number: String,
+        ?txn_date: String
+      }
+
+      type query_params = {
+        ?include_component_line_items: bool,
+        ?include_ret_element: Array["ComponentItemLineRet" | "DataExtRet" | "EditSequence" | "ExpirationDateForSerialLotNumber" | "ExternalGUID" | "InventorySiteLocationRef" | "InventorySiteRef" | "IsPending" | "ItemInventoryAssemblyRef" | "LotNumber" | "Memo" | "QuantityCanBuild" | "QuantityOnHand" | "QuantityOnSalesOrder" | "QuantityToBuild" | "RefNumber" | "SerialNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?item_filter: Types::entity_filter,
+        ?iterator: bool,
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?modified_date_range_filter: Types::modified_date_range_filter,
+        ?owner_id: Array[String],
+        ?pending_status: "All" | "NotPendingOnly" | "PendingOnly",
+        ?ref_number: Array[String],
+        ?ref_number_case_sensitive: Array[String],
+        ?ref_number_filter: Types::ref_number_filter,
+        ?ref_number_range_filter: Types::ref_number_range_filter,
+        ?request_id: String,
+        ?txn_date_range_filter: Types::date_range_filter,
+        ?txn_id: Array[String]
+      }
+
+      type update_params = {
+        edit_sequence: String,
+        ?include_ret_element: Array["ComponentItemLineRet" | "DataExtRet" | "EditSequence" | "ExpirationDateForSerialLotNumber" | "ExternalGUID" | "InventorySiteLocationRef" | "InventorySiteRef" | "IsPending" | "ItemInventoryAssemblyRef" | "ListID" | "LotNumber" | "Memo" | "OwnerID" | "QuantityCanBuild" | "QuantityOnHand" | "QuantityOnSalesOrder" | "QuantityToBuild" | "RefNumber" | "SerialNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        ?lot_number: String,
+        ?mark_pending_if_required: bool,
+        ?memo: String,
+        ?quantity_to_build: Numeric,
+        ?ref_number: String,
+        ?remove_pending: bool,
+        ?request_id: String,
+        ?serial_number: String,
+        ?txn_date: String,
+        txn_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

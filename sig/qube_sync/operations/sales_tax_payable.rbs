@@ -1,0 +1,16 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class SalesTaxPayable < Base
+      type query_params = {
+        ?as_of_date: String,
+        ?include_ret_element: Array["Amount" | "PayeeEntityRef" | "SalesTaxPayableLineRet"],
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

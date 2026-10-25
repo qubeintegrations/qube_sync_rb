@@ -1,0 +1,53 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Alert < Base
+      type alert_permission = {
+        permission_level: Array["AccountsPayable" | "AccountsReceivable" | "Banking" | "Finance" | "Inventory" | "TimeTracking"],
+        permission_needed: "All" | "Any"
+      }
+
+      type com_callback_info = {
+        app_name: String,
+        ?clsid: String,
+        ?prog_id: String
+      }
+
+      type http_callback_info = {
+        url: String
+      }
+
+      type create_params = {
+        ?activation_date: String,
+        ?alert_permission: alert_permission,
+        alert_tag: String,
+        ?com_callback_info: com_callback_info,
+        desc: String,
+        ?expiration_date: String,
+        help_text: String,
+        ?http_callback_info: http_callback_info,
+        message_text: String,
+        owner_id: String,
+        ?request_id: String,
+        ?ui_context: Array["AlertsManager" | "CompanyNavigator"]
+      }
+
+      type delete_params = {
+        alert_tag: String,
+        owner_id: String,
+        ?request_id: String
+      }
+
+      type query_params = {
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        owner_id: Array[String],
+        ?request_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def delete: (String connection_id, ?delete_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

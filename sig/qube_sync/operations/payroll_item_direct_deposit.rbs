@@ -1,0 +1,30 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class PayrollItemDirectDeposit < Base
+      type create_params = {
+        ?include_ret_element: Array["EditSequence" | "IsActive" | "LiabilityAccountRef" | "ListID" | "Name" | "PayrollItemDetailTypeValue" | "TimeCreated" | "TimeModified"],
+        ?is_active: bool,
+        liability_account_ref: Types::ref,
+        name: String,
+        ?payroll_item_detail_type_value: Integer,
+        ?request_id: String
+      }
+
+      type update_params = {
+        edit_sequence: String,
+        ?include_ret_element: Array["EditSequence" | "IsActive" | "LiabilityAccountRef" | "ListID" | "Name" | "PayrollItemDetailTypeValue" | "TimeCreated" | "TimeModified"],
+        ?is_active: bool,
+        ?liability_account_ref: Types::ref,
+        list_id: String,
+        ?name: String,
+        ?payroll_item_detail_type_value: Integer,
+        ?request_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

@@ -1,0 +1,148 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Estimate < Base
+      type estimate_line_add = {
+        ?amount: Numeric,
+        ?class_ref: Types::ref,
+        ?data_ext: Array[Types::data_ext],
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        ?item_ref: Types::ref,
+        ?markup_rate: Numeric,
+        ?markup_rate_percent: Numeric,
+        ?option_for_price_rule_conflict: "BasePrice" | "Zero",
+        ?other1: String,
+        ?other2: String,
+        ?override_item_account_ref: Types::ref,
+        ?price_level_ref: Types::ref,
+        ?quantity: Numeric,
+        ?rate: Numeric,
+        ?rate_percent: Numeric,
+        ?sales_tax_code_ref: Types::ref,
+        ?tax_amount: Numeric,
+        ?unit_of_measure: String
+      }
+
+      type estimate_line_group_mod = {
+        ?estimate_line_mod: Array[estimate_line_mod],
+        ?item_group_ref: Types::ref,
+        ?override_uom_set_ref: Types::ref,
+        ?quantity: Numeric,
+        txn_line_id: String,
+        ?unit_of_measure: String
+      }
+
+      type estimate_line_mod = {
+        ?amount: Numeric,
+        ?class_ref: Types::ref,
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        ?item_ref: Types::ref,
+        ?markup_rate: Numeric,
+        ?markup_rate_percent: Numeric,
+        ?option_for_price_rule_conflict: "BasePrice" | "Zero",
+        ?other1: String,
+        ?other2: String,
+        ?override_uom_set_ref: Types::ref,
+        ?price_level_ref: Types::ref,
+        ?quantity: Numeric,
+        ?rate: Numeric,
+        ?rate_percent: Numeric,
+        ?sales_tax_code_ref: Types::ref,
+        ?tax_amount: Numeric,
+        txn_line_id: String,
+        ?unit_of_measure: String
+      }
+
+      type create_params = {
+        ?bill_address: Types::address,
+        ?class_ref: Types::ref,
+        ?customer_msg_ref: Types::ref,
+        customer_ref: Types::ref,
+        ?customer_sales_tax_code_ref: Types::ref,
+        ?def_macro: String,
+        ?due_date: String,
+        ?estimate_line_add: Array[estimate_line_add],
+        ?estimate_line_group_add: Array[Types::item_group_line_add],
+        ?exchange_rate: Numeric,
+        ?external_guid: String,
+        ?fob: String,
+        ?include_ret_element: Array["BillAddress" | "BillAddressBlock" | "ClassRef" | "CurrencyRef" | "CustomerMsgRef" | "CustomerRef" | "CustomerSalesTaxCodeRef" | "DataExtRet" | "DueDate" | "EditSequence" | "EstimateLineGroupRet" | "EstimateLineRet" | "ExchangeRate" | "ExternalGUID" | "FOB" | "IsActive" | "IsTaxIncluded" | "IsToBeEmailed" | "ItemSalesTaxRef" | "LinkedTxn" | "ListID" | "Memo" | "Other" | "OwnerID" | "PONumber" | "RefNumber" | "SalesRepRef" | "SalesTaxPercentage" | "SalesTaxTotal" | "ShipAddress" | "ShipAddressBlock" | "Subtotal" | "TemplateRef" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalAmount" | "TotalAmountInHomeCurrency" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?is_tax_included: bool,
+        ?is_to_be_emailed: bool,
+        ?item_sales_tax_ref: Types::ref,
+        ?memo: String,
+        ?other: String,
+        ?po_number: String,
+        ?ref_number: String,
+        ?request_id: String,
+        ?sales_rep_ref: Types::ref,
+        ?ship_address: Types::address,
+        ?template_ref: Types::ref,
+        ?terms_ref: Types::ref,
+        ?txn_date: String
+      }
+
+      type query_params = {
+        ?account_filter: Types::entity_filter,
+        ?currency_filter: Types::currency_filter,
+        ?entity_filter: Types::entity_filter,
+        ?include_line_items: bool,
+        ?include_linked_txns: bool,
+        ?include_ret_element: Array["BillAddress" | "BillAddressBlock" | "ClassRef" | "CurrencyRef" | "CustomerMsgRef" | "CustomerRef" | "CustomerSalesTaxCodeRef" | "DataExtRet" | "DueDate" | "EditSequence" | "EstimateLineGroupRet" | "EstimateLineRet" | "ExchangeRate" | "ExternalGUID" | "FOB" | "IsActive" | "IsTaxIncluded" | "IsToBeEmailed" | "ItemSalesTaxRef" | "LinkedTxn" | "Memo" | "Other" | "PONumber" | "RefNumber" | "SalesRepRef" | "SalesTaxPercentage" | "SalesTaxTotal" | "ShipAddress" | "ShipAddressBlock" | "Subtotal" | "TemplateRef" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalAmount" | "TotalAmountInHomeCurrency" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?iterator: bool,
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?modified_date_range_filter: Types::modified_date_range_filter,
+        ?owner_id: Array[String],
+        ?ref_number: Array[String],
+        ?ref_number_case_sensitive: Array[String],
+        ?ref_number_filter: Types::ref_number_filter,
+        ?ref_number_range_filter: Types::ref_number_range_filter,
+        ?request_id: String,
+        ?txn_date_range_filter: Types::date_range_filter,
+        ?txn_id: Array[String]
+      }
+
+      type update_params = {
+        ?bill_address: Types::address,
+        ?class_ref: Types::ref,
+        ?create_change_order: bool,
+        ?customer_msg_ref: Types::ref,
+        ?customer_ref: Types::ref,
+        ?customer_sales_tax_code_ref: Types::ref,
+        ?due_date: String,
+        edit_sequence: String,
+        ?estimate_line_group_mod: Array[estimate_line_group_mod],
+        ?estimate_line_mod: Array[estimate_line_mod],
+        ?exchange_rate: Numeric,
+        ?fob: String,
+        ?include_ret_element: Array["BillAddress" | "BillAddressBlock" | "ClassRef" | "CurrencyRef" | "CustomerMsgRef" | "CustomerRef" | "CustomerSalesTaxCodeRef" | "DataExtRet" | "DueDate" | "EditSequence" | "EstimateLineGroupRet" | "EstimateLineRet" | "ExchangeRate" | "ExternalGUID" | "FOB" | "IsActive" | "IsTaxIncluded" | "IsToBeEmailed" | "ItemSalesTaxRef" | "LinkedTxn" | "ListID" | "Memo" | "Other" | "OwnerID" | "PONumber" | "RefNumber" | "SalesRepRef" | "SalesTaxPercentage" | "SalesTaxTotal" | "ShipAddress" | "ShipAddressBlock" | "Subtotal" | "TemplateRef" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalAmount" | "TotalAmountInHomeCurrency" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?is_tax_included: bool,
+        ?is_to_be_emailed: bool,
+        ?item_sales_tax_ref: Types::ref,
+        ?memo: String,
+        ?other: String,
+        ?po_number: String,
+        ?ref_number: String,
+        ?request_id: String,
+        ?sales_rep_ref: Types::ref,
+        ?ship_address: Types::address,
+        ?template_ref: Types::ref,
+        ?terms_ref: Types::ref,
+        ?txn_date: String,
+        txn_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

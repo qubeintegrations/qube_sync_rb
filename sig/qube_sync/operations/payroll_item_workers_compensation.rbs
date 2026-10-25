@@ -1,0 +1,42 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class PayrollItemWorkersCompensation < Base
+      type create_params = {
+        expense_account_ref: Types::ref,
+        ?include_ret_element: Array["EditSequence" | "ExpenseAccountRef" | "IsActive" | "IsTrackedByCustJob" | "LiabilityAccountRef" | "LiabilityPaymentSchedule" | "ListID" | "Name" | "PaymentTemplateRef" | "PayrollItemDetailTypeValue" | "TimeCreated" | "TimeModified" | "VendorAccountNumber" | "VendorRef"],
+        ?is_active: bool,
+        ?is_tracked_by_cust_job: bool,
+        liability_account_ref: Types::ref,
+        ?liability_payment_schedule: Types::liability_payment_schedule,
+        name: String,
+        payment_template_ref: Types::ref,
+        ?payroll_item_detail_type_value: Integer,
+        ?request_id: String,
+        ?vendor_account_number: String,
+        ?vendor_ref: Types::ref
+      }
+
+      type update_params = {
+        edit_sequence: String,
+        ?expense_account_ref: Types::ref,
+        ?include_ret_element: Array["EditSequence" | "ExpenseAccountRef" | "IsActive" | "IsTrackedByCustJob" | "LiabilityAccountRef" | "LiabilityPaymentSchedule" | "ListID" | "Name" | "PaymentTemplateRef" | "PayrollItemDetailTypeValue" | "TimeCreated" | "TimeModified" | "VendorAccountNumber" | "VendorRef"],
+        ?is_active: bool,
+        ?is_tracked_by_cust_job: bool,
+        ?liability_account_ref: Types::ref,
+        ?liability_payment_schedule: Types::liability_payment_schedule,
+        list_id: String,
+        ?name: String,
+        ?payment_template_ref: Types::ref,
+        ?payroll_item_detail_type_value: Integer,
+        ?request_id: String,
+        ?vendor_account_number: String,
+        ?vendor_ref: Types::ref
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

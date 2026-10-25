@@ -1,0 +1,65 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Account < Base
+      type create_params = {
+        ?account_number: String,
+        account_type: "AccountsPayable" | "AccountsReceivable" | "Bank" | "CostOfGoodsSold" | "CreditCard" | "Equity" | "Expense" | "FixedAsset" | "Income" | "LongTermLiability" | "NonPosting" | "OtherAsset" | "OtherCurrentAsset" | "OtherCurrentLiability" | "OtherExpense" | "OtherIncome",
+        ?bank_number: String,
+        ?currency_ref: Types::ref,
+        ?desc: String,
+        ?detail_account_type: "AP" | "AR" | "AccumulatedAdjustment" | "AccumulatedAmortization" | "AccumulatedAmortizationOfOtherAssets" | "AccumulatedDepletion" | "AccumulatedDepreciation" | "AdvertisingOrPromotional" | "AllowanceForBadDebts" | "Amortization" | "Auto" | "BadDebts" | "BankCharges" | "Buildings" | "CashOnHand" | "CharitableContributions" | "Checking" | "CommonStock" | "CostOfLabor" | "CostOfLaborCOS" | "CreditCard" | "DepletableAssets" | "Depreciation" | "DevelopmentCosts" | "DiscountsOrRefundsGiven" | "DividendIncome" | "DuesAndSubscriptions" | "EmployeeCashAdvances" | "Entertainment" | "EntertainmentMeals" | "EquipmentRental" | "EquipmentRentalCOS" | "FederalIncomeTaxPayable" | "FurnitureAndFixtures" | "Goodwill" | "Insurance" | "InsurancePayable" | "IntangibleAssets" | "InterestEarned" | "InterestPaid" | "Inventory" | "InvestmentMortgageOrRealEstateLoans" | "InvestmentOther" | "InvestmentTaxExemptSecurities" | "InvestmentUSGovObligations" | "Land" | "LeaseBuyout" | "LeaseholdImprovements" | "LegalAndProfessionalFees" | "Licenses" | "LineOfCredit" | "LoanPayable" | "LoansToOfficers" | "LoansToOthers" | "LoansToStockholders" | "MachineryAndEquipment" | "MoneyMarket" | "NonProfitIncome" | "NotesPayable" | "OfficeOrGeneralAdministrativeExpenses" | "OpeningBalanceEquity" | "OrganizationalCosts" | "OtherCostsOfServiceCOS" | "OtherCurrentAssets" | "OtherCurrentLiab" | "OtherFixedAssets" | "OtherInvestmentIncome" | "OtherLongTermAssets" | "OtherLongTermLiab" | "OtherMiscExpense" | "OtherMiscIncome" | "OtherMiscServiceCost" | "OtherPrimaryIncome" | "OwnersEquity" | "PaidInCapitalOrSurplus" | "PartnerContributions" | "PartnerDistributions" | "PartnersEquity" | "PayrollClearing" | "PayrollExpenses" | "PayrollTaxPayable" | "PenaltiesAndSettlements" | "PreferredStock" | "PrepaidExpenses" | "PrepaidExpensesPayable" | "PromotionalMeals" | "RentOrLeaseOfBuildings" | "RentsHeldInTrust" | "RentsInTrustLiab" | "RepairAndMaintenance" | "Retainage" | "RetainedEarnings" | "SalesOfProductIncome" | "SalesTaxPayable" | "Savings" | "SecurityDeposits" | "ServiceOrFeeIncome" | "ShareholderNotesPayable" | "ShippingFreightAndDelivery" | "ShippingFreightAndDeliveryCOS" | "StateOrLocalIncomeTaxPayable" | "SuppliesAndMaterials" | "SuppliesAndMaterialsCOGS" | "TaxExemptInterest" | "TaxesPaid" | "Travel" | "TravelMeals" | "TreasuryStock" | "TrustAccounts" | "TrustAccountsLiab" | "UndepositedFunds" | "Utilities" | "Vehicles",
+        ?include_ret_element: Array["AccountNumber" | "AccountType" | "Balance" | "BankNumber" | "CashFlowClassification" | "CurrencyRef" | "DataExtRet" | "Desc" | "DetailAccountType" | "EditSequence" | "ExternalGUID" | "FullName" | "IsActive" | "IsTaxAccount" | "LastCheckNumber" | "ListID" | "Name" | "OwnerID" | "ParentRef" | "SalesTaxCodeRef" | "SpecialAccountType" | "Sublevel" | "TaxLineInfoRet" | "TimeCreated" | "TimeModified" | "TotalBalance" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        name: String,
+        ?open_balance: Numeric,
+        ?open_balance_date: String,
+        ?parent_ref: Types::ref,
+        ?request_id: String,
+        ?sales_tax_code_ref: Types::ref,
+        ?tax_line_id: Integer
+      }
+
+      type query_params = {
+        ?account_type: Array["AccountsPayable" | "AccountsReceivable" | "Bank" | "CostOfGoodsSold" | "CreditCard" | "Equity" | "Expense" | "FixedAsset" | "Income" | "LongTermLiability" | "NonPosting" | "OtherAsset" | "OtherCurrentAsset" | "OtherCurrentLiability" | "OtherExpense" | "OtherIncome"],
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?currency_filter: Types::currency_filter,
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AccountNumber" | "AccountType" | "Balance" | "BankNumber" | "CashFlowClassification" | "CurrencyRef" | "DataExtRet" | "Desc" | "DetailAccountType" | "EditSequence" | "FullName" | "IsActive" | "IsTaxAccount" | "LastCheckNumber" | "ListID" | "Name" | "ParentRef" | "SalesTaxCodeRef" | "SpecialAccountType" | "Sublevel" | "TaxLineInfoRet" | "TimeCreated" | "TimeModified" | "TotalBalance"],
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?account_number: String,
+        ?account_type: "AccountsPayable" | "AccountsReceivable" | "Bank" | "CostOfGoodsSold" | "CreditCard" | "Equity" | "Expense" | "FixedAsset" | "Income" | "LongTermLiability" | "NonPosting" | "OtherAsset" | "OtherCurrentAsset" | "OtherCurrentLiability" | "OtherExpense" | "OtherIncome",
+        ?bank_number: String,
+        ?currency_ref: Types::ref,
+        ?desc: String,
+        edit_sequence: String,
+        ?include_ret_element: Array["AccountNumber" | "AccountType" | "Balance" | "BankNumber" | "CashFlowClassification" | "CurrencyRef" | "DataExtRet" | "Desc" | "DetailAccountType" | "EditSequence" | "ExternalGUID" | "FullName" | "IsActive" | "IsTaxAccount" | "LastCheckNumber" | "ListID" | "Name" | "OwnerID" | "ParentRef" | "SalesTaxCodeRef" | "SpecialAccountType" | "Sublevel" | "TaxLineInfoRet" | "TimeCreated" | "TimeModified" | "TotalBalance" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        list_id: String,
+        ?name: String,
+        ?open_balance: Numeric,
+        ?open_balance_date: String,
+        ?parent_ref: Types::ref,
+        ?request_id: String,
+        ?sales_tax_code_ref: Types::ref,
+        ?tax_line_id: Integer
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

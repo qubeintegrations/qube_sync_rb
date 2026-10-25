@@ -1,0 +1,16 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class SpecialAccount < Base
+      type create_params = {
+        ?currency_ref: Types::ref,
+        ?include_ret_element: Array["AccountNumber" | "AccountType" | "Balance" | "BankNumber" | "CashFlowClassification" | "CurrencyRef" | "DataExtRet" | "Desc" | "DetailAccountType" | "EditSequence" | "ExternalGUID" | "FullName" | "IsActive" | "IsTaxAccount" | "LastCheckNumber" | "ListID" | "Name" | "OwnerID" | "ParentRef" | "SalesTaxCodeRef" | "SpecialAccountType" | "Sublevel" | "TaxLineInfoRet" | "TimeCreated" | "TimeModified" | "TotalBalance" | "TxnID" | "TxnNumber"],
+        ?request_id: String,
+        special_account_type: "AccountsPayable" | "AccountsReceivable" | "CondenseItemAdjustmentExpenses" | "CostOfGoodsSold" | "DirectDepositLiabilities" | "Estimates" | "ExchangeGainLoss" | "InventoryAssets" | "ItemReceiptAccount" | "OpeningBalanceEquity" | "PayrollExpenses" | "PayrollLiabilities" | "PettyCash" | "PurchaseOrders" | "ReconciliationDifferences" | "RetainedEarnings" | "SalesOrders" | "SalesTaxPayable" | "UncategorizedExpenses" | "UncategorizedIncome" | "UndepositedFunds"
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

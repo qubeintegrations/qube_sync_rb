@@ -3,6 +3,7 @@
 require "json"
 require "net/http"
 require "securerandom"
+require "time"
 require "uri"
 require_relative "version"
 
@@ -246,26 +247,38 @@ module QubeSync
 
     # -- Queued requests --------------------------------------------------------------------
 
-    # Queues a QuickBooks operation: `operation` is the path after the connection
-    # (`"customers"`, `"invoices"`, `"txn-deleteds"`...). For `:get` and `:delete` the params go
-    # in the query string (scalars or arrays), for `:post` and `:put` as the JSON body.
-    # `webhook_url` goes in the query string. Without `idempotency_key:`, the client makes a
-    # UUID for this call and sends the same one on its retries.
-    def queue(connection_id, operation, params = {}, webhook_url:, method: :post, idempotency_key: nil)
-      verb = method.to_s.upcase
+    # Queues a QuickBooks operation by its id, as `client.customer.create(...)` and the other
+    # entity methods do: `queue("customer.create", connection_id, {name: "Acme"}, webhook_url:)`.
+    # The params go as the JSON body or the query string, as the operation takes them, and
+    # `webhook_url` in the query string. Without `idempotency_key:`, the client makes a UUID for
+    # this call and sends the same one on its retries.
+    #
+    # For an operation newer than this version of the gem, pass `method:` (`:post`, `:get`,
+    # `:put`, `:delete`) and `path:`, relative to the connection (`"customers"`); a GET sends the
+    # params as the query string, any other method as the body. For a known id they replace the
+    # index's.
+    def queue(operation_id, connection_id, params = {}, webhook_url:, idempotency_key: nil, method: nil, path: nil)
+      entry = Operations::INDEX[operation_id.to_s]
+      if entry.nil? && (method.nil? || path.nil?)
+        raise ArgumentError, "unknown operation #{operation_id.to_s.inspect}: pass method: and path: for an operation " \
+          "this version of qube_sync doesn't know"
+      end
+
+      verb = (method || entry[:method]).to_s.upcase
       raise ArgumentError, "method must be one of :get, :post, :put, :delete" unless QUEUE_METHODS.include?(verb)
 
-      path = "/connections/#{segment(connection_id)}/#{operation_path(operation)}"
+      params_in = (method.nil? && entry) ? entry[:params_in] : (verb == "GET" ? :query : :body)
+      full_path = "/connections/#{segment(connection_id)}/#{operation_path(path || entry[:path])}"
       params ||= {}
       query = {webhook_url: webhook_url}
       body = nil
-      if %w[GET DELETE].include?(verb)
-        query = params.to_h.merge(query)
+      if params_in == :query
+        query = query.merge(params.to_h.reject { |name, _| name.to_s == "webhook_url" })
       else
         body = params
       end
 
-      call(verb, path, body, query: query, headers: {"Idempotency-Key" => key_for(idempotency_key)})
+      call(verb, full_path, body, query: query, headers: {"Idempotency-Key" => key_for(idempotency_key)})
     end
 
     # Queues qbXML as written.
@@ -491,23 +504,49 @@ module QubeSync
       "#{uri.scheme.downcase}://#{uri.host.downcase}:#{uri.port}"
     end
 
+    # Query strings as the v2 API reads them: an array of scalars repeats its bare key
+    # (`list_id=1&list_id=2`); a nested Hash brackets its keys (`name_range[from]=A`), and an
+    # array inside one brackets too (`currency_filter[list_id][]=1`). nil values are left out,
+    # booleans are `true`/`false`, a Time or Date is ISO 8601.
     def encode_query(query)
+      raise ArgumentError, "query must be a Hash" unless query.nil? || query.is_a?(Hash)
+
       pairs = []
-      (query || {}).each do |name, value|
-        next if value.nil?
-        raise ArgumentError, "query parameter #{name} can't be a Hash" if value.is_a?(Hash)
-
-        if value.is_a?(Array)
-          value.each do |item|
-            raise ArgumentError, "query parameter #{name} can't hold a Hash" if item.is_a?(Hash)
-
-            pairs << [name.to_s, item.to_s] unless item.nil?
-          end
-        else
-          pairs << [name.to_s, value.to_s]
-        end
-      end
+      (query || {}).each { |name, value| query_pairs(name.to_s, value, true, pairs) }
       URI.encode_www_form(pairs)
+    end
+
+    def query_pairs(key, value, top, pairs)
+      case value
+      when nil
+        nil
+      when Array
+        value.each do |item|
+          next if item.nil?
+          raise ArgumentError, "query parameter #{key} can't hold an array of arrays" if item.is_a?(Array)
+
+          if item.is_a?(Hash)
+            query_pairs("#{key}[]", item, false, pairs)
+          else
+            pairs << [top ? key : "#{key}[]", query_scalar(key, item)]
+          end
+        end
+      when Hash
+        value.each { |name, inner| query_pairs("#{key}[#{name}]", inner, false, pairs) }
+      else
+        pairs << [key, query_scalar(key, value)]
+      end
+    end
+
+    def query_scalar(key, value)
+      case value
+      when String, Symbol, Numeric, true, false then value.to_s
+      when Time then value.iso8601
+      else
+        return value.iso8601 if value.respond_to?(:iso8601)
+
+        raise ArgumentError, "query parameter #{key} must be a String, Numeric, boolean, Array or Hash"
+      end
     end
 
     def segment(value)
@@ -536,3 +575,5 @@ module QubeSync
     end
   end
 end
+
+require_relative "operations"

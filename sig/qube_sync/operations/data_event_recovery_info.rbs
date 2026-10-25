@@ -1,0 +1,20 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class DataEventRecoveryInfo < Base
+      type delete_params = {
+        ?request_id: String,
+        subscriber_id: String
+      }
+
+      type query_params = {
+        ?request_id: String,
+        subscriber_id: String
+      }
+
+      def delete: (String connection_id, ?delete_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

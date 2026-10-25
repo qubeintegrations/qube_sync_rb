@@ -1,0 +1,55 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ItemPayment < Base
+      type create_params = {
+        ?bar_code: Types::bar_code,
+        ?class_ref: Types::ref,
+        ?deposit_to_account_ref: Types::ref,
+        ?external_guid: String,
+        ?include_ret_element: Array["BarCodeValue" | "ClassRef" | "DataExtRet" | "DepositToAccountRef" | "EditSequence" | "ExternalGUID" | "IsActive" | "ItemDesc" | "ListID" | "Name" | "OwnerID" | "PaymentMethodRef" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?item_desc: String,
+        name: String,
+        ?payment_method_ref: Types::ref,
+        ?request_id: String
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?class_filter: Types::entity_filter,
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["BarCodeValue" | "ClassRef" | "DataExtRet" | "DepositToAccountRef" | "EditSequence" | "ExternalGUID" | "IsActive" | "ItemDesc" | "ListID" | "Name" | "PaymentMethodRef" | "TimeCreated" | "TimeModified"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?bar_code: Types::bar_code,
+        ?class_ref: Types::ref,
+        ?deposit_to_account_ref: Types::ref,
+        edit_sequence: String,
+        ?include_ret_element: Array["BarCodeValue" | "ClassRef" | "DataExtRet" | "DepositToAccountRef" | "EditSequence" | "ExternalGUID" | "IsActive" | "ItemDesc" | "ListID" | "Name" | "OwnerID" | "PaymentMethodRef" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?item_desc: String,
+        list_id: String,
+        ?name: String,
+        ?payment_method_ref: Types::ref,
+        ?request_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

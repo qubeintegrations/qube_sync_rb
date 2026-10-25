@@ -1,0 +1,434 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    # Nested params records used by more than one entity.
+    module Types
+      type account_filter = {
+        ?account_type_filter: "APAndSalesTax" | "APOrCreditCard" | "ARAndAP" | "AccountsPayable" | "AccountsReceivable" | "AllowedFor1099" | "Asset" | "BalanceSheet" | "Bank" | "BankAndARAndAPAndUF" | "BankAndUF" | "CostOfSales" | "CreditCard" | "CurrentAsset" | "CurrentAssetAndExpense" | "CurrentLiability" | "Equity" | "EquityAndIncomeAndExpense" | "ExpenseAndOtherExpense" | "FixedAsset" | "IncomeAndExpense" | "IncomeAndOtherIncome" | "Liability" | "LiabilityAndEquity" | "LongTermLiability" | "NonPosting" | "OrdinaryExpense" | "OrdinaryIncome" | "OrdinaryIncomeAndCOGS" | "OrdinaryIncomeAndExpense" | "OtherAsset" | "OtherCurrentAsset" | "OtherCurrentLiability" | "OtherExpense" | "OtherIncome" | "OtherIncomeOrExpense",
+        ?full_name: Array[String],
+        ?full_name_with_children: String,
+        ?list_id: Array[String],
+        ?list_id_with_children: String
+      }
+
+      type additional_contact_ref = {
+        contact_name: String,
+        contact_value: String
+      }
+
+      type additional_notes = {
+        note: String
+      }
+
+      type additional_notes_mod = {
+        note: String,
+        note_id: Integer
+      }
+
+      type address = {
+        ?addr1: String,
+        ?addr2: String,
+        ?addr3: String,
+        ?addr4: String,
+        ?addr5: String,
+        ?city: String,
+        ?country: String,
+        ?note: String,
+        ?postal_code: String,
+        ?state: String
+      }
+
+      type applied_to_txn_add = {
+        ?discount_account_ref: Types::ref,
+        ?discount_amount: Numeric,
+        ?discount_class_ref: Types::ref,
+        ?payment_amount: Numeric,
+        ?set_credit: Array[Types::set_credit],
+        txn_id: String,
+        ?txn_line_detail: Array[Types::txn_line_detail]
+      }
+
+      type applied_to_txn_mod = {
+        ?discount_account_ref: Types::ref,
+        ?discount_amount: Numeric,
+        ?discount_class_ref: Types::ref,
+        ?payment_amount: Numeric,
+        ?set_credit: Array[Types::set_credit],
+        txn_id: String
+      }
+
+      type bar_code = {
+        ?allow_override: bool,
+        ?assign_even_if_used: bool,
+        ?bar_code_value: String
+      }
+
+      type contacts = {
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        first_name: String,
+        ?job_title: String,
+        ?last_name: String,
+        ?middle_name: String,
+        ?salutation: String
+      }
+
+      type contacts_mod = {
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?edit_sequence: String,
+        first_name: String,
+        ?job_title: String,
+        ?last_name: String,
+        ?list_id: String,
+        ?middle_name: String,
+        ?salutation: String
+      }
+
+      type credit_card_txn_info = {
+        credit_card_txn_input_info: Types::credit_card_txn_input_info,
+        credit_card_txn_result_info: Types::credit_card_txn_result_info
+      }
+
+      type credit_card_txn_input_info = {
+        ?commercial_card_code: String,
+        ?credit_card_address: String,
+        credit_card_number: String,
+        ?credit_card_postal_code: String,
+        ?credit_card_txn_type: "Authorization" | "Capture" | "Charge" | "Refund" | "VoiceAuthorization",
+        expiration_month: Integer,
+        expiration_year: Integer,
+        name_on_card: String,
+        ?transaction_mode: "CardNotPresent" | "CardPresent"
+      }
+
+      type credit_card_txn_result_info = {
+        ?authorization_code: String,
+        ?avs_street: "Fail" | "NotAvailable" | "Pass",
+        ?avs_zip: "Fail" | "NotAvailable" | "Pass",
+        ?card_security_code_match: "Fail" | "NotAvailable" | "Pass",
+        ?client_trans_id: String,
+        credit_card_trans_id: String,
+        merchant_account_number: String,
+        ?payment_grouping_code: Integer,
+        payment_status: "Completed" | "Unknown",
+        ?recon_batch_id: String,
+        result_code: Integer,
+        result_message: String,
+        ?txn_authorization_stamp: Integer,
+        txn_authorization_time: String
+      }
+
+      type currency_filter = {
+        ?full_name: Array[String],
+        ?list_id: Array[String]
+      }
+
+      type data_ext = {
+        data_ext_name: String,
+        data_ext_value: String,
+        owner_id: String
+      }
+
+      type date_range_filter = {
+        ?date_macro: "All" | "LastCalendarQuarter" | "LastCalendarQuarterToDate" | "LastCalendarYear" | "LastCalendarYearToDate" | "LastFiscalQuarter" | "LastFiscalQuarterToDate" | "LastFiscalYear" | "LastFiscalYearToDate" | "LastMonth" | "LastMonthToDate" | "LastWeek" | "LastWeekToDate" | "NextCalendarQuarter" | "NextCalendarYear" | "NextFiscalQuarter" | "NextFiscalYear" | "NextFourWeeks" | "NextMonth" | "NextWeek" | "ThisCalendarQuarter" | "ThisCalendarQuarterToDate" | "ThisCalendarYear" | "ThisCalendarYearToDate" | "ThisFiscalQuarter" | "ThisFiscalQuarterToDate" | "ThisFiscalYear" | "ThisFiscalYearToDate" | "ThisMonth" | "ThisMonthToDate" | "ThisWeek" | "ThisWeekToDate" | "Today" | "Yesterday",
+        ?from_txn_date: String,
+        ?to_txn_date: String
+      }
+
+      type deleted_date_range_filter = {
+        ?from_deleted_date: String,
+        ?to_deleted_date: String
+      }
+
+      type discount_line_add = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?is_taxable: bool,
+        ?rate_percent: Numeric
+      }
+
+      type earnings = {
+        payroll_item_wage_ref: Types::ref,
+        ?rate: Numeric,
+        ?rate_percent: Numeric
+      }
+
+      type entity_filter = {
+        ?full_name: Array[String],
+        ?full_name_with_children: String,
+        ?list_id: Array[String],
+        ?list_id_with_children: String
+      }
+
+      type entity_filter_aging_report = {
+        ?entity_type_filter: "Customer" | "Employee" | "OtherName" | "Vendor",
+        ?full_name: Array[String],
+        ?full_name_with_children: String,
+        ?list_id: Array[String],
+        ?list_id_with_children: String
+      }
+
+      type expense_line_add = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?billable_status: "Billable" | "HasBeenBilled" | "NotBillable",
+        ?class_ref: Types::ref,
+        ?customer_ref: Types::ref,
+        ?data_ext: Array[Types::data_ext],
+        ?def_macro: String,
+        ?memo: String,
+        ?sales_rep_ref: Types::ref,
+        ?sales_tax_code_ref: Types::ref,
+        ?tax_amount: Numeric
+      }
+
+      type expense_line_mod = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?billable_status: "Billable" | "HasBeenBilled" | "NotBillable",
+        ?class_ref: Types::ref,
+        ?customer_ref: Types::ref,
+        ?memo: String,
+        ?sales_rep_ref: Types::ref,
+        ?sales_tax_code_ref: Types::ref,
+        ?tax_amount: Numeric,
+        txn_line_id: String
+      }
+
+      type item_filter = {
+        ?full_name: Array[String],
+        ?full_name_with_children: String,
+        ?item_type_filter: "AllExceptFixedAsset" | "Assembly" | "Discount" | "FixedAsset" | "Inventory" | "InventoryAndAssembly" | "NonInventory" | "OtherCharge" | "Payment" | "Sales" | "SalesTax" | "Service",
+        ?list_id: Array[String],
+        ?list_id_with_children: String
+      }
+
+      type item_group_line_add = {
+        ?data_ext: Array[Types::data_ext],
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        item_group_ref: Types::ref,
+        ?quantity: Numeric,
+        ?unit_of_measure: String
+      }
+
+      type item_group_line_mod = {
+        ?item_group_ref: Types::ref,
+        ?item_line_mod: Array[Types::item_line_mod],
+        ?override_uom_set_ref: Types::ref,
+        ?quantity: Numeric,
+        txn_line_id: String,
+        ?unit_of_measure: String
+      }
+
+      type item_line_add = {
+        ?amount: Numeric,
+        ?billable_status: "Billable" | "HasBeenBilled" | "NotBillable",
+        ?class_ref: Types::ref,
+        ?cost: Numeric,
+        ?customer_ref: Types::ref,
+        ?data_ext: Array[Types::data_ext],
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        ?item_ref: Types::ref,
+        ?link_to_txn: Types::link_to_txn,
+        ?lot_number: String,
+        ?override_item_account_ref: Types::ref,
+        ?quantity: Numeric,
+        ?sales_rep_ref: Types::ref,
+        ?sales_tax_code_ref: Types::ref,
+        ?serial_number: String,
+        ?tax_amount: Numeric,
+        ?unit_of_measure: String
+      }
+
+      type item_line_mod = {
+        ?amount: Numeric,
+        ?billable_status: "Billable" | "HasBeenBilled" | "NotBillable",
+        ?class_ref: Types::ref,
+        ?cost: Numeric,
+        ?customer_ref: Types::ref,
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        ?item_ref: Types::ref,
+        ?lot_number: String,
+        ?override_item_account_ref: Types::ref,
+        ?override_uom_set_ref: Types::ref,
+        ?quantity: Numeric,
+        ?sales_rep_ref: Types::ref,
+        ?sales_tax_code_ref: Types::ref,
+        ?serial_number: String,
+        ?tax_amount: Numeric,
+        txn_line_id: String,
+        ?unit_of_measure: String
+      }
+
+      type liability_payment_schedule = {
+        ?payment_due_date: String,
+        ?payment_due_num_days_after: Integer,
+        payment_schedule_type: "Empty" | "FederalMonthly" | "FederalNextDay" | "FederalQuarterly" | "FederalSemiweekly" | "Monthly" | "Quarterly" | "Semiweekly" | "Weekly" | "Yearly"
+      }
+
+      type line_group_add = {
+        ?data_ext: Array[Types::data_ext],
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        item_group_ref: Types::ref,
+        ?quantity: Numeric,
+        ?service_date: String,
+        ?unit_of_measure: String
+      }
+
+      type line_mod = {
+        ?amount: Numeric,
+        ?class_ref: Types::ref,
+        ?desc: String,
+        ?inventory_site_location_ref: Types::ref,
+        ?inventory_site_ref: Types::ref,
+        ?item_ref: Types::ref,
+        ?lot_number: String,
+        ?option_for_price_rule_conflict: "BasePrice" | "Zero",
+        ?other1: String,
+        ?other2: String,
+        ?override_item_account_ref: Types::ref,
+        ?override_uom_set_ref: Types::ref,
+        ?price_level_ref: Types::ref,
+        ?quantity: Numeric,
+        ?rate: Numeric,
+        ?rate_percent: Numeric,
+        ?sales_tax_code_ref: Types::ref,
+        ?serial_number: String,
+        ?service_date: String,
+        ?tax_amount: Numeric,
+        txn_line_id: String,
+        ?unit_of_measure: String
+      }
+
+      type link_to_txn = {
+        txn_id: String,
+        txn_line_id: String
+      }
+
+      type modified_date_range_filter = {
+        ?from_modified_date: String,
+        ?to_modified_date: String
+      }
+
+      type name_filter = {
+        match_criterion: "Contains" | "EndsWith" | "StartsWith",
+        name: String
+      }
+
+      type name_range_filter = {
+        ?from_name: String,
+        ?to_name: String
+      }
+
+      type payroll_date_range_filter = {
+        ?date_macro: "All" | "LastCalendarQuarter" | "LastCalendarQuarterToDate" | "LastCalendarYear" | "LastCalendarYearToDate" | "LastFiscalQuarter" | "LastFiscalQuarterToDate" | "LastFiscalYear" | "LastFiscalYearToDate" | "LastMonth" | "LastMonthToDate" | "LastWeek" | "LastWeekToDate" | "NextCalendarQuarter" | "NextCalendarYear" | "NextFiscalQuarter" | "NextFiscalYear" | "NextFourWeeks" | "NextMonth" | "NextWeek" | "ThisCalendarQuarter" | "ThisCalendarQuarterToDate" | "ThisCalendarYear" | "ThisCalendarYearToDate" | "ThisFiscalQuarter" | "ThisFiscalQuarterToDate" | "ThisFiscalYear" | "ThisFiscalYearToDate" | "ThisMonth" | "ThisMonthToDate" | "ThisWeek" | "ThisWeekToDate" | "Today" | "Yesterday",
+        ?from_payroll_date: String,
+        ?to_payroll_date: String
+      }
+
+      type ref = {
+        ?full_name: String,
+        ?list_id: String
+      }
+
+      type ref_number_filter = {
+        match_criterion: "Contains" | "EndsWith" | "StartsWith",
+        ref_number: String
+      }
+
+      type ref_number_range_filter = {
+        ?from_ref_number: String,
+        ?to_ref_number: String
+      }
+
+      type report_modified_date_range_filter = {
+        ?from_report_modified_date: String,
+        ?to_report_modified_date: String
+      }
+
+      type report_period = {
+        ?from_report_date: String,
+        ?to_report_date: String
+      }
+
+      type sales_and_purchase = {
+        ?expense_account_ref: Types::ref,
+        ?income_account_ref: Types::ref,
+        ?pref_vendor_ref: Types::ref,
+        ?purchase_cost: Numeric,
+        ?purchase_desc: String,
+        ?purchase_tax_code_ref: Types::ref,
+        ?sales_desc: String,
+        ?sales_price: Numeric
+      }
+
+      type sales_and_purchase_mod = {
+        ?apply_expense_account_ref_to_existing_txns: bool,
+        ?apply_income_account_ref_to_existing_txns: bool,
+        ?expense_account_ref: Types::ref,
+        ?income_account_ref: Types::ref,
+        ?pref_vendor_ref: Types::ref,
+        ?purchase_cost: Numeric,
+        ?purchase_desc: String,
+        ?purchase_tax_code_ref: Types::ref,
+        ?sales_desc: String,
+        ?sales_price: Numeric
+      }
+
+      type sales_or_purchase = {
+        ?account_ref: Types::ref,
+        ?desc: String,
+        ?price: Numeric,
+        ?price_percent: Numeric
+      }
+
+      type sales_or_purchase_mod = {
+        ?account_ref: Types::ref,
+        ?apply_account_ref_to_existing_txns: bool,
+        ?desc: String,
+        ?price: Numeric,
+        ?price_percent: Numeric
+      }
+
+      type sales_tax_line_add = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?rate_percent: Numeric
+      }
+
+      type set_credit = {
+        applied_amount: Numeric,
+        credit_txn_id: String,
+        ?override: bool,
+        ?txn_line_id: String
+      }
+
+      type shipping_line_add = {
+        ?account_ref: Types::ref,
+        amount: Numeric
+      }
+
+      type taxability = {
+        is_tax_applied: bool,
+        payroll_item_tax_ref: Types::ref
+      }
+
+      type txn_line_detail = {
+        amount: Numeric,
+        txn_line_id: String
+      }
+
+      type type_filter = {
+        txn_type_filter: Array["ARRefundCreditCard" | "All" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Deposit" | "Estimate" | "InventoryAdjustment" | "Invoice" | "ItemReceipt" | "JournalEntry" | "LiabilityAdjustment" | "Paycheck" | "PayrollLiabilityCheck" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "Transfer" | "VendorCredit" | "YTDAdjustment"]
+      }
+    end
+  end
+end

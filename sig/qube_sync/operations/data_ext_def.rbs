@@ -1,0 +1,51 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class DataExtDef < Base
+      type create_params = {
+        ?assign_to_object: Array["ARRefundCreditCard" | "Account" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "Company" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Customer" | "Deposit" | "Employee" | "Estimate" | "InventoryAdjustment" | "Invoice" | "Item" | "ItemReceipt" | "JournalEntry" | "OtherName" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "Vendor" | "VendorCredit"],
+        ?data_ext_format_string: String,
+        ?data_ext_list_require: bool,
+        data_ext_name: String,
+        ?data_ext_txn_require: bool,
+        data_ext_type: "AMTTYPE" | "DATETIMETYPE" | "INTTYPE" | "PERCENTTYPE" | "PRICETYPE" | "QUANTYPE" | "STR1024TYPE" | "STR255TYPE",
+        ?include_ret_element: Array["AssignToObject" | "DataExtFormatString" | "DataExtID" | "DataExtListRequire" | "DataExtName" | "DataExtTxnRequire" | "DataExtType" | "EditSequence" | "ExternalGUID" | "ListID" | "OwnerID" | "TxnID" | "TxnNumber"],
+        owner_id: String,
+        ?request_id: String
+      }
+
+      type delete_params = {
+        data_ext_name: String,
+        owner_id: String,
+        ?request_id: String
+      }
+
+      type query_params = {
+        ?assign_to_object: Array["ARRefundCreditCard" | "Account" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "Company" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Customer" | "Deposit" | "Employee" | "Estimate" | "InventoryAdjustment" | "Invoice" | "Item" | "ItemReceipt" | "JournalEntry" | "OtherName" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "Vendor" | "VendorCredit"],
+        ?include_ret_element: Array["AssignToObject" | "DataExtFormatString" | "DataExtID" | "DataExtListRequire" | "DataExtName" | "DataExtTxnRequire" | "DataExtType" | "OwnerID"],
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?owner_id: Array[String],
+        ?request_id: String
+      }
+
+      type update_params = {
+        ?assign_to_object: Array["ARRefundCreditCard" | "Account" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "Company" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Customer" | "Deposit" | "Employee" | "Estimate" | "InventoryAdjustment" | "Invoice" | "Item" | "ItemReceipt" | "JournalEntry" | "OtherName" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "Vendor" | "VendorCredit"],
+        ?data_ext_format_string: String,
+        ?data_ext_list_require: bool,
+        data_ext_name: String,
+        ?data_ext_new_name: String,
+        ?data_ext_txn_require: bool,
+        ?include_ret_element: Array["AssignToObject" | "DataExtFormatString" | "DataExtID" | "DataExtListRequire" | "DataExtName" | "DataExtTxnRequire" | "DataExtType" | "EditSequence" | "ExternalGUID" | "ListID" | "OwnerID" | "TxnID" | "TxnNumber"],
+        owner_id: String,
+        ?remove_from_object: Array["ARRefundCreditCard" | "Account" | "Bill" | "BillPaymentCheck" | "BillPaymentCreditCard" | "BuildAssembly" | "Charge" | "Check" | "Company" | "CreditCardCharge" | "CreditCardCredit" | "CreditMemo" | "Customer" | "Deposit" | "Employee" | "Estimate" | "InventoryAdjustment" | "Invoice" | "Item" | "ItemReceipt" | "JournalEntry" | "OtherName" | "PurchaseOrder" | "ReceivePayment" | "SalesOrder" | "SalesReceipt" | "SalesTaxPaymentCheck" | "Vendor" | "VendorCredit"],
+        ?request_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def delete: (String connection_id, ?delete_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

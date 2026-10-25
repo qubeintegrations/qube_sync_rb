@@ -1,0 +1,17 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class SpecialItem < Base
+      type create_params = {
+        ?bar_code: Types::bar_code,
+        ?external_guid: String,
+        ?include_ret_element: Array["BarCodeValue" | "ClassRef" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FullName" | "IsActive" | "IsPrintItemsInGroup" | "IsTaxIncluded" | "ItemDesc" | "ItemGroupLine" | "ListID" | "Name" | "ParentRef" | "SalesAndPurchase" | "SalesOrPurchase" | "SalesTaxCodeRef" | "SpecialItemType" | "Sublevel" | "TimeCreated" | "TimeModified" | "UnitOfMeasureSetRef"],
+        ?request_id: String,
+        special_item_type: "FinanceCharge" | "ReimbursableExpenseGroup" | "ReimbursableExpenseSubtotal"
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

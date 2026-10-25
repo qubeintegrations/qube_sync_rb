@@ -1,0 +1,19 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Host < Base
+      type include_list_meta_data = {
+        include_max_capacity: bool
+      }
+
+      type query_params = {
+        ?include_list_meta_data: include_list_meta_data,
+        ?include_ret_element: Array["Country" | "IsAutomaticLogin" | "ListMetaData" | "MajorVersion" | "MinorVersion" | "ProductName" | "QBFileMode" | "SupportedQBXMLVersion"],
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

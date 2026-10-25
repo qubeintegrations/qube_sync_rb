@@ -1,0 +1,88 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class JournalEntry < Base
+      type journal_line_mod = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?billable_status: "Billable" | "HasBeenBilled" | "NotBillable",
+        ?class_ref: Types::ref,
+        ?entity_ref: Types::ref,
+        ?item_sales_tax_ref: Types::ref,
+        ?journal_line_type: "Credit" | "Debit",
+        ?memo: String,
+        ?tax_amount: Numeric,
+        txn_line_id: String
+      }
+
+      type line = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?billable_status: "Billable" | "HasBeenBilled" | "NotBillable",
+        ?class_ref: Types::ref,
+        ?def_macro: String,
+        ?entity_ref: Types::ref,
+        ?item_sales_tax_ref: Types::ref,
+        ?memo: String,
+        ?tax_amount: Numeric,
+        ?txn_line_id: String
+      }
+
+      type create_params = {
+        ?currency_ref: Types::ref,
+        ?def_macro: String,
+        ?exchange_rate: Numeric,
+        ?external_guid: String,
+        ?include_ret_element: Array["CurrencyRef" | "DataExtRet" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "IsAdjustment" | "IsAmountsEnteredInHomeCurrency" | "IsHomeCurrencyAdjustment" | "JournalCreditLine" | "JournalDebitLine" | "ListID" | "Memo" | "OwnerID" | "RefNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?is_adjustment: bool,
+        ?is_amounts_entered_in_home_currency: bool,
+        ?is_home_currency_adjustment: bool,
+        ?journal_credit_line: Array[line],
+        ?journal_debit_line: Array[line],
+        ?memo: String,
+        ?ref_number: String,
+        ?request_id: String,
+        ?txn_date: String
+      }
+
+      type query_params = {
+        ?account_filter: Types::entity_filter,
+        ?currency_filter: Types::currency_filter,
+        ?entity_filter: Types::entity_filter,
+        ?include_line_items: bool,
+        ?include_ret_element: Array["CurrencyRef" | "DataExtRet" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "IsAdjustment" | "IsAmountsEnteredInHomeCurrency" | "IsHomeCurrencyAdjustment" | "JournalCreditLine" | "JournalDebitLine" | "Memo" | "RefNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?iterator: bool,
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?modified_date_range_filter: Types::modified_date_range_filter,
+        ?owner_id: Array[String],
+        ?ref_number: Array[String],
+        ?ref_number_case_sensitive: Array[String],
+        ?ref_number_filter: Types::ref_number_filter,
+        ?ref_number_range_filter: Types::ref_number_range_filter,
+        ?request_id: String,
+        ?txn_date_range_filter: Types::date_range_filter,
+        ?txn_id: Array[String]
+      }
+
+      type update_params = {
+        ?currency_ref: Types::ref,
+        edit_sequence: String,
+        ?exchange_rate: Numeric,
+        ?include_ret_element: Array["CurrencyRef" | "DataExtRet" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "IsAdjustment" | "IsAmountsEnteredInHomeCurrency" | "IsHomeCurrencyAdjustment" | "JournalCreditLine" | "JournalDebitLine" | "ListID" | "Memo" | "OwnerID" | "RefNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?is_adjustment: bool,
+        ?is_amounts_entered_in_home_currency: bool,
+        ?journal_line_mod: Array[journal_line_mod],
+        ?ref_number: String,
+        ?request_id: String,
+        ?txn_date: String,
+        txn_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

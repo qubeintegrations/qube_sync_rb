@@ -1,0 +1,71 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class OtherName < Base
+      type create_params = {
+        ?account_number: String,
+        ?alt_contact: String,
+        ?alt_phone: String,
+        ?company_name: String,
+        ?contact: String,
+        ?email: String,
+        ?external_guid: String,
+        ?fax: String,
+        ?first_name: String,
+        ?include_ret_element: Array["AccountNumber" | "AltContact" | "AltPhone" | "CompanyName" | "Contact" | "DataExtRet" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "IsActive" | "LastName" | "ListID" | "MiddleName" | "Name" | "Notes" | "OtherNameAddress" | "OtherNameAddressBlock" | "OwnerID" | "Phone" | "Salutation" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?last_name: String,
+        ?middle_name: String,
+        name: String,
+        ?notes: String,
+        ?other_name_address: Types::address,
+        ?phone: String,
+        ?request_id: String,
+        ?salutation: String
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AccountNumber" | "AltContact" | "AltPhone" | "CompanyName" | "Contact" | "DataExtRet" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "IsActive" | "LastName" | "ListID" | "MiddleName" | "Name" | "Notes" | "OtherNameAddress" | "OtherNameAddressBlock" | "Phone" | "Salutation" | "TimeCreated" | "TimeModified"],
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?account_number: String,
+        ?alt_contact: String,
+        ?alt_phone: String,
+        ?company_name: String,
+        ?contact: String,
+        edit_sequence: String,
+        ?email: String,
+        ?fax: String,
+        ?first_name: String,
+        ?include_ret_element: Array["AccountNumber" | "AltContact" | "AltPhone" | "CompanyName" | "Contact" | "DataExtRet" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "IsActive" | "LastName" | "ListID" | "MiddleName" | "Name" | "Notes" | "OtherNameAddress" | "OtherNameAddressBlock" | "OwnerID" | "Phone" | "Salutation" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?last_name: String,
+        list_id: String,
+        ?middle_name: String,
+        ?name: String,
+        ?notes: String,
+        ?other_name_address: Types::address,
+        ?phone: String,
+        ?request_id: String,
+        ?salutation: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

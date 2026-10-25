@@ -1,0 +1,142 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Vendor < Base
+      type total_balance_filter = {
+        amount: Numeric,
+        operator: "Equal" | "GreaterThan" | "GreaterThanEqual" | "LessThan" | "LessThanEqual"
+      }
+
+      type create_params = {
+        ?account_number: String,
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?additional_notes: Array[Types::additional_notes],
+        ?alt_contact: String,
+        ?alt_phone: String,
+        ?billing_rate_ref: Types::ref,
+        ?cc: String,
+        ?class_ref: Types::ref,
+        ?company_name: String,
+        ?contact: String,
+        ?contacts: Array[Types::contacts],
+        ?credit_limit: Numeric,
+        ?currency_ref: Types::ref,
+        ?email: String,
+        ?external_guid: String,
+        ?fax: String,
+        ?first_name: String,
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillingRateRef" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditLimit" | "CurrencyRef" | "DataExtRet" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "IsActive" | "IsSalesTaxAgency" | "IsTaxAgency" | "IsTaxOnTax" | "IsTaxTrackedOnPurchases" | "IsTaxTrackedOnSales" | "IsVendorEligibleFor1099" | "JobTitle" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "NameOnCheck" | "Notes" | "OwnerID" | "Pager" | "Phone" | "PrefillAccountRef" | "ReportingPeriod" | "SalesTaxCodeRef" | "SalesTaxCountry" | "SalesTaxReturnRef" | "Salutation" | "ShipAddress" | "Suffix" | "TaxOnPurchasesAccountRef" | "TaxOnSalesAccountRef" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "VendorAddress" | "VendorAddressBlock" | "VendorTaxIdent" | "VendorTypeRef"],
+        ?is_active: bool,
+        ?is_sales_tax_agency: bool,
+        ?is_tax_on_tax: bool,
+        ?is_tax_tracked_on_purchases: bool,
+        ?is_tax_tracked_on_sales: bool,
+        ?is_vendor_eligible_for1099: bool,
+        ?job_title: String,
+        ?last_name: String,
+        ?middle_name: String,
+        ?mobile: String,
+        name: String,
+        ?name_on_check: String,
+        ?notes: String,
+        ?open_balance: Numeric,
+        ?open_balance_date: String,
+        ?pager: String,
+        ?phone: String,
+        ?prefill_account_ref: Array[Types::ref],
+        ?reporting_period: "Monthly" | "Quarterly",
+        ?request_id: String,
+        ?sales_tax_code_ref: Types::ref,
+        ?sales_tax_country: "Australia" | "Canada" | "UK" | "US",
+        ?sales_tax_return_ref: Types::ref,
+        ?salutation: String,
+        ?ship_address: Types::address,
+        ?suffix: String,
+        ?tax_on_purchases_account_ref: Types::ref,
+        ?tax_on_sales_account_ref: Types::ref,
+        ?tax_registration_number: String,
+        ?terms_ref: Types::ref,
+        ?vendor_address: Types::address,
+        ?vendor_tax_ident: String,
+        ?vendor_type_ref: Types::ref
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?class_filter: Types::entity_filter,
+        ?currency_filter: Types::currency_filter,
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillingRateRef" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditLimit" | "CurrencyRef" | "DataExtRet" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "IsActive" | "IsSalesTaxAgency" | "IsTaxAgency" | "IsTaxOnTax" | "IsTaxTrackedOnPurchases" | "IsTaxTrackedOnSales" | "IsVendorEligibleFor1099" | "JobTitle" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "NameOnCheck" | "Notes" | "Pager" | "Phone" | "PrefillAccountRef" | "ReportingPeriod" | "SalesTaxCodeRef" | "SalesTaxCountry" | "SalesTaxReturnRef" | "Salutation" | "ShipAddress" | "Suffix" | "TaxOnPurchasesAccountRef" | "TaxOnSalesAccountRef" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "VendorAddress" | "VendorAddressBlock" | "VendorTaxIdent" | "VendorTypeRef"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String,
+        ?total_balance_filter: total_balance_filter
+      }
+
+      type update_params = {
+        ?account_number: String,
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?additional_notes_mod: Array[Types::additional_notes_mod],
+        ?alt_contact: String,
+        ?alt_phone: String,
+        ?billing_rate_ref: Types::ref,
+        ?cc: String,
+        ?class_ref: Types::ref,
+        ?company_name: String,
+        ?contact: String,
+        ?contacts_mod: Array[Types::contacts_mod],
+        ?credit_limit: Numeric,
+        ?currency_ref: Types::ref,
+        edit_sequence: String,
+        ?email: String,
+        ?fax: String,
+        ?first_name: String,
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillingRateRef" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditLimit" | "CurrencyRef" | "DataExtRet" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "IsActive" | "IsSalesTaxAgency" | "IsTaxAgency" | "IsTaxOnTax" | "IsTaxTrackedOnPurchases" | "IsTaxTrackedOnSales" | "IsVendorEligibleFor1099" | "JobTitle" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "NameOnCheck" | "Notes" | "OwnerID" | "Pager" | "Phone" | "PrefillAccountRef" | "ReportingPeriod" | "SalesTaxCodeRef" | "SalesTaxCountry" | "SalesTaxReturnRef" | "Salutation" | "ShipAddress" | "Suffix" | "TaxOnPurchasesAccountRef" | "TaxOnSalesAccountRef" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "VendorAddress" | "VendorAddressBlock" | "VendorTaxIdent" | "VendorTypeRef"],
+        ?is_active: bool,
+        ?is_sales_tax_agency: bool,
+        ?is_tax_on_tax: bool,
+        ?is_tax_tracked_on_purchases: bool,
+        ?is_tax_tracked_on_sales: bool,
+        ?is_vendor_eligible_for1099: bool,
+        ?job_title: String,
+        ?last_name: String,
+        list_id: String,
+        ?middle_name: String,
+        ?mobile: String,
+        ?name: String,
+        ?name_on_check: String,
+        ?notes: String,
+        ?pager: String,
+        ?phone: String,
+        ?prefill_account_ref: Array[Types::ref],
+        ?reporting_period: "Monthly" | "Quarterly",
+        ?request_id: String,
+        ?sales_tax_code_ref: Types::ref,
+        ?sales_tax_country: "Australia" | "Canada" | "UK" | "US",
+        ?sales_tax_return_ref: Types::ref,
+        ?salutation: String,
+        ?ship_address: Types::address,
+        ?suffix: String,
+        ?tax_on_purchases_account_ref: Types::ref,
+        ?tax_on_sales_account_ref: Types::ref,
+        ?tax_registration_number: String,
+        ?terms_ref: Types::ref,
+        ?vendor_address: Types::address,
+        ?vendor_tax_ident: String,
+        ?vendor_type_ref: Types::ref
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

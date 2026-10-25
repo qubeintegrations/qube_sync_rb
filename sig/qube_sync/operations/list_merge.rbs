@@ -1,0 +1,22 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ListMerge < Base
+      type merge_from = {
+        edit_sequence: String,
+        list_id: String
+      }
+
+      type execute_params = {
+        list_merge_type: "Account" | "Class" | "Customer" | "ItemDiscount" | "ItemGroup" | "ItemInventory" | "ItemNonInventory" | "ItemOtherCharge" | "ItemPayment" | "ItemSalesTax" | "ItemSalesTaxGroup" | "ItemService" | "ItemSubtotal" | "Vendor",
+        merge_from: merge_from,
+        merge_to: merge_from,
+        ?request_id: String,
+        ?same_ship_addr_ok: bool
+      }
+
+      def execute: (String connection_id, ?execute_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

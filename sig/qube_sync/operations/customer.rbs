@@ -1,0 +1,174 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Customer < Base
+      type credit_card_info = {
+        ?credit_card_address: String,
+        ?credit_card_number: String,
+        ?credit_card_postal_code: String,
+        ?expiration_month: Integer,
+        ?expiration_year: Integer,
+        ?name_on_card: String
+      }
+
+      type name_range = {
+        ?from: String,
+        ?to: String
+      }
+
+      type ship_to_address = {
+        ?addr1: String,
+        ?addr2: String,
+        ?addr3: String,
+        ?addr4: String,
+        ?addr5: String,
+        ?city: String,
+        ?country: String,
+        ?default_ship_to: bool,
+        name: String,
+        ?note: String,
+        ?postal_code: String,
+        ?state: String
+      }
+
+      type create_params = {
+        ?account_number: String,
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?additional_notes: Array[Types::additional_notes],
+        ?alt_contact: String,
+        ?alt_phone: String,
+        ?bill_address: Types::address,
+        ?cc: String,
+        ?class_ref: Types::ref,
+        ?company_name: String,
+        ?contact: String,
+        ?contacts: Array[Types::contacts],
+        ?credit_card_info: credit_card_info,
+        ?credit_limit: Numeric,
+        ?currency_ref: Types::ref,
+        ?customer_type_ref: Types::ref,
+        ?delivery_method: "Email" | "Fax" | "Print",
+        ?email: String,
+        ?external_guid: String,
+        ?fax: String,
+        ?first_name: String,
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillAddress" | "BillAddressBlock" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditCardInfo" | "CreditLimit" | "CurrencyRef" | "CustomerTypeRef" | "DataExtRet" | "DeliveryMethod" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "FullName" | "IsActive" | "IsStatementWithParent" | "ItemSalesTaxRef" | "JobDesc" | "JobEndDate" | "JobProjectedEndDate" | "JobStartDate" | "JobStatus" | "JobTitle" | "JobTypeRef" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "Notes" | "OwnerID" | "Pager" | "ParentRef" | "Phone" | "PreferredDeliveryMethod" | "PreferredPaymentMethodRef" | "PriceLevelRef" | "PrintAs" | "ResaleNumber" | "SalesRepRef" | "SalesTaxCodeRef" | "SalesTaxCountry" | "Salutation" | "ShipAddress" | "ShipAddressBlock" | "ShipToAddress" | "Sublevel" | "Suffix" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalBalance" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?is_statement_with_parent: bool,
+        ?item_sales_tax_ref: Types::ref,
+        ?job_desc: String,
+        ?job_end_date: String,
+        ?job_projected_end_date: String,
+        ?job_start_date: String,
+        ?job_status: "Awarded" | "Closed" | "InProgress" | "None" | "NotAwarded" | "Pending",
+        ?job_title: String,
+        ?job_type_ref: Types::ref,
+        ?last_name: String,
+        ?middle_name: String,
+        ?mobile: String,
+        name: String,
+        ?notes: String,
+        ?open_balance: Numeric,
+        ?open_balance_date: String,
+        ?pager: String,
+        ?parent_ref: Types::ref,
+        ?phone: String,
+        ?preferred_delivery_method: "Email" | "Fax" | "None",
+        ?preferred_payment_method_ref: Types::ref,
+        ?price_level_ref: Types::ref,
+        ?print_as: String,
+        ?request_id: String,
+        ?resale_number: String,
+        ?sales_rep_ref: Types::ref,
+        ?sales_tax_code_ref: Types::ref,
+        ?sales_tax_country: "Australia" | "Canada" | "UK" | "US",
+        ?salutation: String,
+        ?ship_address: Types::address,
+        ?ship_to_address: Array[ship_to_address],
+        ?suffix: String,
+        ?tax_registration_number: String,
+        ?terms_ref: Types::ref
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillAddress" | "BillAddressBlock" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditCardInfo" | "CreditLimit" | "CurrencyRef" | "CustomerTypeRef" | "DataExtRet" | "DeliveryMethod" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "FullName" | "IsActive" | "IsStatementWithParent" | "ItemSalesTaxRef" | "JobDesc" | "JobEndDate" | "JobProjectedEndDate" | "JobStartDate" | "JobStatus" | "JobTitle" | "JobTypeRef" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "Notes" | "Pager" | "ParentRef" | "Phone" | "PreferredDeliveryMethod" | "PreferredPaymentMethodRef" | "PriceLevelRef" | "PrintAs" | "ResaleNumber" | "SalesRepRef" | "SalesTaxCodeRef" | "SalesTaxCountry" | "Salutation" | "ShipAddress" | "ShipAddressBlock" | "ShipToAddress" | "Sublevel" | "Suffix" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalBalance"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?name_contains: String,
+        ?name_ends_with: String,
+        ?name_range: name_range,
+        ?name_starts_with: String,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?account_number: String,
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?additional_notes_mod: Array[Types::additional_notes_mod],
+        ?alt_contact: String,
+        ?alt_phone: String,
+        ?bill_address: Types::address,
+        ?cc: String,
+        ?class_ref: Types::ref,
+        ?company_name: String,
+        ?contact: String,
+        ?contacts_mod: Array[Types::contacts_mod],
+        ?credit_card_info: credit_card_info,
+        ?credit_limit: Numeric,
+        ?currency_ref: Types::ref,
+        ?customer_type_ref: Types::ref,
+        ?delivery_method: "Email" | "Fax" | "Print",
+        edit_sequence: String,
+        ?email: String,
+        ?fax: String,
+        ?first_name: String,
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillAddress" | "BillAddressBlock" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditCardInfo" | "CreditLimit" | "CurrencyRef" | "CustomerTypeRef" | "DataExtRet" | "DeliveryMethod" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "FullName" | "IsActive" | "IsStatementWithParent" | "ItemSalesTaxRef" | "JobDesc" | "JobEndDate" | "JobProjectedEndDate" | "JobStartDate" | "JobStatus" | "JobTitle" | "JobTypeRef" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "Notes" | "OwnerID" | "Pager" | "ParentRef" | "Phone" | "PreferredDeliveryMethod" | "PreferredPaymentMethodRef" | "PriceLevelRef" | "PrintAs" | "ResaleNumber" | "SalesRepRef" | "SalesTaxCodeRef" | "SalesTaxCountry" | "Salutation" | "ShipAddress" | "ShipAddressBlock" | "ShipToAddress" | "Sublevel" | "Suffix" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalBalance" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?is_statement_with_parent: bool,
+        ?item_sales_tax_ref: Types::ref,
+        ?job_desc: String,
+        ?job_end_date: String,
+        ?job_projected_end_date: String,
+        ?job_start_date: String,
+        ?job_status: "Awarded" | "Closed" | "InProgress" | "None" | "NotAwarded" | "Pending",
+        ?job_title: String,
+        ?job_type_ref: Types::ref,
+        ?last_name: String,
+        list_id: String,
+        ?middle_name: String,
+        ?mobile: String,
+        ?name: String,
+        ?notes: String,
+        ?pager: String,
+        ?parent_ref: Types::ref,
+        ?phone: String,
+        ?preferred_delivery_method: "Email" | "Fax" | "None",
+        ?preferred_payment_method_ref: Types::ref,
+        ?price_level_ref: Types::ref,
+        ?print_as: String,
+        ?request_id: String,
+        ?resale_number: String,
+        ?sales_rep_ref: Types::ref,
+        ?sales_tax_code_ref: Types::ref,
+        ?sales_tax_country: "Australia" | "Canada" | "UK" | "US",
+        ?salutation: String,
+        ?ship_address: Types::address,
+        ?ship_to_address: Array[ship_to_address],
+        ?suffix: String,
+        ?tax_registration_number: String,
+        ?terms_ref: Types::ref
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

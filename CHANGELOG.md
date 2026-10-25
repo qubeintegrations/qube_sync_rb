@@ -18,10 +18,22 @@ legacy (no runtime warning). New code should use the client.
 - Runs and questions: `start_run` (its `reference` is the Idempotency-Key), `get_run`,
   `list_runs`, `cancel_run`, `run_events`, `answer`, `search`. Methods that take a link refuse
   one on another scheme, host or port with `ArgumentError`, before any request.
-- Requests: `queue` (any operation, `method:` `:post`, `:get`, `:put` or `:delete`),
-  `queue_qbxml`, `get_request`, `request_pages`, `list_requests`, `each_request` (every page),
-  `discard_request`; and `request` for anything else. `queue` and `queue_qbxml` make an
-  Idempotency-Key per call when none is given, and reuse it on that call's retries.
+- QuickBooks operations: one method per operation on its entity, `client.customer.create`,
+  `client.invoice.query`, `client.txn_void.execute`... (261 operations on 124 entities;
+  QuickBooks' `class` is `client.class_`), each `(connection_id, params = {}, webhook_url:,
+  idempotency_key: nil)`. They're generated from the QuickBooks operations manifest
+  (`spec/fixtures/operations.json`, served at https://qubesync.com/libraries/operations.json)
+  by `bin/generate-operations` (`rake operations:generate`), with YARD docs listing every field
+  and RBS records for the params in `sig/qube_sync/operations/`. An entity's file loads on first
+  use. CI fails when the generated files or the vendored manifest drift.
+- `queue(operation_id, connection_id, params = {}, webhook_url:, idempotency_key: nil, method:
+  nil, path: nil)` queues an operation by its id; `method:` and `path:` send one this version
+  doesn't know. A query string repeats an array's key and brackets nested Hashes.
+- Requests: `queue_qbxml`, `get_request`, `request_pages`, `list_requests`, `each_request`
+  (every page), `discard_request`; and `request` for anything else. Operations and
+  `queue_qbxml` make an Idempotency-Key per call when none is given, and reuse it on that call's
+  retries.
+- Signatures for the whole client in `sig/` (`rbs -I sig validate` runs in CI).
 - Retries: a GET, PUT, DELETE or a request with an Idempotency-Key is retried twice (0.5 s, then
   1 s) on a failed connection, a timeout, or a 429, 502, 503 or 504, honouring `Retry-After` up
   to 30 s. `answer` is retried too when its link has a `prompt_token`. Anything else outside 2xx

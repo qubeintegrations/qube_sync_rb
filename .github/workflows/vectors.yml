@@ -30,3 +30,28 @@ jobs:
             diff spec/fixtures/test_vectors.json served.json | head -40
             exit 1
           fi
+  # The vendored operations manifest must match the one qubesync.com serves (mix
+  # library_operations.gen in qube), so a new or changed operation fails here, and
+  # bin/generate-operations then makes its methods. The 404 allowance goes once
+  # https://qubesync.com/libraries/operations.json is live.
+  operations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: spec/fixtures/operations.json matches https://qubesync.com/libraries/operations.json
+        run: |
+          url=https://qubesync.com/libraries/operations.json
+          status=$(curl -sS -o served.json -w '%{http_code}' "$url")
+          if [ "$status" = 404 ]; then
+            echo "::warning::$url isn't served yet; skipped"
+            exit 0
+          fi
+          if [ "$status" != 200 ]; then
+            echo "::error::GET $url answered $status"
+            exit 1
+          fi
+          if ! cmp -s served.json spec/fixtures/operations.json; then
+            echo "::error::spec/fixtures/operations.json differs from $url: copy the served file over it, run bin/generate-operations and rerun the tests"
+            diff spec/fixtures/operations.json served.json | head -40
+            exit 1
+          fi

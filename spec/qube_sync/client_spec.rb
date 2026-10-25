@@ -353,48 +353,156 @@ RSpec.describe QubeSync::Client do
   end
 
   describe "queued requests" do
-    it "queue posts params as the body with webhook_url in the query and a fresh UUID key" do
+    it "an entity's create sends JSON, webhook_url in the query and a fresh UUID key" do
       server.respond(data({"id" => "q1"}, 201))
-      expect(client.queue("c1", "/customers", {name: "Acme"}, webhook_url: "https://app.test/qb")).to eq({"id" => "q1"})
+      result = client.customer.create("c1", {name: "Acme", bill_address: {addr1: "1 Main St"}}, webhook_url: "https://app.test/qb")
+      expect(result).to eq({"id" => "q1"})
       request = server.last
       expect([request.method, request.path]).to eq(["POST", "/api/v2/connections/c1/customers"])
       expect(request.query_hash).to eq({"webhook_url" => "https://app.test/qb"})
-      expect(request.json).to eq({"name" => "Acme"})
+      expect(request.headers["content-type"]).to eq("application/json")
+      expect(request.json).to eq({"name" => "Acme", "bill_address" => {"addr1" => "1 Main St"}})
       expect(request.headers["idempotency-key"]).to match(/\A\h{8}-\h{4}-4\h{3}-[89ab]\h{3}-\h{12}\z/)
     end
 
-    it "queue reuses its generated key on a retry, and makes a new one per call" do
+    it "reuses its generated key on a retry, and makes a new one per call" do
       server.respond([502, {}, "Bad Gateway"], data({"id" => "q1"}, 201), data({"id" => "q2"}, 201))
-      client.queue("c1", "invoices", {}, webhook_url: "https://app.test/qb")
-      client.queue("c1", "invoices", {}, webhook_url: "https://app.test/qb")
+      client.invoice.create("c1", {}, webhook_url: "https://app.test/qb")
+      client.invoice.create("c1", {}, webhook_url: "https://app.test/qb")
       keys = server.recorded.map { |r| r.headers["idempotency-key"] }
       expect(keys[0]).to eq(keys[1])
       expect(keys[2]).not_to eq(keys[0])
     end
 
-    it "queue with method: :get sends params in the query, arrays repeated" do
+    it "a query sends its params as the query string, arrays repeated and nested Hashes in brackets" do
       server.respond(data({"id" => "q1"}, 201))
-      client.queue("c1", "customers", {max_returned: 10, list_id: %w[1 2], active_status: nil},
-        webhook_url: "https://app.test/qb", method: :get, idempotency_key: "k1")
+      expect(QubeSync::Operations::INDEX["invoice.query"][:paged]).to be(true)
+      client.invoice.query("c1", {
+        max_returned: 10, ref_number: %w[A B], include_line_items: true, iterator: nil,
+        modified_date_range_filter: {from_modified_date: "2026-10-01T00:00:00Z"},
+        currency_filter: {list_id: %w[1 2]}
+      }, webhook_url: "https://app.test/qb", idempotency_key: "k1")
       request = server.last
-      expect([request.method, request.path, request.body]).to eq(["GET", "/api/v2/connections/c1/customers", ""])
-      expect(request.query_pairs).to eq([["max_returned", "10"], ["list_id", "1"], ["list_id", "2"], ["webhook_url", "https://app.test/qb"]])
+      expect([request.method, request.path, request.body]).to eq(["GET", "/api/v2/connections/c1/invoices", ""])
+      expect(request.query_pairs).to eq([
+        ["webhook_url", "https://app.test/qb"],
+        ["max_returned", "10"], ["ref_number", "A"], ["ref_number", "B"], ["include_line_items", "true"],
+        ["modified_date_range_filter[from_modified_date]", "2026-10-01T00:00:00Z"],
+        ["currency_filter[list_id][]", "1"], ["currency_filter[list_id][]", "2"]
+      ])
       expect(request.headers["idempotency-key"]).to eq("k1")
     end
 
-    it "queue refuses a Hash in a query and an unknown method" do
-      expect { client.queue("c1", "customers", {name_range: {from: "a"}}, webhook_url: "x", method: :get) }.to raise_error(ArgumentError)
-      expect { client.queue("c1", "customers", {}, webhook_url: "x", method: :patch) }.to raise_error(ArgumentError)
+    it "reaches every operation in the index through its entity and action" do
+      index = QubeSync::Operations::INDEX
+      expect(index.size).to eq(261)
+      index.each_key { server.respond(data({"id" => "q"}, 201)) }
+      index.each do |id, entry|
+        accessor = entry[:entity] == "class" ? "class_" : entry[:entity]
+        action = id.split(".").last
+        client.public_send(accessor).public_send(action, "c1", {probe: "1"}, webhook_url: "w")
+        request = server.last
+        expect([request.method, request.path]).to eq([entry[:method], "/api/v2/connections/c1/#{entry[:path]}"]), id
+        expect(request.headers["idempotency-key"]).not_to be_nil, id
+        if entry[:params_in] == :query
+          expect(request.query_pairs).to eq([["webhook_url", "w"], ["probe", "1"]]), id
+          expect(request.body).to eq(""), id
+        else
+          expect(request.query_pairs).to eq([["webhook_url", "w"]]), id
+          expect(request.json).to eq({"probe" => "1"}), id
+        end
+      end
+      expect(server.recorded.size).to eq(261)
+    end
+
+    it "has one accessor per entity, memoized, with class as class_" do
+      entities = QubeSync::Operations::INDEX.values.map { |e| e[:entity] }.uniq
+      expect(QubeSync::Operations::ENTITIES.keys).to eq(entities.sort)
+      expect(client.customer).to be(client.customer)
+      expect(client.customer).to be_a(QubeSync::Operations::Customer)
+      expect(client.class_).to be_a(QubeSync::Operations::Class_)
+      expect(client.class).to eq(QubeSync::Client)
+      expect(client.customer.inspect).not_to include(api_key)
+    end
+
+    it "loads an entity's file only when it's first used" do
+      lib = File.expand_path("../../lib", __dir__)
+      script = <<~RUBY
+        require "qube_sync/client"
+        loaded = -> { $LOADED_FEATURES.grep(%r{qube_sync/operations/}).map { |f| File.basename(f, ".rb") } }
+        before = [QubeSync::Operations.autoload?(:Customer) ? "autoload" : "loaded", loaded.call]
+        QubeSync::Client.new(api_key: "k").customer
+        after = [QubeSync::Operations.autoload?(:Customer).inspect, loaded.call]
+        puts JSON.generate([before, after])
+      RUBY
+      output = IO.popen([RbConfig.ruby, "-I", lib, "-e", script], err: File::NULL, &:read)
+      expect(JSON.parse(output)).to eq([["autoload", []], ["nil", ["customer"]]])
+    end
+
+    it "encodes a query as the Node library does for the same input" do
+      server.respond(data({}, 201))
+      client.customer.query("c1", {
+        list_id: ["80000001-1", "80000002-1"],
+        max_returned: 10,
+        name_range: {from: "A", to: "M"},
+        currency_filter: {full_name: ["US Dollar"]}
+      }, webhook_url: "https://app.test/hooks")
+      expect(server.last.query_pairs).to eq([
+        ["webhook_url", "https://app.test/hooks"],
+        ["list_id", "80000001-1"],
+        ["list_id", "80000002-1"],
+        ["max_returned", "10"],
+        ["name_range[from]", "A"],
+        ["name_range[to]", "M"],
+        ["currency_filter[full_name][]", "US Dollar"]
+      ])
+      expect { client.customer.query("c1", {list_id: [["a"]]}, webhook_url: "w") }.to raise_error(ArgumentError)
+      expect { client.customer.query("c1", {list_id: Object.new}, webhook_url: "w") }.to raise_error(ArgumentError)
+      expect(server.recorded.size).to eq(1)
+    end
+
+    it "encodes request's query: the same way, booleans, times and arrays of Hashes included" do
+      server.respond(data([]))
+      client.request(:get, "/connections", query: {
+        active: false, at: Time.utc(2026, 10, 1, 12), lines: [{name: "a"}, {name: "b"}], skip: nil, ids: [1, nil, 2]
+      })
+      expect(server.last.query_pairs).to eq([
+        ["active", "false"], ["at", "2026-10-01T12:00:00Z"], ["lines[][name]", "a"], ["lines[][name]", "b"],
+        ["ids", "1"], ["ids", "2"]
+      ])
+    end
+
+    it "queue by id sends what the entity method sends" do
+      server.respond(data({}, 201), data({}, 201))
+      params = {name: "Acme"}
+      client.customer.create("c1", params, webhook_url: "w", idempotency_key: "k")
+      client.queue("customer.create", "c1", params, webhook_url: "w", idempotency_key: "k")
+      first, second = server.recorded
+      expect([second.method, second.path, second.query, second.body]).to eq([first.method, first.path, first.query, first.body])
+      expect(second.headers).to eq(first.headers)
+    end
+
+    it "queue refuses an unknown id without method: and path:, naming both" do
+      expect { client.queue("widget.create", "c1", {}, webhook_url: "w") }
+        .to raise_error(ArgumentError, /widget\.create.*method:.*path:/)
+      expect { client.queue("widget.create", "c1", {}, webhook_url: "w", method: :post) }.to raise_error(ArgumentError)
+      expect { client.queue("widget.create", "c1", {}, webhook_url: "w", method: :patch, path: "widgets") }.to raise_error(ArgumentError)
       expect(server.recorded).to be_empty
     end
 
-    it "queue with :put and :delete" do
-      server.respond(data({}), data({}))
-      client.queue("c1", "customers", {list_id: "1", name: "B"}, webhook_url: "w", method: :put)
-      expect([server.last.method, server.last.json]).to eq(["PUT", {"list_id" => "1", "name" => "B"}])
-      client.queue("c1", "txn-deleteds", {txn_del_type: "Invoice"}, webhook_url: "w", method: :delete)
-      expect([server.last.method, server.last.path]).to eq(["DELETE", "/api/v2/connections/c1/txn-deleteds"])
-      expect(server.last.query_hash).to eq({"txn_del_type" => "Invoice", "webhook_url" => "w"})
+    it "queue sends an unknown id with method: and path:" do
+      server.respond(data({"id" => "q1"}, 201), data({"id" => "q2"}, 201))
+      client.queue("widget.create", "c1", {name: "W"}, webhook_url: "w", method: :post, path: "/widgets")
+      expect([server.last.method, server.last.path, server.last.json]).to eq(["POST", "/api/v2/connections/c1/widgets", {"name" => "W"}])
+      client.queue("widget.query", "c1", {name: "W"}, webhook_url: "w", method: :get, path: "widgets")
+      expect([server.last.method, server.last.query_pairs]).to eq(["GET", [["webhook_url", "w"], ["name", "W"]]])
+    end
+
+    it "a delete sends its params as the body" do
+      server.respond(data({}, 201))
+      client.txn.delete("c1", {txn_del_type: "Invoice", txn_id: "1-2"}, webhook_url: "w")
+      expect([server.last.method, server.last.path]).to eq(["DELETE", "/api/v2/connections/c1/txns"])
+      expect(server.last.json).to eq({"txn_del_type" => "Invoice", "txn_id" => "1-2"})
     end
 
     it "queue_qbxml posts request_xml with webhook_url in the query" do

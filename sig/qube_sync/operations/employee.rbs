@@ -1,0 +1,173 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Employee < Base
+      type contact = {
+        contact_name: String,
+        contact_value: String,
+        ?relation: "Brother" | "Daughter" | "Father" | "Friend" | "Mother" | "Other" | "Partner" | "Sister" | "Son" | "Spouse"
+      }
+
+      type emergency_contacts = {
+        ?primary_contact: contact,
+        ?secondary_contact: contact
+      }
+
+      type employee_address = {
+        ?addr1: String,
+        ?addr2: String,
+        ?addr3: String,
+        ?addr4: String,
+        ?city: String,
+        ?country: String,
+        ?postal_code: String,
+        ?state: String
+      }
+
+      type employee_payroll_info_mod = {
+        ?class_ref: Types::ref,
+        ?clear_earnings: bool,
+        ?earnings: Array[Types::earnings],
+        ?pay_period: "Biweekly" | "Daily" | "Monthly" | "Quarterly" | "Semimonthly" | "Weekly" | "Yearly",
+        ?sick_hours: hours,
+        ?use_time_data_to_create_paychecks: "DoNotUseTimeData" | "NotSet" | "UseTimeData",
+        ?vacation_hours: hours
+      }
+
+      type hours = {
+        ?accrual_period: "BeginningOfYear" | "EveryHourOnPaycheck" | "EveryPaycheck",
+        ?accrual_start_date: String,
+        ?hours_accrued: String,
+        ?hours_available: String,
+        ?hours_used: String,
+        ?is_resetting_hours_each_new_year: bool,
+        ?maximum_hours: String
+      }
+
+      type create_params = {
+        ?account_number: String,
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?additional_notes: Array[Types::additional_notes],
+        ?adjusted_service_date: String,
+        ?alt_phone: String,
+        ?billing_rate_ref: Types::ref,
+        ?birth_date: String,
+        ?department: String,
+        ?description: String,
+        ?disability_desc: String,
+        ?disabled: "No" | "Yes",
+        ?email: String,
+        ?emergency_contacts: emergency_contacts,
+        ?employee_address: employee_address,
+        ?employee_payroll_info: employee_payroll_info_mod,
+        ?employee_type: "Officer" | "Owner" | "Regular" | "Statutory",
+        ?ethnicity: "AmericianIndian" | "Asian" | "Black" | "Hawaiian" | "Hispanic" | "TwoOrMoreRaces" | "White",
+        ?exempt: "Exempt" | "NonExempt",
+        ?external_guid: String,
+        ?fax: String,
+        ?first_name: String,
+        ?gender: "Female" | "Male",
+        ?hired_date: String,
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AdjustedServiceDate" | "AltPhone" | "BillingRateRef" | "BirthDate" | "DataExtRet" | "Department" | "Description" | "DisabilityDesc" | "Disabled" | "EditSequence" | "Email" | "EmergencyContacts" | "EmployeeAddress" | "EmployeePayrollInfo" | "EmployeeType" | "Ethnicity" | "Exempt" | "ExternalGUID" | "Fax" | "FirstName" | "Gender" | "HiredDate" | "IsActive" | "JobTitle" | "KeyEmployee" | "LastName" | "ListID" | "MiddleName" | "MilitaryStatus" | "Mobile" | "Name" | "Notes" | "OnFile" | "OriginalHireDate" | "OwnerID" | "Pager" | "PagerPIN" | "PartOrFullTime" | "Phone" | "PrintAs" | "ReleasedDate" | "SSN" | "Salutation" | "Suffix" | "SupervisorRef" | "TargetBonus" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "USCitizen" | "USVeteran" | "WorkAuthExpireDate"],
+        ?is_active: bool,
+        ?job_title: String,
+        ?key_employee: "No" | "Yes",
+        ?last_name: String,
+        ?middle_name: String,
+        ?military_status: "Active" | "Reserve",
+        ?mobile: String,
+        ?name: String,
+        ?notes: String,
+        ?on_file: "No" | "Yes",
+        ?original_hire_date: String,
+        ?pager: String,
+        ?pager_pin: String,
+        ?part_or_full_time: "FullTime" | "PartTime",
+        ?phone: String,
+        ?print_as: String,
+        ?released_date: String,
+        ?request_id: String,
+        ?salutation: String,
+        ?ssn: String,
+        ?suffix: String,
+        ?supervisor_ref: Types::ref,
+        ?target_bonus: Numeric,
+        ?us_citizen: "No" | "Yes",
+        ?us_veteran: "No" | "Yes",
+        ?work_auth_expire_date: String
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AdjustedServiceDate" | "AltPhone" | "BillingRateRef" | "BirthDate" | "DataExtRet" | "Department" | "Description" | "DisabilityDesc" | "Disabled" | "EditSequence" | "Email" | "EmergencyContacts" | "EmployeeAddress" | "EmployeePayrollInfo" | "EmployeeType" | "Ethnicity" | "Exempt" | "ExternalGUID" | "Fax" | "FirstName" | "Gender" | "HiredDate" | "IsActive" | "JobTitle" | "KeyEmployee" | "LastName" | "ListID" | "MiddleName" | "MilitaryStatus" | "Mobile" | "Name" | "Notes" | "OnFile" | "OriginalHireDate" | "Pager" | "PagerPIN" | "PartOrFullTime" | "Phone" | "PrintAs" | "ReleasedDate" | "SSN" | "Salutation" | "Suffix" | "SupervisorRef" | "TargetBonus" | "TimeCreated" | "TimeModified" | "USCitizen" | "USVeteran" | "WorkAuthExpireDate"],
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?account_number: String,
+        ?additional_contact_ref: Array[Types::additional_contact_ref],
+        ?additional_notes_mod: Array[Types::additional_notes_mod],
+        ?adjusted_service_date: String,
+        ?alt_phone: String,
+        ?billing_rate_ref: Types::ref,
+        ?birth_date: String,
+        ?department: String,
+        ?description: String,
+        ?disability_desc: String,
+        ?disabled: "No" | "Yes",
+        edit_sequence: String,
+        ?email: String,
+        ?emergency_contacts: emergency_contacts,
+        ?employee_address: employee_address,
+        ?employee_payroll_info_mod: employee_payroll_info_mod,
+        ?employee_type: "Officer" | "Owner" | "Regular" | "Statutory",
+        ?ethnicity: "AmericianIndian" | "Asian" | "Black" | "Hawaiian" | "Hispanic" | "TwoOrMoreRaces" | "White",
+        ?exempt: "Exempt" | "NonExempt",
+        ?fax: String,
+        ?first_name: String,
+        ?hired_date: String,
+        ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AdjustedServiceDate" | "AltPhone" | "BillingRateRef" | "BirthDate" | "DataExtRet" | "Department" | "Description" | "DisabilityDesc" | "Disabled" | "EditSequence" | "Email" | "EmergencyContacts" | "EmployeeAddress" | "EmployeePayrollInfo" | "EmployeeType" | "Ethnicity" | "Exempt" | "ExternalGUID" | "Fax" | "FirstName" | "Gender" | "HiredDate" | "IsActive" | "JobTitle" | "KeyEmployee" | "LastName" | "ListID" | "MiddleName" | "MilitaryStatus" | "Mobile" | "Name" | "Notes" | "OnFile" | "OriginalHireDate" | "OwnerID" | "Pager" | "PagerPIN" | "PartOrFullTime" | "Phone" | "PrintAs" | "ReleasedDate" | "SSN" | "Salutation" | "Suffix" | "SupervisorRef" | "TargetBonus" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "USCitizen" | "USVeteran" | "WorkAuthExpireDate"],
+        ?is_active: bool,
+        ?job_title: String,
+        ?key_employee: "No" | "Yes",
+        ?last_name: String,
+        list_id: String,
+        ?middle_name: String,
+        ?military_status: "Active" | "Reserve",
+        ?mobile: String,
+        ?name: String,
+        ?notes: String,
+        ?on_file: "No" | "Yes",
+        ?original_hire_date: String,
+        ?pager: String,
+        ?pager_pin: String,
+        ?part_or_full_time: "FullTime" | "PartTime",
+        ?phone: String,
+        ?print_as: String,
+        ?released_date: String,
+        ?request_id: String,
+        ?salutation: String,
+        ?suffix: String,
+        ?supervisor_ref: Types::ref,
+        ?target_bonus: Numeric,
+        ?us_citizen: "No" | "Yes",
+        ?us_veteran: "No" | "Yes",
+        ?work_auth_expire_date: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

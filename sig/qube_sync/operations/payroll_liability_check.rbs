@@ -1,0 +1,27 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class PayrollLiabilityCheck < Base
+      type query_params = {
+        ?account_filter: Types::entity_filter,
+        ?entity_filter: Types::entity_filter,
+        ?include_line_items: bool,
+        ?include_ret_element: Array["AccountRef" | "Address" | "Amount" | "EditSequence" | "IsToBePrinted" | "Memo" | "PayrollDate" | "PayrollLiabilityCheckLineRet" | "RefNumber" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber" | "VendorRef"],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?modified_date_range_filter: Types::modified_date_range_filter,
+        ?payroll_date_range_filter: Types::payroll_date_range_filter,
+        ?ref_number: Array[String],
+        ?ref_number_case_sensitive: Array[String],
+        ?ref_number_filter: Types::ref_number_filter,
+        ?ref_number_range_filter: Types::ref_number_range_filter,
+        ?request_id: String,
+        ?txn_date_range_filter: Types::date_range_filter,
+        ?txn_id: Array[String]
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

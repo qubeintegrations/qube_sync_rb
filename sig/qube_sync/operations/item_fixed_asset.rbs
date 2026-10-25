@@ -1,0 +1,97 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ItemFixedAsset < Base
+      type fixed_asset_sales_info = {
+        sales_date: String,
+        sales_desc: String,
+        ?sales_expense: Numeric,
+        ?sales_price: Numeric
+      }
+
+      type fixed_asset_sales_info_mod = {
+        ?sales_date: String,
+        ?sales_desc: String,
+        ?sales_expense: Numeric,
+        ?sales_price: Numeric
+      }
+
+      type create_params = {
+        acquired_as: "New" | "Old",
+        ?asset_account_ref: Types::ref,
+        ?asset_desc: String,
+        ?asset_number: String,
+        ?bar_code: Types::bar_code,
+        ?class_ref: Types::ref,
+        ?cost_basis: Numeric,
+        ?external_guid: String,
+        ?fixed_asset_sales_info: fixed_asset_sales_info,
+        ?include_ret_element: Array["AcquiredAs" | "AssetAccountRef" | "AssetDesc" | "AssetNumber" | "BarCodeValue" | "ClassRef" | "CostBasis" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FixedAssetSalesInfo" | "IsActive" | "ListID" | "Location" | "Name" | "Notes" | "OwnerID" | "PONumber" | "PurchaseCost" | "PurchaseDate" | "PurchaseDesc" | "SerialNumber" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "VendorOrPayeeName" | "WarrantyExpDate" | "YearEndAccumulatedDepreciation" | "YearEndBookValue"],
+        ?is_active: bool,
+        ?location: String,
+        name: String,
+        ?notes: String,
+        ?po_number: String,
+        ?purchase_cost: Numeric,
+        purchase_date: String,
+        purchase_desc: String,
+        ?request_id: String,
+        ?serial_number: String,
+        ?vendor_or_payee_name: String,
+        ?warranty_exp_date: String,
+        ?year_end_accumulated_depreciation: Numeric,
+        ?year_end_book_value: Numeric
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?class_filter: Types::entity_filter,
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["AcquiredAs" | "AssetAccountRef" | "AssetDesc" | "AssetNumber" | "BarCodeValue" | "ClassRef" | "CostBasis" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FixedAssetSalesInfo" | "IsActive" | "ListID" | "Location" | "Name" | "Notes" | "PONumber" | "PurchaseCost" | "PurchaseDate" | "PurchaseDesc" | "SerialNumber" | "TimeCreated" | "TimeModified" | "VendorOrPayeeName" | "WarrantyExpDate" | "YearEndAccumulatedDepreciation" | "YearEndBookValue"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?acquired_as: "New" | "Old",
+        ?asset_account_ref: Types::ref,
+        ?asset_desc: String,
+        ?asset_number: String,
+        ?bar_code: Types::bar_code,
+        ?class_ref: Types::ref,
+        ?cost_basis: Numeric,
+        edit_sequence: String,
+        ?fixed_asset_sales_info_mod: fixed_asset_sales_info_mod,
+        ?include_ret_element: Array["AcquiredAs" | "AssetAccountRef" | "AssetDesc" | "AssetNumber" | "BarCodeValue" | "ClassRef" | "CostBasis" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "FixedAssetSalesInfo" | "IsActive" | "ListID" | "Location" | "Name" | "Notes" | "OwnerID" | "PONumber" | "PurchaseCost" | "PurchaseDate" | "PurchaseDesc" | "SerialNumber" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber" | "VendorOrPayeeName" | "WarrantyExpDate" | "YearEndAccumulatedDepreciation" | "YearEndBookValue"],
+        ?is_active: bool,
+        list_id: String,
+        ?location: String,
+        ?name: String,
+        ?notes: String,
+        ?po_number: String,
+        ?purchase_cost: Numeric,
+        ?purchase_date: String,
+        ?purchase_desc: String,
+        ?request_id: String,
+        ?serial_number: String,
+        ?vendor_or_payee_name: String,
+        ?warranty_exp_date: String,
+        ?year_end_accumulated_depreciation: Numeric,
+        ?year_end_book_value: Numeric
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

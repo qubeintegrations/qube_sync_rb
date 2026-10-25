@@ -8,3 +8,6 @@ gemspec
 gem "rake", "~> 13.0"
 
 gem "rspec", "~> 3.0"
+
+# Validates the signatures in sig/ (rbs -I sig validate).
+gem "rbs", "~> 3.4", require: false

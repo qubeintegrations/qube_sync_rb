@@ -1,0 +1,19 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class BillToPay < Base
+      type query_params = {
+        ?ap_account_ref: Types::ref,
+        ?currency_filter: Types::currency_filter,
+        ?due_date: String,
+        ?include_ret_element: Array["BillToPay" | "CreditToApply"],
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        payee_entity_ref: Types::ref,
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

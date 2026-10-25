@@ -1,0 +1,100 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Deposit < Base
+      type cash_back_info_add = {
+        account_ref: Types::ref,
+        ?amount: Numeric,
+        ?def_macro: String,
+        ?memo: String
+      }
+
+      type cash_back_info_mod = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?memo: String
+      }
+
+      type deposit_line_add = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?check_number: String,
+        ?class_ref: Types::ref,
+        ?def_macro: String,
+        ?entity_ref: Types::ref,
+        ?memo: String,
+        ?override_check_number: String,
+        ?override_class_ref: Types::ref,
+        ?override_memo: String,
+        ?payment_method_ref: Types::ref,
+        ?payment_txn_id: String,
+        ?payment_txn_line_id: String
+      }
+
+      type deposit_line_mod = {
+        ?account_ref: Types::ref,
+        ?amount: Numeric,
+        ?check_number: String,
+        ?class_ref: Types::ref,
+        ?entity_ref: Types::ref,
+        ?memo: String,
+        ?override_check_number: String,
+        ?override_class_ref: Types::ref,
+        ?override_memo: String,
+        ?payment_method_ref: Types::ref,
+        ?payment_txn_id: String,
+        ?payment_txn_line_id: String,
+        txn_line_id: String
+      }
+
+      type create_params = {
+        ?cash_back_info_add: cash_back_info_add,
+        ?currency_ref: Types::ref,
+        ?def_macro: String,
+        ?deposit_line_add: Array[deposit_line_add],
+        deposit_to_account_ref: Types::ref,
+        ?exchange_rate: Numeric,
+        ?external_guid: String,
+        ?include_ret_element: Array["CashBackInfoRet" | "CurrencyRef" | "DataExtRet" | "DepositLineRet" | "DepositToAccountRef" | "DepositTotal" | "DepositTotalInHomeCurrency" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "ListID" | "Memo" | "OwnerID" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?memo: String,
+        ?request_id: String,
+        ?txn_date: String
+      }
+
+      type query_params = {
+        ?account_filter: Types::entity_filter,
+        ?currency_filter: Types::currency_filter,
+        ?entity_filter: Types::entity_filter,
+        ?include_line_items: bool,
+        ?include_ret_element: Array["CashBackInfoRet" | "CurrencyRef" | "DataExtRet" | "DepositLineRet" | "DepositToAccountRef" | "DepositTotal" | "DepositTotalInHomeCurrency" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "Memo" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?iterator: bool,
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?modified_date_range_filter: Types::modified_date_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?txn_date_range_filter: Types::date_range_filter,
+        ?txn_id: Array[String]
+      }
+
+      type update_params = {
+        ?cash_back_info_mod: cash_back_info_mod,
+        ?currency_ref: Types::ref,
+        ?deposit_line_mod: Array[deposit_line_mod],
+        ?deposit_to_account_ref: Types::ref,
+        edit_sequence: String,
+        ?exchange_rate: Numeric,
+        ?include_ret_element: Array["CashBackInfoRet" | "CurrencyRef" | "DataExtRet" | "DepositLineRet" | "DepositToAccountRef" | "DepositTotal" | "DepositTotalInHomeCurrency" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "ListID" | "Memo" | "OwnerID" | "TimeCreated" | "TimeModified" | "TxnDate" | "TxnID" | "TxnNumber"],
+        ?memo: String,
+        ?request_id: String,
+        ?txn_date: String,
+        txn_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

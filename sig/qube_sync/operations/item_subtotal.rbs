@@ -1,0 +1,48 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class ItemSubtotal < Base
+      type create_params = {
+        ?bar_code: Types::bar_code,
+        ?external_guid: String,
+        ?include_ret_element: Array["BarCodeValue" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "IsActive" | "ItemDesc" | "ListID" | "Name" | "OwnerID" | "SpecialItemType" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?item_desc: String,
+        name: String,
+        ?request_id: String
+      }
+
+      type query_params = {
+        ?active_status: "ActiveOnly" | "All" | "InactiveOnly",
+        ?from_modified_date: String,
+        ?full_name: Array[String],
+        ?include_ret_element: Array["BarCodeValue" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "IsActive" | "ItemDesc" | "ListID" | "Name" | "SpecialItemType" | "TimeCreated" | "TimeModified"],
+        ?iterator: bool,
+        ?list_id: Array[String],
+        ?max_returned: Integer,
+        ?meta_data: "MetaDataAndResponseData" | "MetaDataOnly" | "NoMetaData",
+        ?name_filter: Types::name_filter,
+        ?name_range_filter: Types::name_range_filter,
+        ?owner_id: Array[String],
+        ?request_id: String,
+        ?to_modified_date: String
+      }
+
+      type update_params = {
+        ?bar_code: Types::bar_code,
+        edit_sequence: String,
+        ?include_ret_element: Array["BarCodeValue" | "DataExtRet" | "EditSequence" | "ExternalGUID" | "IsActive" | "ItemDesc" | "ListID" | "Name" | "OwnerID" | "SpecialItemType" | "TimeCreated" | "TimeModified" | "TxnID" | "TxnNumber"],
+        ?is_active: bool,
+        ?item_desc: String,
+        list_id: String,
+        ?name: String,
+        ?request_id: String
+      }
+
+      def create: (String connection_id, ?create_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

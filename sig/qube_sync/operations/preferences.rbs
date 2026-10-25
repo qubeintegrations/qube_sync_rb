@@ -1,0 +1,26 @@
+# Generated from operations.json by bin/generate-operations: don't edit.
+
+module QubeSync
+  module Operations
+    class Preferences < Base
+      type accounting_preferences_mod = {
+        ?closing_date: String,
+        ?closing_date_password: String
+      }
+
+      type query_params = {
+        ?include_ret_element: Array["AccountingPreferences" | "CurrentAppAccessRights" | "FinanceChargePreferences" | "ItemsAndInventoryPreferences" | "JobsAndEstimatesPreferences" | "MultiCurrencyPreferences" | "MultiLocationInventoryPreferences" | "PurchasesAndVendorsPreferences" | "ReportsPreferences" | "SalesAndCustomersPreferences" | "SalesTaxPreferences" | "TimeTrackingPreferences"],
+        ?request_id: String
+      }
+
+      type update_params = {
+        accounting_preferences_mod: accounting_preferences_mod,
+        ?include_ret_element: Array["AccountingPreferences" | "CurrentAppAccessRights" | "FinanceChargePreferences" | "ItemsAndInventoryPreferences" | "JobsAndEstimatesPreferences" | "MultiCurrencyPreferences" | "MultiLocationInventoryPreferences" | "PurchasesAndVendorsPreferences" | "ReportsPreferences" | "SalesAndCustomersPreferences" | "SalesTaxPreferences" | "TimeTrackingPreferences"],
+        ?request_id: String
+      }
+
+      def query: (String connection_id, ?query_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+      def update: (String connection_id, ?update_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]
+    end
+  end
+end

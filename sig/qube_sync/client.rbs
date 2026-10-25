@@ -1,0 +1,82 @@
+module QubeSync
+  class Error < StandardError
+  end
+
+  class APIError < Error
+    MAX_RAW: Integer
+
+    attr_reader status: Integer
+    attr_reader errors: untyped
+    attr_reader code: String?
+    attr_reader body: String
+    attr_reader request_id: String?
+
+    def initialize: (status: Integer, ?body: String?, ?request_id: String?) -> void
+  end
+
+  class Client
+    type data = Hash[String, untyped]
+    type retry_info = {
+      attempt: Integer,
+      max_retries: Integer,
+      delay: Float,
+      elapsed: Float,
+      method: String,
+      url: String,
+      status: Integer?,
+      error: Exception?
+    }
+
+    DEFAULT_BASE_URL: String
+
+    attr_reader base_url: String
+    attr_reader open_timeout: Numeric
+    attr_reader read_timeout: Numeric
+    attr_reader max_retries: Integer
+    attr_reader total_timeout: Numeric
+
+    def initialize: (
+      api_key: String,
+      ?base_url: String,
+      ?open_timeout: Numeric,
+      ?read_timeout: Numeric,
+      ?max_retries: Integer,
+      ?total_timeout: Numeric,
+      ?on_retry: (^(retry_info) -> void)?,
+      ?sleep: (^(Numeric) -> void)?,
+      ?clock: (^() -> Numeric)?
+    ) -> void
+
+    def inspect: () -> String
+    def to_s: () -> String
+
+    def create_connection: (webhook_url: String, ?name: String?) -> data
+    def get_connection: (String id) -> data
+    def list_connections: () -> Array[data]
+    def update_connection: (String id, ?webhook_url: String?, ?name: String?) -> data
+    def delete_connection: (String id) -> nil
+    def regenerate_onboarding: (String id) -> data
+    def set_password: (String id, ?password: String?) -> data
+    def get_qwc: (String id) -> String?
+
+    def start_run: (String connection_id, String workflow, Hash[untyped, untyped]? input, reference: String, webhook_url: String, ?version: Integer?) -> data
+    def get_run: (String run_url_or_connection_id, ?String? run_id) -> data
+    def list_runs: (String connection_id, ?reference: String?, ?state: String?, ?outcome: String?) -> Array[data]
+    def cancel_run: (String cancel_url, ?reason: String?) -> data
+    def run_events: (String connection_id, String run_id, ?after: Integer?, ?limit: Integer?) -> data
+
+    def answer: (String decisions_url, choice: String, ?data: Hash[untyped, untyped]?) -> data
+    def search: (String search_url, field: String, q: String) -> Array[data]
+
+    def queue: (String operation_id, String connection_id, ?Hash[Symbol | String, untyped]? params, webhook_url: String, ?idempotency_key: String?, ?method: (Symbol | String)?, ?path: String?) -> data
+    def queue_qbxml: (String connection_id, String request_xml, webhook_url: String, ?idempotency_key: String?) -> data
+    def get_request: (String connection_id, String id) -> data
+    def request_pages: (String connection_id, String id) -> Array[data]
+    def list_requests: (String connection_id, ?page: Integer?, ?page_size: Integer?, ?state: String?, ?webhook_state: String?, ?sort: String?, ?sort_direction: String?, ?search_phrase: String?) -> data
+    def each_request: (String connection_id, **untyped filters) { (data) -> void } -> nil
+                    | (String connection_id, **untyped filters) -> Enumerator[data, nil]
+    def discard_request: (String connection_id, String id) -> data
+
+    def request: (Symbol | String method, String path_or_url, ?untyped body, ?query: Hash[Symbol | String, untyped], ?headers: Hash[String, String]) -> untyped
+  end
+end

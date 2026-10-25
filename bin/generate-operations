@@ -1,0 +1,475 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Writes QubeSync::Client's per-operation methods from the vendored QuickBooks operations
+# manifest (spec/fixtures/operations.json, served at https://qubesync.com/libraries/operations.json):
+#
+#   lib/qube_sync/operations.rb              the index, the entity accessors and an autoload per entity
+#   lib/qube_sync/operations/<entity>.rb     one class per entity, its actions documented with YARD
+#   sig/qube_sync/operations.rbs             the index's and the accessors' signatures
+#   sig/qube_sync/operations/<entity>.rbs    the entity's methods and its params as RBS records
+#   sig/qube_sync/operations/types.rbs       nested records used by more than one entity
+#
+#   bin/generate-operations           writes them, and removes generated files no longer made
+#   bin/generate-operations --check   writes nothing; fails when a file is stale, missing or orphaned
+#
+# Re-running gives byte-identical output.
+
+require "json"
+require "set"
+
+module GenerateOperations
+  ROOT = File.expand_path("..", __dir__)
+  MANIFEST = File.join(ROOT, "spec/fixtures/operations.json")
+  SCRIPT = "bin/generate-operations"
+  HEADER = "# Generated from operations.json by #{SCRIPT}: don't edit."
+  WIDTH = 100
+  SUPPORTED_VERSION = 1
+  # Entities whose natural accessor would replace a method every Ruby object has.
+  RESERVED = {"class" => "class_"}.freeze
+  # Schema keys that don't change a field's type.
+  NON_STRUCTURAL = %w[description title format minimum maximum not example].freeze
+  # Words too vague to name a shared record alone (`item_group_line_add` and
+  # `estimate_line_group_add` end in `add`); such a record takes its most used field name.
+  GENERIC = %w[add mod filter].freeze
+
+  module_function
+
+  def run(argv)
+    check = argv.include?("--check")
+    manifest = JSON.parse(File.read(MANIFEST, encoding: "UTF-8"))
+    unless manifest["version"] == SUPPORTED_VERSION
+      abort "#{SCRIPT}: operations.json is version #{manifest["version"].inspect}; this generator reads version #{SUPPORTED_VERSION}"
+    end
+
+    files = Generator.new(manifest).files
+    existing = generated_on_disk
+    stale = files.select { |path, content| !File.exist?(File.join(ROOT, path)) || File.read(File.join(ROOT, path), encoding: "UTF-8") != content }.keys
+    orphans = existing - files.keys
+
+    if check
+      if stale.empty? && orphans.empty?
+        puts "#{SCRIPT}: #{files.size} files up to date"
+        return
+      end
+      stale.each { |path| warn "stale or missing: #{path}" }
+      orphans.each { |path| warn "orphan: #{path}" }
+      abort "#{SCRIPT} --check: run #{SCRIPT} and commit the result"
+    end
+
+    stale.each do |path|
+      full = File.join(ROOT, path)
+      Dir.mkdir(File.dirname(full)) unless Dir.exist?(File.dirname(full))
+      File.write(full, files[path])
+    end
+    orphans.each { |path| File.delete(File.join(ROOT, path)) }
+    puts "#{SCRIPT}: #{files.size} files, #{stale.size} written, #{orphans.size} removed"
+  end
+
+  def generated_on_disk
+    patterns = %w[lib/qube_sync/operations.rb lib/qube_sync/operations/*.rb sig/qube_sync/operations.rbs sig/qube_sync/operations/*.rbs]
+    patterns.flat_map { |pattern| Dir.glob(File.join(ROOT, pattern)) }
+      .map { |full| full.delete_prefix("#{ROOT}/") }
+      .sort
+  end
+
+  def pascal(snake)
+    snake.split("_").map { |part| part[0].upcase + part[1..] }.join
+  end
+
+  # Word-wraps text to WIDTH: the first line starts with `first`, the others with `rest`.
+  def wrap(text, first, rest)
+    lines = []
+    line = first.dup
+    fresh = true
+    text.to_s.split.each do |word|
+      if !fresh && line.length + 1 + word.length > WIDTH
+        lines << line
+        line = rest + word
+      else
+        line << (fresh ? "" : " ") << word
+      end
+      fresh = false
+    end
+    lines << line
+    lines.map(&:rstrip)
+  end
+
+  class Generator
+    attr_reader :manifest, :operations, :entities
+
+    def initialize(manifest)
+      @manifest = manifest
+      @operations = manifest["operations"].sort_by { |op| op["id"] }
+      @entities = @operations.group_by { |op| op["entity"] }.sort.to_h
+      name_types
+    end
+
+    def files
+      out = {}
+      out["lib/qube_sync/operations.rb"] = index_rb
+      out["sig/qube_sync/operations.rbs"] = index_rbs
+      out["sig/qube_sync/operations/types.rbs"] = types_rbs
+      @entities.each do |entity, ops|
+        out["lib/qube_sync/operations/#{entity}.rb"] = entity_rb(entity, ops)
+        out["sig/qube_sync/operations/#{entity}.rbs"] = entity_rbs(entity, ops)
+      end
+      out.sort.to_h
+    end
+
+    # -- Names ------------------------------------------------------------------------------
+
+    def accessor(entity)
+      RESERVED.fetch(entity, entity)
+    end
+
+    def const(entity)
+      name = GenerateOperations.pascal(entity)
+      RESERVED.key?(entity) ? "#{name}_" : name
+    end
+
+    # Every nested object gets a named record: one shared by two or more entities goes in
+    # types.rbs, any other in its entity's own file. Structurally equal objects (descriptions
+    # aside) share a name.
+    def name_types
+      uses = Hash.new { |h, k| h[k] = {fields: [], entities: Set.new, schema: nil} }
+      @operations.each do |op|
+        each_nested(op["params"]) do |field, schema|
+          use = uses[structure(schema)]
+          use[:fields] << field
+          use[:entities] << op["entity"]
+          use[:schema] ||= schema
+        end
+      end
+
+      @shared = {}
+      @local = Hash.new { |h, k| h[k] = {} }
+      taken_shared = {}
+      taken_local = Hash.new { |h, k| h[k] = {} }
+      uses.each do |key, use|
+        base = type_name(use[:fields])
+        first_entity = use[:entities].min
+        if use[:entities].size > 1
+          name = unique(base, taken_shared, "_#{first_entity}")
+          @shared[key] = {name: name, schema: use[:schema]}
+        else
+          name = unique(base, taken_local[first_entity], nil)
+          @local[first_entity][key] = {name: name, schema: use[:schema]}
+        end
+      end
+      @shared = @shared.sort_by { |_k, v| v[:name] }.to_h
+      @local.each_key { |entity| @local[entity] = @local[entity].sort_by { |_k, v| v[:name] }.to_h }
+    end
+
+    def unique(base, taken, suffix)
+      name = base
+      name = "#{base}#{suffix}" if taken.key?(name) && suffix
+      n = 2
+      candidate = name
+      while taken.key?(candidate) || candidate.end_with?("_params")
+        candidate = "#{name}_#{n}"
+        n += 1
+      end
+      taken[candidate] = true
+      candidate
+    end
+
+    # The field name when one name uses the record; otherwise the words the names end with in
+    # common (`bill_address` and `ship_address` share `address`), or the most used name.
+    def type_name(fields)
+      names = fields.uniq
+      return names.first if names.size == 1
+
+      tokens = names.map { |name| name.split("_") }
+      common = []
+      tokens.map(&:reverse).reduce { |a, b| a.zip(b).take_while { |x, y| x == y }.map(&:first) }.then do |suffix|
+        common = suffix.reverse
+      end
+      return common.join("_") unless common.empty? || (common.size == 1 && GENERIC.include?(common.first))
+
+      fields.tally.max_by { |name, count| [count, name.bytes.map { |b| -b }] }.first
+    end
+
+    def each_nested(schema, &block)
+      object_fields(schema).each do |field, sub|
+        visit(field, sub, &block)
+      end
+    end
+
+    def visit(field, schema, &block)
+      if schema["type"] == "array"
+        visit(field, schema["items"] || {}, &block)
+      elsif object?(schema)
+        yield field, schema
+        each_nested(schema, &block)
+      end
+    end
+
+    def object?(schema)
+      schema["type"] == "object" || schema.key?("properties") || schema.key?("oneOf")
+    end
+
+    # An object's fields: its own properties, then any in its exclusive groups (oneOf), all
+    # optional but the ones its own `required` names.
+    def object_fields(schema)
+      fields = {}
+      (schema["properties"] || {}).each { |name, sub| fields[name] = sub }
+      Array(schema["oneOf"]).each do |variant|
+        (variant["properties"] || {}).each { |name, sub| fields[name] ||= sub }
+      end
+      fields.sort.to_h
+    end
+
+    def required(schema)
+      Array(schema["required"]).to_set
+    end
+
+    def exclusive_groups(schema)
+      Array(schema["oneOf"]).map { |variant| (variant["properties"] || {}).keys.sort }.reject(&:empty?)
+    end
+
+    def structure(schema)
+      JSON.generate(strip(schema))
+    end
+
+    def strip(schema)
+      case schema
+      when Hash
+        if object?(schema)
+          {"object" => object_fields(schema).transform_values { |s| strip(s) }, "required" => required(schema).to_a.sort}
+        else
+          schema.reject { |k, _| NON_STRUCTURAL.include?(k) }.sort.to_h.transform_values { |v| strip(v) }
+        end
+      when Array then schema.map { |v| strip(v) }
+      else schema
+      end
+    end
+
+    # -- RBS --------------------------------------------------------------------------------
+
+    def rbs_type(schema, entity)
+      if schema["type"] == "array"
+        "Array[#{rbs_type(schema["items"] || {}, entity)}]"
+      elsif object?(schema)
+        key = structure(schema)
+        if (shared = @shared[key])
+          "Types::#{shared[:name]}"
+        else
+          @local[entity].fetch(key)[:name]
+        end
+      elsif schema["enum"]
+        schema["enum"].map { |value| value.is_a?(String) ? JSON.generate(value) : value.to_s }.join(" | ")
+      else
+        case schema["type"]
+        when "string" then "String"
+        when "integer" then "Integer"
+        when "number" then "Numeric"
+        when "boolean" then "bool"
+        else "untyped"
+        end
+      end
+    end
+
+    def rbs_record(schema, entity, indent)
+      fields = object_fields(schema)
+      return "Hash[Symbol, untyped]" if fields.empty?
+
+      req = required(schema)
+      lines = fields.map do |name, sub|
+        "#{indent}  #{req.include?(name) ? "" : "?"}#{name}: #{rbs_type(sub, entity)}"
+      end
+      "{\n#{lines.join(",\n")}\n#{indent}}"
+    end
+
+    def types_rbs
+      lines = [HEADER, "", "module QubeSync", "  module Operations", "    # Nested params records used by more than one entity.", "    module Types"]
+      @shared.each_value do |type|
+        lines << "      type #{type[:name]} = #{rbs_record(type[:schema], nil, "      ")}"
+        lines << ""
+      end
+      lines.pop if lines.last == ""
+      lines.concat(["    end", "  end", "end", ""])
+      lines.join("\n")
+    end
+
+    def entity_rbs(entity, ops)
+      lines = [HEADER, "", "module QubeSync", "  module Operations", "    class #{const(entity)} < Base"]
+      @local[entity].each_value do |type|
+        lines << "      type #{type[:name]} = #{rbs_record(type[:schema], entity, "      ")}"
+        lines << ""
+      end
+      ops.each do |op|
+        lines << "      type #{op["action"]}_params = #{rbs_record(op["params"], entity, "      ")}"
+        lines << ""
+      end
+      ops.each do |op|
+        lines << "      def #{op["action"]}: (String connection_id, ?#{op["action"]}_params params, webhook_url: String, ?idempotency_key: String?) -> Hash[String, untyped]"
+      end
+      lines.concat(["    end", "  end", "end", ""])
+      lines.join("\n")
+    end
+
+    def index_rbs
+      lines = [HEADER, "", "module QubeSync", "  module Operations"]
+      lines << "    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }"
+      lines << ""
+      lines << "    INDEX: Hash[String, entry]"
+      lines << "    ENTITIES: Hash[String, Symbol]"
+      lines << ""
+      lines << "    # One entity's operations, bound to a client."
+      lines << "    class Base"
+      lines << "      def initialize: (Client client) -> void"
+      lines << "      def inspect: () -> String"
+      lines << ""
+      lines << "      private"
+      lines << ""
+      lines << "      def queue: (String operation_id, String connection_id, Hash[Symbol | String, untyped]? params, webhook_url: String, idempotency_key: String?) -> Hash[String, untyped]"
+      lines << "    end"
+      lines << "  end"
+      lines << ""
+      lines << "  class Client"
+      @entities.each_key do |entity|
+        lines << "    def #{accessor(entity)}: () -> Operations::#{const(entity)}"
+      end
+      lines.concat(["  end", "end", ""])
+      lines.join("\n")
+    end
+
+    # -- Ruby -------------------------------------------------------------------------------
+
+    def index_rb
+      lines = [HEADER, "# frozen_string_literal: true", "", "module QubeSync"]
+      lines << "  # QuickBooks operations, one class per entity, each loaded on first use. A client reaches"
+      lines << "  # them through its entity accessors: `client.customer.create(...)`."
+      lines << "  module Operations"
+      lines << "    # Operation id => how it's sent. `path` is relative to the connection."
+      lines << "    INDEX = {"
+      @operations.each do |op|
+        path = op["path"].delete_prefix("/connections/{connection_id}/")
+        lines << "      #{op["id"].inspect} => {method: #{op["method"].inspect}, path: #{path.inspect}, params_in: :#{op["params_in"]}, paged: #{op["paged"]}, entity: #{op["entity"].inspect}}.freeze,"
+      end
+      lines[-1] = lines[-1].chomp(",")
+      lines << "    }.freeze"
+      lines << ""
+      lines << "    # Entity => its class's name."
+      lines << "    ENTITIES = {"
+      @entities.each_key { |entity| lines << "      #{entity.inspect} => :#{const(entity)}," }
+      lines[-1] = lines[-1].chomp(",")
+      lines << "    }.freeze"
+      lines << ""
+      lines << "    # One entity's operations, bound to a client."
+      lines << "    class Base"
+      lines << "      def initialize(client)"
+      lines << "        @client = client"
+      lines << "      end"
+      lines << ""
+      lines << "      def inspect"
+      lines << "        \"#<\#{self.class.name}>\""
+      lines << "      end"
+      lines << ""
+      lines << "      private"
+      lines << ""
+      lines << "      def queue(operation_id, connection_id, params, webhook_url:, idempotency_key:)"
+      lines << "        @client.queue(operation_id, connection_id, params, webhook_url: webhook_url, idempotency_key: idempotency_key)"
+      lines << "      end"
+      lines << "    end"
+      lines << ""
+      @entities.each_key do |entity|
+        lines << "    autoload :#{const(entity)}, File.expand_path(\"operations/#{entity}\", __dir__)"
+      end
+      lines << "  end"
+      lines << ""
+      lines << "  class Client"
+      @entities.each_key do |entity|
+        lines << "    # #{GenerateOperations.pascal(entity)} operations: #{@entities[entity].map { |op| op["action"] }.join(", ")}."
+        lines << "    def #{accessor(entity)}"
+        lines << "      @#{entity}_operations ||= Operations::#{const(entity)}.new(self)"
+        lines << "    end"
+        lines << ""
+      end
+      lines.pop
+      lines.concat(["  end", "end", ""])
+      lines.join("\n")
+    end
+
+    def entity_rb(entity, ops)
+      lines = [HEADER, "# frozen_string_literal: true", "", "module QubeSync", "  module Operations"]
+      lines << "    # QuickBooks #{entity.tr("_", " ")} operations, reached as `client.#{accessor(entity)}`. Each queues a request and"
+      lines << "    # returns it (the response's `data`); the answer comes to `webhook_url`."
+      lines << "    class #{const(entity)} < Base"
+      ops.each_with_index do |op, i|
+        lines << "" if i.positive?
+        lines.concat(method_doc(op, entity))
+        lines << "      def #{op["action"]}(connection_id, params = {}, webhook_url:, idempotency_key: nil)"
+        lines << "        queue(#{op["id"].inspect}, connection_id, params, webhook_url: webhook_url, idempotency_key: idempotency_key)"
+        lines << "      end"
+      end
+      lines.concat(["    end", "  end", "end", ""])
+      lines.join("\n")
+    end
+
+    def method_doc(op, entity)
+      ind = "      # "
+      doc = []
+      doc << "#{op["summary"]}: #{op["method"]} #{op["path"]} (`#{op["id"]}`)."
+      doc << ""
+      doc << if op["paged"]
+        "QuickBooks answers in pages: one webhook per page, each with its `page`, the last with `iteration_state` `done`."
+      else
+        "QuickBooks answers in one webhook."
+      end
+      doc << ""
+      doc << "Params, sent as the JSON body:" if op["params_in"] == "body"
+      doc << "Params, sent as the query string:" if op["params_in"] == "query"
+      out = doc.flat_map { |line| line.empty? ? ["      #"] : GenerateOperations.wrap(line, ind, ind) }
+      fields = field_lines(op["params"], entity, 0)
+      out.concat(fields.empty? ? ["#{ind}(none)"] : fields)
+      out << "      #"
+      tags = [
+        "@param connection_id [String]",
+        "@param params [Hash] the fields above",
+        "@param webhook_url [String] where QuBe Sync sends the answer",
+        "@param idempotency_key [String, nil] made for the call when nil, and reused on its retries",
+        "@return [Hash] the queued request",
+        "@see #{op["docs_url"]}"
+      ]
+      out.concat(tags.map { |tag| "#{ind}#{tag}" })
+      out
+    end
+
+    def field_lines(schema, entity, depth)
+      req = required(schema)
+      out = []
+      groups = exclusive_groups(schema)
+      unless groups.empty?
+        note = "Give at most one of: #{groups.map { |g| g.map { |f| "`#{f}`" }.join(" with ") }.join(", or ")}."
+        pad = "      # #{"  " * depth}"
+        out.concat(GenerateOperations.wrap(note, pad, pad))
+      end
+      object_fields(schema).each do |name, sub|
+        label = "- `#{name}` (#{doc_type(sub, entity)}#{req.include?(name) ? ", required" : ""})"
+        text = sub["description"] || (sub["type"] == "array" ? sub.dig("items", "description") : nil)
+        line = text ? "#{label}: #{text}" : label
+        pad = "      # #{"  " * depth}"
+        out.concat(GenerateOperations.wrap(line, pad, "#{pad}  "))
+        nested = sub["type"] == "array" ? (sub["items"] || {}) : sub
+        out.concat(field_lines(nested, entity, depth + 1)) if object?(nested)
+      end
+      out
+    end
+
+    def doc_type(schema, entity)
+      if schema["type"] == "array"
+        "Array<#{doc_type(schema["items"] || {}, entity)}>"
+      elsif object?(schema)
+        "Hash"
+      elsif schema["enum"]
+        "one of #{schema["enum"].map { |v| v.to_s.inspect }.join(", ")}"
+      else
+        {"string" => "String", "integer" => "Integer", "number" => "Numeric", "boolean" => "Boolean"}.fetch(schema["type"], "Object")
+      end
+    end
+  end
+end
+
+GenerateOperations.run(ARGV) if $PROGRAM_NAME == __FILE__
