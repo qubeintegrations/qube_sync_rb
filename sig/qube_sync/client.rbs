@@ -65,6 +65,8 @@ module QubeSync
     def cancel_run: (String cancel_url, ?reason: String?) -> data
     def run_events: (String connection_id, String run_id, ?after: Integer?, ?limit: Integer?) -> data
 
+    def workflow_types: (?include_drafts: bool, ?etag: String?) -> (data | :not_modified)
+
     def answer: (String decisions_url, choice: String, ?data: Hash[untyped, untyped]?) -> data
     def search: (String search_url, field: String, q: String) -> Array[data]
 

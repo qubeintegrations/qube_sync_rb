@@ -229,6 +229,24 @@ module QubeSync
         query: {after: after, limit: limit})
     end
 
+    # -- Workflow types ---------------------------------------------------------------------
+
+    # The input types of the app's workflows, which `qube_sync workflows` renders into a typed
+    # file (QubeSync::WorkflowTypes). Returns the document (the response's data): `digest`,
+    # `operations_digest`, `include_drafts`, `workflows` (each published workflow at its
+    # published version) and, with `include_drafts: true`, `drafts` (each workflow whose working
+    # copy differs from it). With `etag:` (a document's `digest`, or the ETag it came with),
+    # returns :not_modified when the document is still that one.
+    def workflow_types(include_drafts: false, etag: nil)
+      headers = {}
+      headers["If-None-Match"] = entity_tag(etag) unless etag.nil? || etag.to_s.empty?
+      call(:get, "/workflows/types", query: {include: include_drafts ? "drafts" : nil}, headers: headers)
+    rescue APIError => e
+      raise unless e.status == 304
+
+      :not_modified
+    end
+
     # -- Questions --------------------------------------------------------------------------
 
     # `decisions_url` is the run's `links.decisions`. It's retried like a GET when the link
@@ -561,6 +579,11 @@ module QubeSync
       raise ArgumentError, "expected an operation such as \"customers\"" if parts.empty?
 
       parts.map { |part| segment(part) }.join("/")
+    end
+
+    def entity_tag(value)
+      text = value.to_s
+      (text.start_with?("\"") || text.start_with?("W/")) ? text : "\"#{text}\""
     end
 
     def key_for(idempotency_key)

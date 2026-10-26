@@ -302,6 +302,39 @@ RSpec.describe QubeSync::Client do
     end
   end
 
+  describe "workflow types" do
+    let(:document) { {"digest" => "sha256:#{"a" * 64}", "operations_digest" => "sha256:#{"b" * 64}", "include_drafts" => false, "workflows" => {}} }
+
+    it "GETs /workflows/types and returns the document, its data" do
+      server.respond(json(200, {"data" => document}, "ETag" => %("#{document["digest"]}")))
+      expect(client.workflow_types).to eq(document)
+      expect(server.last.method).to eq("GET")
+      expect(server.last.path).to eq("/api/v2/workflows/types")
+      expect(server.last.query).to be_nil
+      expect(server.last.headers).not_to have_key("if-none-match")
+    end
+
+    it "asks for drafts with include=drafts" do
+      server.respond(data(document.merge("include_drafts" => true, "drafts" => {})))
+      expect(client.workflow_types(include_drafts: true)["drafts"]).to eq({})
+      expect(server.last.query_hash).to eq({"include" => "drafts"})
+    end
+
+    it "sends a digest as If-None-Match and returns :not_modified on a 304" do
+      server.respond([304, {}, ""], [304, {}, ""])
+      expect(client.workflow_types(etag: document["digest"])).to eq(:not_modified)
+      expect(server.last.headers["if-none-match"]).to eq(%("#{document["digest"]}"))
+
+      client.workflow_types(etag: %("#{document["digest"]}"))
+      expect(server.last.headers["if-none-match"]).to eq(%("#{document["digest"]}"))
+    end
+
+    it "raises APIError for a 401" do
+      server.respond(json(401, {"errors" => "unauthorized"}))
+      expect { client.workflow_types }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(401) }
+    end
+  end
+
   describe "questions" do
     let(:decisions) { "#{server.url}/api/v2/connections/c1/workflow-runs/r1/decisions?prompt_token=tok" }
     let(:search_link) { "#{server.url}/api/v2/connections/c1/workflow-runs/r1/search?prompt_token=tok" }
