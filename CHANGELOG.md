@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- `Client#create_connection(webhook_url:, name: nil, type: nil)`: `type: "simulated"` makes a
+  connection to a simulated QuickBooks company file, connected as it's made.
 - Typed workflow starts: `qube_sync workflows [--drafts] [--check] [--output lib/qube_workflows.rb]
   [--sig sig/qube_workflows.rbs]` (exe/qube_sync, with QUBE_API_KEY) fetches the app's workflow
   input types and writes a QubeWorkflows module and its RBS: a start and an `*_input` method per

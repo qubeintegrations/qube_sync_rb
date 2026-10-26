@@ -159,8 +159,10 @@ module QubeSync
 
     # -- Connections ------------------------------------------------------------------------
 
-    def create_connection(webhook_url:, name: nil)
-      call(:post, "/connections", compact(webhook_url: webhook_url, name: name))
+    # type: "simulated" makes a connection to a simulated QuickBooks company file, connected as
+    # it's made (connection.connected comes at once), for testing with no Windows computer.
+    def create_connection(webhook_url:, name: nil, type: nil)
+      call(:post, "/connections", compact(webhook_url: webhook_url, name: name, type: type))
     end
 
     def get_connection(id)

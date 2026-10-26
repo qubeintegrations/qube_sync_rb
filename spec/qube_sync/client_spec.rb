@@ -198,6 +198,12 @@ RSpec.describe QubeSync::Client do
       expect(server.last.headers).not_to have_key("idempotency-key")
     end
 
+    it "create_connection sends type for a simulated connection" do
+      server.respond(data({"id" => "c3", "type" => "simulated"}, 201))
+      client.create_connection(webhook_url: "https://app.test/hook", type: "simulated")
+      expect(server.last.json).to eq({"webhook_url" => "https://app.test/hook", "type" => "simulated"})
+    end
+
     it "get_connection" do
       server.respond(data({"id" => "c1"}))
       expect(client.get_connection("c1")).to eq({"id" => "c1"})

@@ -50,7 +50,7 @@ module QubeSync
     def inspect: () -> String
     def to_s: () -> String
 
-    def create_connection: (webhook_url: String, ?name: String?) -> data
+    def create_connection: (webhook_url: String, ?name: String?, ?type: String?) -> data
     def get_connection: (String id) -> data
     def list_connections: () -> Array[data]
     def update_connection: (String id, ?webhook_url: String?, ?name: String?) -> data

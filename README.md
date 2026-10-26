@@ -41,7 +41,9 @@ redirect_to connection["links"]["onboarding"], allow_other_host: true
 
 QuBe Sync sends `connection.connected` to the connection's `webhook_url` once the customer's Web
 Connector first checks in. `regenerate_onboarding(id)` makes a fresh onboarding link, and
-`update_connection(id, webhook_url:, name:)` changes either. `get_connection`,
+`update_connection(id, webhook_url:, name:)` changes either. `create_connection(webhook_url:,
+type: "simulated")` makes a connection to a simulated QuickBooks company file instead, connected
+as it's made, for testing without a Windows computer. `get_connection`,
 `list_connections`, `delete_connection`, `set_password(id, password: nil)` and `get_qwc(id)` (the
 QWC file's XML) are there for setup without hosted onboarding.
 
