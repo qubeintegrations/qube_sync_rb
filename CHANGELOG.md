@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- `Client#redeliver_run(connection_id, run_id)`: `POST .../workflow-runs/{id}/redeliver`, which
+  has QuBe Sync send the run's latest event again (after an outage longer than the retries).
 - `Client#create_connection(webhook_url:, name: nil, type: nil)`: `type: "simulated"` makes a
   connection to a simulated QuickBooks company file, connected as it's made.
 - Typed workflow starts: `qube_sync workflows [--drafts] [--check] [--output lib/qube_workflows.rb]

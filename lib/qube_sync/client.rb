@@ -225,6 +225,15 @@ module QubeSync
       call(:post, cancel_url, compact(reason: reason))
     end
 
+    # Asks QuBe Sync to send the run's latest event again (its ending, or the question it's
+    # waiting on) to the run's webhook URL, signed, with the revision it carries, so a receiver
+    # that missed it, or was down for longer than the retries, catches up. Returns
+    # `{"run_id", "event", "revision", "webhook_url"}`. A run with nothing to send yet answers
+    # 409 (APIError), and one asked again too soon 429.
+    def redeliver_run(connection_id, run_id)
+      call(:post, "/connections/#{segment(connection_id)}/workflow-runs/#{segment(run_id)}/redeliver")
+    end
+
     # Returns the whole body: `{"data" => [...], "next_after" => ...}`.
     def run_events(connection_id, run_id, after: nil, limit: nil)
       request(:get, "/connections/#{segment(connection_id)}/workflow-runs/#{segment(run_id)}/events",

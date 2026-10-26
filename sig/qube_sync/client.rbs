@@ -61,6 +61,7 @@ module QubeSync
 
     def start_run: (String connection_id, String workflow, Hash[untyped, untyped]? input, reference: String, webhook_url: String, ?version: Integer?) -> data
     def get_run: (String run_url_or_connection_id, ?String? run_id) -> data
+    def redeliver_run: (String connection_id, String run_id) -> data
     def list_runs: (String connection_id, ?reference: String?, ?state: String?, ?outcome: String?) -> Array[data]
     def cancel_run: (String cancel_url, ?reason: String?) -> data
     def run_events: (String connection_id, String run_id, ?after: Integer?, ?limit: Integer?) -> data

@@ -299,6 +299,14 @@ RSpec.describe QubeSync::Client do
       expect(server.last.json).to eq({})
     end
 
+    it "redeliver_run posts to the run's redeliver route and returns what was sent" do
+      sent = {"run_id" => "r1", "event" => "workflow_run.completed", "revision" => 7,
+              "webhook_url" => "https://app.test/hooks/runs/1"}
+      server.respond(data(sent, 202))
+      expect(client.redeliver_run("c1", "r1")).to eq(sent)
+      expect([server.last.method, server.last.path]).to eq(["POST", "/api/v2/connections/c1/workflow-runs/r1/redeliver"])
+    end
+
     it "run_events returns the whole body" do
       body = {"data" => [{"seq" => 1}], "next_after" => 1}
       server.respond(json(200, body))

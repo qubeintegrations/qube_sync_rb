@@ -65,7 +65,9 @@ end
 ```
 
 `get_run(run_url)` or `get_run(connection_id, run_id)` reads a run, `list_runs(connection_id,
-reference:, state:, outcome:)` finds runs, `cancel_run(cancel_url, reason: nil)` cancels one, and
+reference:, state:, outcome:)` finds runs, `cancel_run(cancel_url, reason: nil)` cancels one,
+`redeliver_run(connection_id, run_id)` has QuBe Sync send its latest event again (after an
+outage longer than the webhook retries), and
 `run_events(connection_id, run_id, after:, limit:)` returns a page of its event log whole
 (`{"data" => [...], "next_after" => ...}`). A method that takes a link takes it from a webhook's
 or a run's `links`, or a path under `/api/v2`. A link on any other scheme, host or port raises
