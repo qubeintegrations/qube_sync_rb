@@ -95,9 +95,10 @@ QubeWorkflows.add_transaction.invoice_input(params, adds: adds)
 ```
 
 - A workflow whose input has branches (add_transaction's `operation`, upsert's `kind`) gets one
-  method per branch, named by the branch: the discriminator is filled in, the branch's one
-  operation body is taken positionally, and the other inputs are keywords (required ones without
-  defaults). `start(connection_id, input, ...)` takes any branch's input. A workflow without
+  method per branch, named by the branch: the discriminator is filled in and the inputs are
+  keywords (required ones without defaults), except a workflow's one operation body (add_transaction's
+  `params`), which every branch takes positionally; a workflow with two (upsert's `add` and
+  `update`) takes both as keywords. `start(connection_id, input, ...)` takes any branch's input. A workflow without
   branches gets `start(connection_id, <inputs as keywords>, reference:, webhook_url:)` and
   `input(...)`. Each `*_input` leaves out nil values. `connection_id` may be anything with a
   `qube_id` (a QubeRails::Connection).

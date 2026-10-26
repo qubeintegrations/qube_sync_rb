@@ -120,8 +120,8 @@ module QubeWorkflows
 
     def self.customer: (::QubeWorkflows::connection connection, add: ::QubeSync::Operations::Customer::create_params, ?class: String?, ?list_id: String?, update: ::QubeSync::Operations::Customer::update_params, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
     def self.customer_input: (add: ::QubeSync::Operations::Customer::create_params, ?class: String?, ?list_id: String?, update: ::QubeSync::Operations::Customer::update_params) -> customer_input
-    def self.future_list: (::QubeWorkflows::connection connection, Hash[untyped, untyped] add, ?class: String?, ?list_id: String?, update: Hash[untyped, untyped], reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
-    def self.future_list_input: (Hash[untyped, untyped] add, ?class: String?, ?list_id: String?, update: Hash[untyped, untyped]) -> future_list_input
+    def self.future_list: (::QubeWorkflows::connection connection, add: Hash[untyped, untyped], ?class: String?, ?list_id: String?, update: Hash[untyped, untyped], reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
+    def self.future_list_input: (add: Hash[untyped, untyped], ?class: String?, ?list_id: String?, update: Hash[untyped, untyped]) -> future_list_input
     def self.start: (::QubeWorkflows::connection connection, input input, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
   end
 end

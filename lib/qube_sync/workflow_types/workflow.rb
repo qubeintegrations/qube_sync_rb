@@ -32,8 +32,9 @@ module QubeSync
       Input = Struct.new(:name, :schema, :required, keyword_init: true)
 
       # title: the branch's name in the document; method: its start method's name; value: the
-      # discriminator's const; inputs: the others, sorted by name; body: the one operation body
-      # among them, which its methods take positionally, or nil when it has none or several.
+      # discriminator's const; inputs: the others, sorted by name; body: the workflow's one
+      # operation-body input (a $operation in at least one branch), which every branch's methods
+      # take positionally, or nil when the workflow has none or several.
       Branch = Struct.new(:title, :method, :value, :inputs, :body, keyword_init: true)
 
       attr_reader :key, :const, :accessor, :name, :description, :version, :draft, :schema, :discriminator,
@@ -52,6 +53,13 @@ module QubeSync
         if @discriminator
           checked_name(@discriminator, "#{key}'s discriminator")
           @inputs = []
+          # The inputs that are an operation body in at least one branch. Only when there's one is
+          # it positional, in every branch, so every branch's method takes the same shape.
+          bodies = schema["oneOf"].flat_map do |branch|
+            (branch["properties"] || {}).select { |_name, sub| self.class.operation(sub) }.keys
+          end.uniq
+          bodies |= (schema["properties"] || {}).select { |_name, sub| self.class.operation(sub) }.keys
+          @body_name = bodies.size == 1 ? bodies.first : nil
           @branches = schema["oneOf"].map { |branch| branch_for(branch) }.sort_by(&:method)
           methods = @branches.flat_map { |branch| [branch.method, "#{branch.method}_input"] }
           duplicate = methods.tally.find { |_method, count| count > 1 }
@@ -110,9 +118,9 @@ module QubeSync
 
         required = Array(schema["required"]) | Array(branch["required"])
         inputs = inputs_of(properties.reject { |name, _| name == @discriminator }, required)
-        bodies = inputs.select { |input| self.class.operation(input.schema) }
+        body = inputs.find { |input| input.name == @body_name }
         method = (MODULE_METHODS.include?(title) || title == "start") ? "#{title}_" : title
-        Branch.new(title: title, method: method, value: value, inputs: inputs, body: bodies.size == 1 ? bodies.first : nil)
+        Branch.new(title: title, method: method, value: value, inputs: inputs, body: body)
       end
 
       def inputs_of(properties, required)

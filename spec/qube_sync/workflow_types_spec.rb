@@ -129,6 +129,32 @@ RSpec.describe QubeSync::WorkflowTypes do
     end
   end
 
+  # The document QuBe Sync served for the shipped templates (qube's GET /api/v2/workflows/types,
+  # 2026-10-25): too big for golden files, so it's rendered, loaded and validated.
+  describe "a served document" do
+    let(:served) { JSON.parse(File.read(File.join(fixtures, "served.json"))) }
+
+    it "renders, loads and validates with rbs, without warnings" do
+      files = render(served)
+      expect(files.warnings).to eq([])
+      load_ruby(files.ruby)
+      expect(QubeWorkflows.constants.size).to eq(served["workflows"].size)
+      Dir.mktmpdir do |dir|
+        File.write(File.join(dir, "qube_workflows.rbs"), files.rbs)
+        output = IO.popen([RbConfig.ruby, Gem.bin_path("rbs", "rbs"), "-I", File.join(root, "sig"), "-I", dir, "validate"],
+          err: [:child, :out], &:read)
+        expect($?.success?).to be(true), output
+      end
+    end
+
+    it "gives every branch of a workflow the same shape: the body positional in all of them or in none" do
+      served["workflows"].each do |key, entry|
+        workflow = described_class::Workflow.new(key, entry)
+        expect(workflow.branches.map { |branch| branch.body&.name }.uniq.size).to be <= 1, key
+      end
+    end
+  end
+
   describe "the generated methods" do
     before do
       load_ruby(render(document, drafts: true).ruby)
@@ -158,7 +184,7 @@ RSpec.describe QubeSync::WorkflowTypes do
       QubeWorkflows.upsert.customer("conn-1", add: {name: "Acme"}, update: {name: "Acme"}, class: "Wholesale",
         reference: "customer-1", webhook_url: "https://app.test/runs")
       expect(fake_client.runs.last[:input]).to eq({kind: "customer", add: {name: "Acme"}, class: "Wholesale", update: {name: "Acme"}})
-      expect(QubeWorkflows::Upsert.future_list_input({name: "Later"}, update: {})).to eq({kind: "future_list", add: {name: "Later"}, update: {}})
+      expect(QubeWorkflows::Upsert.future_list_input(add: {name: "Later"}, update: {})).to eq({kind: "future_list", add: {name: "Later"}, update: {}})
     end
 
     it "takes a workflow without branches' inputs as keywords" do
@@ -200,6 +226,21 @@ RSpec.describe QubeSync::WorkflowTypes do
           err: [:child, :out], &:read)
         expect($?.success?).to be(true), output
       end
+    end
+
+    it "takes the body positionally in every branch or in none, by the workflow's body fields" do
+      branches = [
+        {"title" => "a", "properties" => {"kind" => {"const" => "a"}, "add" => {"$operation" => "customer.create"}}},
+        {"title" => "b", "properties" => {"kind" => {"const" => "b"}, "add" => {"type" => "object"}}}
+      ]
+      input = {"type" => "object", "required" => ["kind", "add"], "discriminator" => {"propertyName" => "kind"},
+               "properties" => {"kind" => {"type" => "string"}, "add" => {"type" => "object"}}, "oneOf" => branches}
+      ruby = render(workflow(input)).ruby
+      expect(ruby).to include("def self.a(connection, add, reference:", "def self.b(connection, add, reference:")
+
+      branches[1]["properties"]["update"] = {"$operation" => "customer.update"}
+      ruby = render(workflow(input)).ruby
+      expect(ruby).to include("def self.a(connection, add:, reference:", "def self.b(connection, add:, update: nil, reference:")
     end
 
     it "types an operation it doesn't know as a Hash" do

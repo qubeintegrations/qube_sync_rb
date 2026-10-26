@@ -295,8 +295,8 @@ module QubeWorkflows
     # @param version [Integer, nil] the version to run; nil runs the published one
     # @param client [QubeSync::Client] defaults to QubeWorkflows.client
     # @return [Hash] the run, as QubeSync::Client#start_run returns it
-    def self.future_list(connection, add, class: nil, list_id: nil, update:, reference:, webhook_url:, version: nil, client: ::QubeWorkflows.client)
-      start(connection, future_list_input(add, class: binding.local_variable_get(:class), list_id: list_id, update: update), reference: reference, webhook_url: webhook_url, version: version, client: client)
+    def self.future_list(connection, add:, class: nil, list_id: nil, update:, reference:, webhook_url:, version: nil, client: ::QubeWorkflows.client)
+      start(connection, future_list_input(add: add, class: binding.local_variable_get(:class), list_id: list_id, update: update), reference: reference, webhook_url: webhook_url, version: version, client: client)
     end
 
     # upsert's input with `kind` "future_list", without its nil values: for start, or a
@@ -308,7 +308,7 @@ module QubeWorkflows
     # @param list_id [String, nil]
     # @param update [Hash]
     # @return [Hash] the input
-    def self.future_list_input(add, class: nil, list_id: nil, update:)
+    def self.future_list_input(add:, class: nil, list_id: nil, update:)
       {kind: "future_list", add: add, class: binding.local_variable_get(:class), list_id: list_id, update: update}.compact
     end
 
