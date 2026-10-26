@@ -1,5 +1,18 @@
 ## [Unreleased]
 
+- Typed workflow starts: `qube_sync workflows [--drafts] [--check] [--output lib/qube_workflows.rb]
+  [--sig sig/qube_workflows.rbs]` (exe/qube_sync, with QUBE_API_KEY) fetches the app's workflow
+  input types and writes a QubeWorkflows module and its RBS: a start and an `*_input` method per
+  branch of a workflow's input, each operation body typed as that operation's params
+  (`QubeSync::Operations::<Entity>::<action>_params`) with its YARD reference. The same document
+  gives byte-identical files, which load on Ruby 2.7 too. `--check` exits 1 when the file's digest
+  isn't the served one (naming the workflows that changed) or on a 401, and warns and exits 0 when
+  QuBe Sync can't be reached or answers 5xx. `QubeSync::WorkflowTypes.render` and `.check` do the
+  same from code (qube_rails' generator uses them).
+- `Client#workflow_types(include_drafts: false, etag: nil)`: `GET /workflows/types`, returning
+  `:not_modified` on a 304.
+- `QubeSync::Operations::DIGEST`: the sha256 of the operations manifest the operation methods were
+  generated from; `qube_sync workflows` warns when QuBe Sync's `operations_digest` differs.
 - Releases publish through RubyGems trusted publishing, from `release.yml`'s OIDC token; no
   API key is stored.
 

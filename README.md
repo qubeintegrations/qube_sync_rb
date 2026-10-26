@@ -69,6 +69,56 @@ reference:, state:, outcome:)` finds runs, `cancel_run(cancel_url, reason: nil)`
 or a run's `links`, or a path under `/api/v2`. A link on any other scheme, host or port raises
 `ArgumentError` before a request is made, so the API key only ever goes to QuBe Sync.
 
+### Typed workflow starts
+
+`qube_sync workflows` fetches your app's workflow input types (`GET /api/v2/workflows/types`) and
+writes them as Ruby and RBS you check in: a start method per workflow, and per branch of its
+input, whose operation bodies have the same types and field docs as the operation methods below.
+
+```sh
+QUBE_API_KEY=... bundle exec qube_sync workflows             # lib/qube_workflows.rb, sig/qube_workflows.rbs
+QUBE_API_KEY=... bundle exec qube_sync workflows --check     # in CI: exits 1 when the files are out of date
+```
+
+```ruby
+require_relative "qube_workflows"
+QubeWorkflows.client = QUBE # once, at boot
+
+QubeWorkflows.add_transaction.invoice(connection_id, {
+  customer_ref: {list_id: "80000001-1700000000"},
+  invoice_line_add: [{item_ref: {full_name: "Consulting"}, amount: "100.00"}]
+}, adds: [{kind: "customer", add: {name: "Acme Ltd"}}],
+  reference: "invoice-#{invoice.id}", webhook_url: "https://myapp.example/qube/runs")
+
+# The input alone, for start or a QubeRails::Operation's input:
+QubeWorkflows.add_transaction.invoice_input(params, adds: adds)
+```
+
+- A workflow whose input has branches (add_transaction's `operation`, upsert's `kind`) gets one
+  method per branch, named by the branch: the discriminator is filled in, the branch's one
+  operation body is taken positionally, and the other inputs are keywords (required ones without
+  defaults). `start(connection_id, input, ...)` takes any branch's input. A workflow without
+  branches gets `start(connection_id, <inputs as keywords>, reference:, webhook_url:)` and
+  `input(...)`. Each `*_input` leaves out nil values. `connection_id` may be anything with a
+  `qube_id` (a QubeRails::Connection).
+- Each start takes `reference:`, `webhook_url:`, `version: nil` and `client:` (QubeWorkflows.client
+  unless given), and returns the run as `start_run` does.
+- The RBS gives each input a type alias (`QubeWorkflows::AddTransaction::invoice_input`), each
+  operation body that operation's params record (`::QubeSync::Operations::Invoice::create_params`)
+  and a nested entry with branches (an `adds` item) a union of a record per branch. An operation
+  newer than your qube_sync is a plain Hash, with a warning when the served operations aren't the
+  gem's. An operation body is typed with its required fields, though a workflow may fill some in
+  itself (`customer_ref`, `list_id`, `edit_sequence`).
+- QuBe Sync still checks every start: a field the operation doesn't take is a 422 at the call, its
+  error's `path` the body (`input.params`) and its `message` naming the field (`unknown parameter:
+  "customer_rf"`).
+- `--drafts` types each workflow's draft where it has one, so you can build against a workflow
+  before publishing it. The header records the digest and the flag, and `--check` fetches with the
+  same flag. When QuBe Sync can't be reached or answers 5xx, `--check` warns and exits 0; a 401
+  exits 1.
+- `--output PATH` and `--sig PATH` choose the files; `QUBE_BASE_URL` another host.
+- In Rails, `bin/rails g qube_rails:workflows` (qube_rails) writes the same file into `app/qube/`.
+
 ### Queueing an operation
 
 Every QuickBooks operation is a method on its entity: `client.<entity>.<action>`, where the

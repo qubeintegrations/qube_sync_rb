@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# qube_sync workflows [--drafts] [--check] [--output lib/qube_workflows.rb] [--sig sig/qube_workflows.rbs]
+#
+# Writes your app's typed workflow starts (QubeSync::WorkflowTypes::CLI). QUBE_API_KEY is your
+# app's API key; QUBE_BASE_URL is https://qubesync.com unless set.
+
+require "qube_sync/workflow_types"
+
+exit QubeSync::WorkflowTypes::CLI.new.run(ARGV)
