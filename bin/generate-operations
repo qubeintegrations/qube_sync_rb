@@ -6,6 +6,8 @@
 #
 #   lib/qube_sync/operations.rb              the index, the entity accessors and an autoload per entity
 #   lib/qube_sync/operations/<entity>.rb     one class per entity, its actions documented with YARD
+#   lib/qube_sync/operations/fields.rb       each operation's top-level params' RBS types, for
+#                                            QubeSync::WorkflowTypes (loaded only by it)
 #   sig/qube_sync/operations.rbs             the index's and the accessors' signatures
 #   sig/qube_sync/operations/<entity>.rbs    the entity's methods and its params as RBS records
 #   sig/qube_sync/operations/types.rbs       nested records used by more than one entity
@@ -26,6 +28,7 @@ module GenerateOperations
   HEADER = "# Generated from operations.json by #{SCRIPT}: don't edit."
   WIDTH = 100
   SUPPORTED_VERSION = 1
+  FIELDS_FILE = "lib/qube_sync/operations/fields.rb"
   # Entities whose natural accessor would replace a method every Ruby object has.
   RESERVED = {"class" => "class_"}.freeze
   # Schema keys that don't change a field's type.
@@ -118,6 +121,7 @@ module GenerateOperations
       out["lib/qube_sync/operations.rb"] = index_rb
       out["sig/qube_sync/operations.rbs"] = index_rbs
       out["sig/qube_sync/operations/types.rbs"] = types_rbs
+      out["lib/qube_sync/operations/fields.rb"] = fields_rb
       @entities.each do |entity, ops|
         out["lib/qube_sync/operations/#{entity}.rb"] = entity_rb(entity, ops)
         out["sig/qube_sync/operations/#{entity}.rbs"] = entity_rbs(entity, ops)
@@ -140,6 +144,8 @@ module GenerateOperations
     # types.rbs, any other in its entity's own file. Structurally equal objects (descriptions
     # aside) share a name.
     def name_types
+      raise "an entity named fields would overwrite #{FIELDS_FILE}" if @entities.key?("fields")
+
       uses = Hash.new { |h, k| h[k] = {fields: [], entities: Set.new, schema: nil} }
       @operations.each do |op|
         each_nested(op["params"]) do |field, schema|
@@ -341,6 +347,49 @@ module GenerateOperations
         lines << "    def #{accessor(entity)}: () -> Operations::#{const(entity)}"
       end
       lines.concat(["  end", "end", ""])
+      lines.join("\n")
+    end
+
+    # The RBS type of a params field, its nested records named in full, as a file outside the
+    # entity's class (sig/qube_workflows.rbs) names them.
+    def qualified_type(schema, entity)
+      if schema["type"] == "array"
+        "Array[#{qualified_type(schema["items"] || {}, entity)}]"
+      elsif object?(schema)
+        key = structure(schema)
+        if (shared = @shared[key])
+          "::QubeSync::Operations::Types::#{shared[:name]}"
+        else
+          "::QubeSync::Operations::#{const(entity)}::#{@local[entity].fetch(key)[:name]}"
+        end
+      else
+        rbs_type(schema, entity)
+      end
+    end
+
+    # Each operation's top-level params, as RBS: QubeSync::WorkflowTypes writes a body record
+    # with the fields a workflow sets itself made optional, which an alias can't express.
+    def fields_rb
+      lines = [HEADER, "# frozen_string_literal: true", "", "module QubeSync", "  module Operations"]
+      lines << "    # Operation id => {field => [its RBS type, required]}, the params' own fields. Only"
+      lines << "    # QubeSync::WorkflowTypes loads it."
+      lines << "    FIELDS = {"
+      @operations.each do |op|
+        req = required(op["params"])
+        fields = object_fields(op["params"])
+        if fields.empty?
+          lines << "      #{op["id"].inspect} => {}.freeze,"
+          next
+        end
+        lines << "      #{op["id"].inspect} => {"
+        fields.each do |name, sub|
+          lines << "        #{name.inspect} => [#{qualified_type(sub, op["entity"]).inspect}, #{req.include?(name)}].freeze,"
+        end
+        lines[-1] = lines[-1].chomp(",")
+        lines << "      }.freeze,"
+      end
+      lines[-1] = lines[-1].chomp(",")
+      lines.concat(["    }.freeze", "  end", "end", ""])
       lines.join("\n")
     end
 

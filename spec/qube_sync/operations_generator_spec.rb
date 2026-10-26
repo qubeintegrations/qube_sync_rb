@@ -21,7 +21,7 @@ RSpec.describe "bin/generate-operations" do
     expect(second).to eq(first)
     expect(first.values).to all(start_with(GenerateOperations::HEADER))
     expect(first["lib/qube_sync/operations.rb"]).to include("DIGEST = #{digest.inspect}")
-    expect(first.keys.grep(%r{\Alib/qube_sync/operations/}).size).to eq(manifest["operations"].map { |op| op["entity"] }.uniq.size)
+    expect((first.keys.grep(%r{\Alib/qube_sync/operations/}) - [GenerateOperations::FIELDS_FILE]).size).to eq(manifest["operations"].map { |op| op["entity"] }.uniq.size)
   end
 
   it "gives the index the manifest's digest, as QuBe Sync serves it" do
