@@ -4,6 +4,7 @@ module QubeSync
   module Operations
     type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }
 
+    DIGEST: String
     INDEX: Hash[String, entry]
     ENTITIES: Hash[String, Symbol]
 

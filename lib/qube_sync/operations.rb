@@ -5,6 +5,10 @@ module QubeSync
   # QuickBooks operations, one class per entity, each loaded on first use. A client reaches
   # them through its entity accessors: `client.customer.create(...)`.
   module Operations
+    # The digest of the operations.json these were generated from. A workflow types document
+    # names the one its `$operation` ids refer to (`operations_digest`).
+    DIGEST = "sha256:27dfcdae7dfd1d566328e676abfb92126f24a90719c8eb8c8defd74b031aa4fa"
+
     # Operation id => how it's sent. `path` is relative to the connection.
     INDEX = {
       "account.create" => {method: "POST", path: "accounts", params_in: :body, paged: false, entity: "account"}.freeze,

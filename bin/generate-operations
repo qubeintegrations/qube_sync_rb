@@ -15,6 +15,7 @@
 #
 # Re-running gives byte-identical output.
 
+require "digest"
 require "json"
 require "set"
 
@@ -42,7 +43,7 @@ module GenerateOperations
       abort "#{SCRIPT}: operations.json is version #{manifest["version"].inspect}; this generator reads version #{SUPPORTED_VERSION}"
     end
 
-    files = Generator.new(manifest).files
+    files = Generator.new(manifest, digest: digest(File.binread(MANIFEST))).files
     existing = generated_on_disk
     stale = files.select { |path, content| !File.exist?(File.join(ROOT, path)) || File.read(File.join(ROOT, path), encoding: "UTF-8") != content }.keys
     orphans = existing - files.keys
@@ -64,6 +65,12 @@ module GenerateOperations
     end
     orphans.each { |path| File.delete(File.join(ROOT, path)) }
     puts "#{SCRIPT}: #{files.size} files, #{stale.size} written, #{orphans.size} removed"
+  end
+
+  # The manifest's digest as QuBe Sync gives it (`operations_digest` in GET /workflows/types): of
+  # its bytes, as served.
+  def digest(bytes)
+    "sha256:#{Digest::SHA256.hexdigest(bytes)}"
   end
 
   def generated_on_disk
@@ -96,10 +103,11 @@ module GenerateOperations
   end
 
   class Generator
-    attr_reader :manifest, :operations, :entities
+    attr_reader :manifest, :digest, :operations, :entities
 
-    def initialize(manifest)
+    def initialize(manifest, digest:)
       @manifest = manifest
+      @digest = digest
       @operations = manifest["operations"].sort_by { |op| op["id"] }
       @entities = @operations.group_by { |op| op["entity"] }.sort.to_h
       name_types
@@ -313,6 +321,7 @@ module GenerateOperations
       lines = [HEADER, "", "module QubeSync", "  module Operations"]
       lines << "    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }"
       lines << ""
+      lines << "    DIGEST: String"
       lines << "    INDEX: Hash[String, entry]"
       lines << "    ENTITIES: Hash[String, Symbol]"
       lines << ""
@@ -342,6 +351,10 @@ module GenerateOperations
       lines << "  # QuickBooks operations, one class per entity, each loaded on first use. A client reaches"
       lines << "  # them through its entity accessors: `client.customer.create(...)`."
       lines << "  module Operations"
+      lines << "    # The digest of the operations.json these were generated from. A workflow types document"
+      lines << "    # names the one its `$operation` ids refer to (`operations_digest`)."
+      lines << "    DIGEST = #{@digest.inspect}"
+      lines << ""
       lines << "    # Operation id => how it's sent. `path` is relative to the connection."
       lines << "    INDEX = {"
       @operations.each do |op|
