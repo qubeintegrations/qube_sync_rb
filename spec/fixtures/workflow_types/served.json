@@ -1,5 +1,5 @@
 {
-  "digest": "sha256:fd9a16569dd7c44995cb995145b6480ad3023d94792dcad870398c4014f889e9",
+  "digest": "sha256:82e821b393f927047aca633e20689cbd18ddd1b2b1585bbd84b589b171c847ee",
   "include_drafts": false,
   "operations_digest": "sha256:27dfcdae7dfd1d566328e676abfb92126f24a90719c8eb8c8defd74b031aa4fa",
   "workflows": {
@@ -1044,7 +1044,10 @@
             "properties": {
               "add": {
                 "$operation": "account.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "account"
@@ -1056,7 +1059,10 @@
             "properties": {
               "add": {
                 "$operation": "billing_rate.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "billing_rate"
@@ -1068,7 +1074,10 @@
             "properties": {
               "add": {
                 "$operation": "class.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "class"
@@ -1080,7 +1089,10 @@
             "properties": {
               "add": {
                 "$operation": "currency.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "currency"
@@ -1092,7 +1104,10 @@
             "properties": {
               "add": {
                 "$operation": "customer.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "customer"
@@ -1104,7 +1119,10 @@
             "properties": {
               "add": {
                 "$operation": "customer_msg.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "customer_msg"
@@ -1116,7 +1134,10 @@
             "properties": {
               "add": {
                 "$operation": "customer_type.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "customer_type"
@@ -1128,7 +1149,10 @@
             "properties": {
               "add": {
                 "$operation": "date_driven_terms.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "date_driven_terms"
@@ -1140,7 +1164,10 @@
             "properties": {
               "add": {
                 "$operation": "employee.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "employee"
@@ -1152,7 +1179,10 @@
             "properties": {
               "add": {
                 "$operation": "inventory_site.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "inventory_site"
@@ -1164,7 +1194,10 @@
             "properties": {
               "add": {
                 "$operation": "item_discount.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_discount"
@@ -1176,7 +1209,10 @@
             "properties": {
               "add": {
                 "$operation": "item_fixed_asset.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_fixed_asset"
@@ -1188,7 +1224,10 @@
             "properties": {
               "add": {
                 "$operation": "item_group.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_group"
@@ -1200,7 +1239,10 @@
             "properties": {
               "add": {
                 "$operation": "item_inventory.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_inventory"
@@ -1212,7 +1254,10 @@
             "properties": {
               "add": {
                 "$operation": "item_inventory_assembly.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_inventory_assembly"
@@ -1224,7 +1269,10 @@
             "properties": {
               "add": {
                 "$operation": "item_non_inventory.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_non_inventory"
@@ -1236,7 +1284,10 @@
             "properties": {
               "add": {
                 "$operation": "item_other_charge.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_other_charge"
@@ -1248,7 +1299,10 @@
             "properties": {
               "add": {
                 "$operation": "item_payment.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_payment"
@@ -1260,7 +1314,10 @@
             "properties": {
               "add": {
                 "$operation": "item_sales_tax.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_sales_tax"
@@ -1272,7 +1329,10 @@
             "properties": {
               "add": {
                 "$operation": "item_sales_tax_group.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_sales_tax_group"
@@ -1284,7 +1344,10 @@
             "properties": {
               "add": {
                 "$operation": "item_service.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_service"
@@ -1296,7 +1359,10 @@
             "properties": {
               "add": {
                 "$operation": "item_subtotal.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "item_subtotal"
@@ -1308,7 +1374,10 @@
             "properties": {
               "add": {
                 "$operation": "job_type.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "job_type"
@@ -1320,7 +1389,10 @@
             "properties": {
               "add": {
                 "$operation": "lead.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "lead"
@@ -1332,7 +1404,10 @@
             "properties": {
               "add": {
                 "$operation": "other_name.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "other_name"
@@ -1344,7 +1419,10 @@
             "properties": {
               "add": {
                 "$operation": "payment_method.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "payment_method"
@@ -1356,7 +1434,10 @@
             "properties": {
               "add": {
                 "$operation": "payroll_item_wage.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "payroll_item_wage"
@@ -1368,7 +1449,10 @@
             "properties": {
               "add": {
                 "$operation": "price_level.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "price_level"
@@ -1380,7 +1464,10 @@
             "properties": {
               "add": {
                 "$operation": "sales_rep.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "sales_rep"
@@ -1392,7 +1479,10 @@
             "properties": {
               "add": {
                 "$operation": "sales_tax_code.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "sales_tax_code"
@@ -1404,7 +1494,10 @@
             "properties": {
               "add": {
                 "$operation": "ship_method.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "ship_method"
@@ -1416,7 +1509,10 @@
             "properties": {
               "add": {
                 "$operation": "standard_terms.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "standard_terms"
@@ -1428,7 +1524,10 @@
             "properties": {
               "add": {
                 "$operation": "to_do.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "to_do"
@@ -1440,7 +1539,10 @@
             "properties": {
               "add": {
                 "$operation": "unit_of_measure_set.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "unit_of_measure_set"
@@ -1452,7 +1554,10 @@
             "properties": {
               "add": {
                 "$operation": "vehicle.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "vehicle"
@@ -1464,7 +1569,10 @@
             "properties": {
               "add": {
                 "$operation": "vendor.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "vendor"
@@ -1476,7 +1584,10 @@
             "properties": {
               "add": {
                 "$operation": "vendor_type.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "vendor_type"
@@ -1488,7 +1599,10 @@
             "properties": {
               "add": {
                 "$operation": "workers_comp_code.create",
-                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick."
+                "description": "The add to send when nothing is the record, exactly as the v2 <kind>.create endpoint takes it: its name, and its parent_ref for a job or a sub-item, are what is looked for. Left out, nothing is created: a missing record is your app's to pick.",
+                "set_by_workflow": [
+                  "name"
+                ]
               },
               "kind": {
                 "const": "workers_comp_code"
@@ -2373,7 +2487,12 @@
           },
           "payment": {
             "$operation": "receive_payment.create",
-            "description": "How it was paid: payment_method_ref, deposit_to_account_ref, ref_number (a check number), txn_date, memo -- and total_amount only when it is not the whole balance. customer_ref and applied_to_txn_add are filled in from the invoice."
+            "description": "How it was paid: payment_method_ref, deposit_to_account_ref, ref_number (a check number), txn_date, memo -- and total_amount only when it is not the whole balance. customer_ref and applied_to_txn_add are filled in from the invoice.",
+            "set_by_workflow": [
+              "applied_to_txn_add",
+              "customer_ref",
+              "total_amount"
+            ]
           },
           "ref_number": {
             "description": "The reference number, such as an invoice number: tried when there is no id, or the id is stale.",
@@ -3136,7 +3255,11 @@
               },
               "update": {
                 "$operation": "account.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "account"
@@ -3168,7 +3291,11 @@
               },
               "update": {
                 "$operation": "class.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "class"
@@ -3184,7 +3311,11 @@
               },
               "update": {
                 "$operation": "currency.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "currency"
@@ -3200,7 +3331,11 @@
               },
               "update": {
                 "$operation": "customer.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "customer"
@@ -3264,7 +3399,11 @@
               },
               "update": {
                 "$operation": "employee.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "employee"
@@ -3280,7 +3419,11 @@
               },
               "update": {
                 "$operation": "inventory_site.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "inventory_site"
@@ -3296,7 +3439,11 @@
               },
               "update": {
                 "$operation": "item_discount.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_discount"
@@ -3312,7 +3459,11 @@
               },
               "update": {
                 "$operation": "item_fixed_asset.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_fixed_asset"
@@ -3328,7 +3479,11 @@
               },
               "update": {
                 "$operation": "item_group.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_group"
@@ -3344,7 +3499,11 @@
               },
               "update": {
                 "$operation": "item_inventory.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_inventory"
@@ -3360,7 +3519,11 @@
               },
               "update": {
                 "$operation": "item_inventory_assembly.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_inventory_assembly"
@@ -3376,7 +3539,11 @@
               },
               "update": {
                 "$operation": "item_non_inventory.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_non_inventory"
@@ -3392,7 +3559,11 @@
               },
               "update": {
                 "$operation": "item_other_charge.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_other_charge"
@@ -3408,7 +3579,11 @@
               },
               "update": {
                 "$operation": "item_payment.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_payment"
@@ -3424,7 +3599,11 @@
               },
               "update": {
                 "$operation": "item_sales_tax.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_sales_tax"
@@ -3440,7 +3619,11 @@
               },
               "update": {
                 "$operation": "item_sales_tax_group.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_sales_tax_group"
@@ -3456,7 +3639,11 @@
               },
               "update": {
                 "$operation": "item_service.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_service"
@@ -3472,7 +3659,11 @@
               },
               "update": {
                 "$operation": "item_subtotal.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "item_subtotal"
@@ -3504,7 +3695,11 @@
               },
               "update": {
                 "$operation": "lead.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "lead"
@@ -3520,7 +3715,11 @@
               },
               "update": {
                 "$operation": "other_name.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "other_name"
@@ -3552,7 +3751,11 @@
               },
               "update": {
                 "$operation": "payroll_item_wage.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "payroll_item_wage"
@@ -3568,7 +3771,11 @@
               },
               "update": {
                 "$operation": "price_level.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "price_level"
@@ -3584,7 +3791,11 @@
               },
               "update": {
                 "$operation": "sales_rep.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "sales_rep"
@@ -3600,7 +3811,11 @@
               },
               "update": {
                 "$operation": "sales_tax_code.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "sales_tax_code"
@@ -3648,7 +3863,11 @@
               },
               "update": {
                 "$operation": "to_do.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "to_do"
@@ -3680,7 +3899,11 @@
               },
               "update": {
                 "$operation": "vehicle.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "vehicle"
@@ -3696,7 +3919,11 @@
               },
               "update": {
                 "$operation": "vendor.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "vendor"
@@ -3728,7 +3955,11 @@
               },
               "update": {
                 "$operation": "workers_comp_code.update",
-                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks."
+                "description": "The fields to set on the record once it is found or picked, as the v2 <list>.update endpoint takes them: {\"phone\": \"512-555-0100\"}. Leave list_id and edit_sequence out: the chart fills in the ListID of the record it found, and the engine reads the edit sequence before sending. A field left out keeps its value in QuickBooks.",
+                "set_by_workflow": [
+                  "edit_sequence",
+                  "list_id"
+                ]
               }
             },
             "title": "workers_comp_code"

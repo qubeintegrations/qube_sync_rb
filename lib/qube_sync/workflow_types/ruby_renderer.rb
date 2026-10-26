@@ -78,9 +78,9 @@ module QubeSync
             "A start uses #{client} unless it's passed another as client:."
           end,
           "The signatures are in sig/qube_workflows.rbs. An operation's body is typed as that operation's " \
-            "params, its required fields included, but a workflow may fill some in itself (customer_ref, " \
-            "list_id, edit_sequence): QuBe Sync checks an input's fields and types when the run starts, and " \
-            "required fields when it sends the request."
+            "params, except that a field the workflow sets itself is optional (and a value given for it is " \
+            "overwritten): QuBe Sync checks an input's fields and types when the run starts, and required " \
+            "fields when it sends the request."
         ]
         text.flat_map { |paragraph| ["#"] + WorkflowTypes.wrap(paragraph, "# ", "# ") }.drop(1)
       end
@@ -300,6 +300,11 @@ module QubeSync
         description = schema["description"].to_s.strip
         parts[-1] = "#{parts[-1]}:" if id && !description.empty?
         parts << description unless description.empty?
+        set = id ? Workflow.set_by_workflow(schema) : []
+        unless set.empty?
+          parts << "The workflow sets #{set.map { |field| "`#{field}`" }.join(", ")} itself: a value given for " \
+            "#{set.size == 1 ? "it" : "them"} is overwritten."
+        end
         parts << "One of #{schema["enum"].map(&:inspect).join(", ")}." if schema["enum"].is_a?(Array)
         parts << "Always #{schema["const"].inspect}." if schema.key?("const")
         extra = schema["additionalProperties"]

@@ -72,14 +72,33 @@ module QubeWorkflows
     WORKFLOW: String
     VERSION: Integer
 
+    type payment_body = {
+      ?applied_to_txn_add: Array[::QubeSync::Operations::Types::applied_to_txn_add],
+      ?ar_account_ref: ::QubeSync::Operations::Types::ref,
+      ?credit_card_txn_info: ::QubeSync::Operations::Types::credit_card_txn_info,
+      ?customer_ref: ::QubeSync::Operations::Types::ref,
+      ?def_macro: String,
+      ?deposit_to_account_ref: ::QubeSync::Operations::Types::ref,
+      ?exchange_rate: Numeric,
+      ?external_guid: String,
+      ?include_ret_element: Array["ARAccountRef" | "AppliedToTxnRet" | "CreditCardTxnInfo" | "CurrencyRef" | "CustomerRef" | "DataExtRet" | "DepositToAccountRef" | "EditSequence" | "ExchangeRate" | "ExternalGUID" | "ListID" | "Memo" | "OwnerID" | "PaymentMethodRef" | "RefNumber" | "TimeCreated" | "TimeModified" | "TotalAmount" | "TotalAmountInHomeCurrency" | "TxnDate" | "TxnID" | "TxnNumber" | "UnusedCredits" | "UnusedPayment"],
+      ?is_auto_apply: bool,
+      ?memo: String,
+      ?payment_method_ref: ::QubeSync::Operations::Types::ref,
+      ?ref_number: String,
+      ?request_id: String,
+      ?total_amount: Numeric,
+      ?txn_date: String
+    }
+
     type input = {
       ?filters: ::QubeSync::Operations::Invoice::query_params,
-      payment: ::QubeSync::Operations::ReceivePayment::create_params,
+      payment: payment_body,
       ?txn_id: String
     }
 
-    def self.start: (::QubeWorkflows::connection connection, ?filters: ::QubeSync::Operations::Invoice::query_params?, payment: ::QubeSync::Operations::ReceivePayment::create_params, ?txn_id: String?, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
-    def self.input: (?filters: ::QubeSync::Operations::Invoice::query_params?, payment: ::QubeSync::Operations::ReceivePayment::create_params, ?txn_id: String?) -> input
+    def self.start: (::QubeWorkflows::connection connection, ?filters: ::QubeSync::Operations::Invoice::query_params?, payment: payment_body, ?txn_id: String?, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
+    def self.input: (?filters: ::QubeSync::Operations::Invoice::query_params?, payment: payment_body, ?txn_id: String?) -> input
   end
 
   module Resolve
@@ -100,12 +119,70 @@ module QubeWorkflows
     WORKFLOW: String
     VERSION: Integer
 
+    type customer_update_body = {
+      ?account_number: String,
+      ?additional_contact_ref: Array[::QubeSync::Operations::Types::additional_contact_ref],
+      ?additional_notes_mod: Array[::QubeSync::Operations::Types::additional_notes_mod],
+      ?alt_contact: String,
+      ?alt_phone: String,
+      ?bill_address: ::QubeSync::Operations::Types::address,
+      ?cc: String,
+      ?class_ref: ::QubeSync::Operations::Types::ref,
+      ?company_name: String,
+      ?contact: String,
+      ?contacts_mod: Array[::QubeSync::Operations::Types::contacts_mod],
+      ?credit_card_info: ::QubeSync::Operations::Customer::credit_card_info,
+      ?credit_limit: Numeric,
+      ?currency_ref: ::QubeSync::Operations::Types::ref,
+      ?customer_type_ref: ::QubeSync::Operations::Types::ref,
+      ?delivery_method: "Email" | "Fax" | "Print",
+      ?edit_sequence: String,
+      ?email: String,
+      ?fax: String,
+      ?first_name: String,
+      ?include_ret_element: Array["AccountNumber" | "AdditionalContactRef" | "AdditionalNotesRet" | "AltContact" | "AltPhone" | "Balance" | "BillAddress" | "BillAddressBlock" | "Cc" | "ClassRef" | "CompanyName" | "Contact" | "ContactsRet" | "CreditCardInfo" | "CreditLimit" | "CurrencyRef" | "CustomerTypeRef" | "DataExtRet" | "DeliveryMethod" | "EditSequence" | "Email" | "ExternalGUID" | "Fax" | "FirstName" | "FullName" | "IsActive" | "IsStatementWithParent" | "ItemSalesTaxRef" | "JobDesc" | "JobEndDate" | "JobProjectedEndDate" | "JobStartDate" | "JobStatus" | "JobTitle" | "JobTypeRef" | "LastName" | "ListID" | "MiddleName" | "Mobile" | "Name" | "Notes" | "OwnerID" | "Pager" | "ParentRef" | "Phone" | "PreferredDeliveryMethod" | "PreferredPaymentMethodRef" | "PriceLevelRef" | "PrintAs" | "ResaleNumber" | "SalesRepRef" | "SalesTaxCodeRef" | "SalesTaxCountry" | "Salutation" | "ShipAddress" | "ShipAddressBlock" | "ShipToAddress" | "Sublevel" | "Suffix" | "TaxRegistrationNumber" | "TermsRef" | "TimeCreated" | "TimeModified" | "TotalBalance" | "TxnID" | "TxnNumber"],
+      ?is_active: bool,
+      ?is_statement_with_parent: bool,
+      ?item_sales_tax_ref: ::QubeSync::Operations::Types::ref,
+      ?job_desc: String,
+      ?job_end_date: String,
+      ?job_projected_end_date: String,
+      ?job_start_date: String,
+      ?job_status: "Awarded" | "Closed" | "InProgress" | "None" | "NotAwarded" | "Pending",
+      ?job_title: String,
+      ?job_type_ref: ::QubeSync::Operations::Types::ref,
+      ?last_name: String,
+      ?list_id: String,
+      ?middle_name: String,
+      ?mobile: String,
+      ?name: String,
+      ?notes: String,
+      ?pager: String,
+      ?parent_ref: ::QubeSync::Operations::Types::ref,
+      ?phone: String,
+      ?preferred_delivery_method: "Email" | "Fax" | "None",
+      ?preferred_payment_method_ref: ::QubeSync::Operations::Types::ref,
+      ?price_level_ref: ::QubeSync::Operations::Types::ref,
+      ?print_as: String,
+      ?request_id: String,
+      ?resale_number: String,
+      ?sales_rep_ref: ::QubeSync::Operations::Types::ref,
+      ?sales_tax_code_ref: ::QubeSync::Operations::Types::ref,
+      ?sales_tax_country: "Australia" | "Canada" | "UK" | "US",
+      ?salutation: String,
+      ?ship_address: ::QubeSync::Operations::Types::address,
+      ?ship_to_address: Array[::QubeSync::Operations::Customer::ship_to_address],
+      ?suffix: String,
+      ?tax_registration_number: String,
+      ?terms_ref: ::QubeSync::Operations::Types::ref
+    }
+
     type customer_input = {
       kind: "customer",
       add: ::QubeSync::Operations::Customer::create_params,
       ?class: String,
       ?list_id: String,
-      update: ::QubeSync::Operations::Customer::update_params
+      update: customer_update_body
     }
 
     type future_list_input = {
@@ -118,8 +195,8 @@ module QubeWorkflows
 
     type input = customer_input | future_list_input
 
-    def self.customer: (::QubeWorkflows::connection connection, add: ::QubeSync::Operations::Customer::create_params, ?class: String?, ?list_id: String?, update: ::QubeSync::Operations::Customer::update_params, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
-    def self.customer_input: (add: ::QubeSync::Operations::Customer::create_params, ?class: String?, ?list_id: String?, update: ::QubeSync::Operations::Customer::update_params) -> customer_input
+    def self.customer: (::QubeWorkflows::connection connection, add: ::QubeSync::Operations::Customer::create_params, ?class: String?, ?list_id: String?, update: customer_update_body, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
+    def self.customer_input: (add: ::QubeSync::Operations::Customer::create_params, ?class: String?, ?list_id: String?, update: customer_update_body) -> customer_input
     def self.future_list: (::QubeWorkflows::connection connection, add: Hash[untyped, untyped], ?class: String?, ?list_id: String?, update: Hash[untyped, untyped], reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data
     def self.future_list_input: (add: Hash[untyped, untyped], ?class: String?, ?list_id: String?, update: Hash[untyped, untyped]) -> future_list_input
     def self.start: (::QubeWorkflows::connection connection, input input, reference: String, webhook_url: String, ?version: Integer?, ?client: ::QubeSync::Client) -> ::QubeSync::Client::data

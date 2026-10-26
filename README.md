@@ -108,8 +108,9 @@ QubeWorkflows.add_transaction.invoice_input(params, adds: adds)
   operation body that operation's params record (`::QubeSync::Operations::Invoice::create_params`)
   and a nested entry with branches (an `adds` item) a union of a record per branch. An operation
   newer than your qube_sync is a plain Hash, with a warning when the served operations aren't the
-  gem's. An operation body is typed with its required fields, though a workflow may fill some in
-  itself (`customer_ref`, `list_id`, `edit_sequence`).
+  gem's. A field the workflow sets itself (QuBe Sync lists them as `set_by_workflow`: upsert's
+  `list_id` and `edit_sequence`) is optional in that body, which then gets a record of its own
+  (`payment_body`, `customer_update_body`), and its docs say a value given for it is overwritten.
 - QuBe Sync still checks every start: a field the operation doesn't take is a 422 at the call, its
   error's `path` the body (`input.params`) and its `message` naming the field (`unknown parameter:
   "customer_rf"`).

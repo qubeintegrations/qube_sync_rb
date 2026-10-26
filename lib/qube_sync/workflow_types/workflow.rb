@@ -92,6 +92,18 @@ module QubeSync
         [Operations::ENTITIES.fetch(entry[:entity]).to_s, id.split(".", 2).last]
       end
 
+      # The fields a $operation reference says its workflow sets itself (`set_by_workflow`).
+      def self.set_by_workflow(schema)
+        Array(schema["set_by_workflow"]).select { |field| field.is_a?(String) }.uniq.sort
+      end
+
+      # An operation's top-level params, {field => [RBS type, required]}, or nil for one this gem
+      # doesn't know. The index loads on first use.
+      def self.operation_fields(id)
+        require_relative "../operations/fields"
+        Operations::FIELDS[id]
+      end
+
       # An object schema discriminated by one of its properties: its oneOf branches.
       def self.discriminated?(schema)
         schema.is_a?(Hash) && Array(schema["oneOf"]).any? && schema.dig("discriminator", "propertyName").is_a?(String)

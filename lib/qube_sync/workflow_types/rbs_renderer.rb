@@ -56,11 +56,14 @@ module QubeSync
       def workflow_rbs(workflow)
         @aliases = {}
         @memo = {}
+        @prefix = nil
         @taken = ["input"] + workflow.branches.map { |branch| "#{branch.method}_input" }
         inputs = {}
         methods = []
         if workflow.discriminated?
           workflow.branches.each do |branch|
+            # A body's own record is named for its branch.
+            @prefix = branch.method
             fields = [[workflow.discriminator, literal(branch.value), true]] +
               branch.inputs.map { |input| [input.name, type(input.schema, input.name, "      "), input.required] }
             inputs["#{branch.method}_input"] = record(fields, "    ")
@@ -68,6 +71,7 @@ module QubeSync
             methods << "    def self.#{branch.method}: (#{(connection + signature(params) + run).join(", ")}) -> #{DATA}"
             methods << "    def self.#{branch.method}_input: (#{signature(params).join(", ")}) -> #{branch.method}_input"
           end
+          @prefix = nil
           inputs["input"] = workflow.branches.map { |branch| "#{branch.method}_input" }.join(" | ")
           methods << "    def self.start: (#{(connection + ["input input"] + run).join(", ")}) -> #{DATA}"
         else
@@ -122,7 +126,7 @@ module QubeSync
 
       def members(schema, path, indent)
         id = Workflow.operation(schema)
-        return [operation_type(id)] if id
+        return [body_type(id, schema, path)] if id
         return [named(schema, path)] if Workflow.discriminated?(schema)
         return [literal(schema["const"])] if schema.key?("const")
         return schema["enum"].map { |value| literal(value) } if schema["enum"].is_a?(Array)
@@ -211,6 +215,9 @@ module QubeSync
 
         name = claim(path)
         @memo[key] = name
+        # Shared by every branch of the workflow, so not named for one.
+        prefix = @prefix
+        @prefix = nil
         discriminator = schema.dig("discriminator", "propertyName")
         branches = Workflow.branch_schemas(schema).map do |title, properties, required|
           branch = claim("#{name}_#{title}")
@@ -226,6 +233,7 @@ module QubeSync
           branch
         end
         @aliases[name] = branches.empty? ? "Hash[untyped, untyped]" : branches.join(" | ")
+        @prefix = prefix
         name
       end
 
@@ -238,6 +246,27 @@ module QubeSync
           n += 1
         end
         @taken << name
+        name
+      end
+
+      # An operation body: the operation's params alias, or, when the workflow sets some of its
+      # required fields itself (set_by_workflow), a record of its own with those made optional,
+      # named <branch>_<input>_body (<input>_body without branches). A field or an operation this
+      # gem doesn't know is ignored.
+      def body_type(id, schema, path)
+        fields = Workflow.operation_fields(id)
+        return operation_type(id) unless fields
+
+        relaxed = Workflow.set_by_workflow(schema).select { |field| fields.key?(field) && fields[field][1] }
+        return operation_type(id) if relaxed.empty?
+
+        base = [@prefix, path].compact.join("_")
+        key = [:body, base, id, relaxed]
+        return @memo[key] if @memo.key?(key)
+
+        name = claim("#{base}_body")
+        @memo[key] = name
+        @aliases[name] = record(fields.sort.map { |field, (rbs, required)| [field, rbs, required && !relaxed.include?(field)] }, "    ")
         name
       end
 

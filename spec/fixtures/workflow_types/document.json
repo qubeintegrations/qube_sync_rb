@@ -62,7 +62,7 @@
         "additionalProperties": false,
         "required": ["payment"],
         "properties": {
-          "payment": {"$operation": "receive_payment.create", "description": "How it was paid."},
+          "payment": {"$operation": "receive_payment.create", "set_by_workflow": ["applied_to_txn_add", "customer_ref", "total_amount"], "description": "How it was paid."},
           "txn_id": {"type": "string", "description": "The TxnID your app stored, if any."},
           "filters": {"$operation": "invoice.query", "description": "The query's own filters."}
         }
@@ -86,7 +86,7 @@
         },
         "discriminator": {"propertyName": "kind"},
         "oneOf": [
-          {"title": "customer", "properties": {"kind": {"const": "customer"}, "add": {"$operation": "customer.create"}, "update": {"$operation": "customer.update"}}},
+          {"title": "customer", "properties": {"kind": {"const": "customer"}, "add": {"$operation": "customer.create"}, "update": {"$operation": "customer.update", "set_by_workflow": ["edit_sequence", "list_id"]}}},
           {"title": "future_list", "properties": {"kind": {"const": "future_list"}, "add": {"$operation": "future_list.create"}, "update": {"type": "object"}}}
         ]
       }

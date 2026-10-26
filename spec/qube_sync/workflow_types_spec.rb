@@ -243,6 +243,25 @@ RSpec.describe QubeSync::WorkflowTypes do
       expect(ruby).to include("def self.a(connection, add:, reference:", "def self.b(connection, add:, update: nil, reference:")
     end
 
+    it "makes the fields a workflow sets itself optional in a body record of its own" do
+      files = render(document, drafts: true)
+      expect(files.rbs).to include("    type payment_body = {\n", "      ?customer_ref: ::QubeSync::Operations::Types::ref,\n",
+        "      payment: payment_body,\n", "    type customer_update_body = {\n", "      ?list_id: String,\n",
+        "      update: customer_update_body\n", "type future_list_input")
+      expect(files.rbs[/    type payment_body = \{\n(.*?)\n    \}/m, 1]).not_to match(/^      [a-z_]+: /) # every field optional here
+      expect(files.ruby.gsub(/\n *# +/, " ")).to include("The workflow sets `applied_to_txn_add`, `customer_ref`, " \
+        "`total_amount` itself: a value given for them is overwritten.")
+    end
+
+    it "ignores set_by_workflow fields it doesn't know, keeping the operation's alias" do
+      files = render(workflow({"type" => "object", "required" => ["payment", "body"], "properties" => {
+        "payment" => {"$operation" => "receive_payment.create", "set_by_workflow" => ["no_such_field"]},
+        "body" => {"$operation" => "widget.create", "set_by_workflow" => ["name"]}
+      }}))
+      expect(files.rbs).to include("payment: ::QubeSync::Operations::ReceivePayment::create_params", "body: Hash[untyped, untyped]")
+      expect(files.rbs).not_to include("_body =")
+    end
+
     it "types an operation it doesn't know as a Hash" do
       files = render(workflow({"type" => "object", "required" => ["body"], "properties" => {"body" => {"$operation" => "widget.create"}}}))
       expect(files.rbs).to include("body: Hash[untyped, untyped]")

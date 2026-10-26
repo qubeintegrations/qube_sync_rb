@@ -15,9 +15,9 @@
 # QubeWorkflows.client = QubeSync::Client.new(api_key: ENV.fetch("QUBE_API_KEY")).
 #
 # The signatures are in sig/qube_workflows.rbs. An operation's body is typed as that operation's
-# params, its required fields included, but a workflow may fill some in itself (customer_ref,
-# list_id, edit_sequence): QuBe Sync checks an input's fields and types when the run starts, and
-# required fields when it sends the request.
+# params, except that a field the workflow sets itself is optional (and a value given for it is
+# overwritten): QuBe Sync checks an input's fields and types when the run starts, and required
+# fields when it sends the request.
 module QubeWorkflows
   class << self
     attr_writer :client
@@ -174,7 +174,9 @@ module QubeWorkflows
     # @param filters [Hash, nil] the invoice.query body (see QubeSync::Operations::Invoice#query):
     #   The query's own filters.
     # @param payment [Hash] the receive_payment.create body (see
-    #   QubeSync::Operations::ReceivePayment#create): How it was paid.
+    #   QubeSync::Operations::ReceivePayment#create): How it was paid. The workflow sets
+    #   `applied_to_txn_add`, `customer_ref`, `total_amount` itself: a value given for them is
+    #   overwritten.
     # @param txn_id [String, nil] The TxnID your app stored, if any.
     # @param reference [String] your reference for the run, also its Idempotency-Key, so a retry
     #   never starts a second run
@@ -193,7 +195,9 @@ module QubeWorkflows
     # @param filters [Hash, nil] the invoice.query body (see QubeSync::Operations::Invoice#query):
     #   The query's own filters.
     # @param payment [Hash] the receive_payment.create body (see
-    #   QubeSync::Operations::ReceivePayment#create): How it was paid.
+    #   QubeSync::Operations::ReceivePayment#create): How it was paid. The workflow sets
+    #   `applied_to_txn_add`, `customer_ref`, `total_amount` itself: a value given for them is
+    #   overwritten.
     # @param txn_id [String, nil] The TxnID your app stored, if any.
     # @return [Hash] the input
     # @see QubeSync::Operations::Invoice#query
@@ -254,7 +258,8 @@ module QubeWorkflows
     # @param add [Hash] the customer.create body (see QubeSync::Operations::Customer#create)
     # @param class [String, nil] An input named after a Ruby keyword, to test the generator.
     # @param list_id [String, nil]
-    # @param update [Hash] the customer.update body (see QubeSync::Operations::Customer#update)
+    # @param update [Hash] the customer.update body (see QubeSync::Operations::Customer#update) The
+    #   workflow sets `edit_sequence`, `list_id` itself: a value given for them is overwritten.
     # @param reference [String] your reference for the run, also its Idempotency-Key, so a retry
     #   never starts a second run
     # @param webhook_url [String] where QuBe Sync sends the run's webhooks
@@ -273,7 +278,8 @@ module QubeWorkflows
     # @param add [Hash] the customer.create body (see QubeSync::Operations::Customer#create)
     # @param class [String, nil] An input named after a Ruby keyword, to test the generator.
     # @param list_id [String, nil]
-    # @param update [Hash] the customer.update body (see QubeSync::Operations::Customer#update)
+    # @param update [Hash] the customer.update body (see QubeSync::Operations::Customer#update) The
+    #   workflow sets `edit_sequence`, `list_id` itself: a value given for them is overwritten.
     # @return [Hash] the input
     # @see QubeSync::Operations::Customer#create
     # @see QubeSync::Operations::Customer#update

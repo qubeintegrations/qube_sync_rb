@@ -8,7 +8,10 @@
   gives byte-identical files, which load on Ruby 2.7 too. `--check` exits 1 when the file's digest
   isn't the served one (naming the workflows that changed) or on a 401, and warns and exits 0 when
   QuBe Sync can't be reached or answers 5xx. `QubeSync::WorkflowTypes.render` and `.check` do the
-  same from code (qube_rails' generator uses them).
+  same from code (qube_rails' generator uses them). A body whose workflow sets some of its
+  required fields itself (`set_by_workflow`) gets its own record, those fields optional, from
+  `lib/qube_sync/operations/fields.rb` (`Operations::FIELDS`, each operation's top-level params as
+  RBS, written by bin/generate-operations and loaded only by the renderer).
 - `Client#workflow_types(include_drafts: false, etag: nil)`: `GET /workflows/types`, returning
   `:not_modified` on a 304.
 - `QubeSync::Operations::DIGEST`: the sha256 of the operations manifest the operation methods were
