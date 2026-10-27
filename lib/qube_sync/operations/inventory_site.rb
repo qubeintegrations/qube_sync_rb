@@ -34,8 +34,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `phone` (String): The telephone number.
       # - `request_id` (String): Your own label for the request, sent to QuickBooks as its qbXML
       #   `requestID` and echoed in the raw answer (`response_xml`); optional, since the answer's
@@ -96,11 +96,11 @@ module QubeSync
       #   "SiteAddressBlock", "SiteDesc", "TimeCreated", "TimeModified">)
       # - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`. Choose at most
-      #   one of: `list_id`, or `full_name`, or the set (`active_status`, `from_modified_date`,
-      #   `name_filter`, `name_range_filter`, `to_modified_date`). Members of a set combine with
-      #   each other, not with the other choices.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
+      #   Choose at most one of: `list_id`, or `full_name`, or the set (`active_status`,
+      #   `from_modified_date`, `name_filter`, `name_range_filter`, `to_modified_date`). Members of
+      #   a set combine with each other, not with the other choices.
       # - `meta_data` (one of "MetaDataAndResponseData", "MetaDataOnly", "NoMetaData"): Use the
       #   `meta_data` attribute to control whether query responses include counts. Options are
       #   NoMetaData (default), MetaDataOnly (count only), and MetaDataAndResponseData (count plus
@@ -162,8 +162,8 @@ module QubeSync
       #   QuickBooks. The default value is true.
       # - `list_id` (String, required): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
       # - `name` (String): Name is the case-insensitive short name of a list object (without
       #   ancestors). It must be unique within its hierarchy scope. Hierarchical lists can reuse the
       #   same Name in different branches because `full_name` remains distinct.
@@ -177,8 +177,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `phone` (String): The telephone number.
       # - `request_id` (String): Your own label for the request, sent to QuickBooks as its qbXML
       #   `requestID` and echoed in the raw answer (`response_xml`); optional, since the answer's

@@ -23,8 +23,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `asset_desc` (String): Description of the asset—maker, brand, and so on.
       # - `asset_number` (String): The number used by the QuickBooks Fixed Asset Manager to identify
       #   this asset.
@@ -43,8 +43,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `cost_basis` (Numeric): The total cost of the fixed asset. This can include the cost of
       #   improvements or repairs. This amount is used to figure depreciation.
       # - `external_guid` (String): Allows for the attachment of a user defined GUID value.
@@ -125,8 +125,9 @@ module QubeSync
       #     `full_name_with_children` is exactly the same as `full_name`.
       #   - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #     QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #     within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #     supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     within a list family, not across the company file: customers, vendors, employees and
+      #     other names share one sequence, every item type shares another, and each other list has
+      #     its own.
       #   - `list_id_with_children` (String): Allows you to filter for data that relates to the
       #     specified object and its descendants.
       # - `from_modified_date` (String): Filters results to objects modified on or after this
@@ -155,10 +156,10 @@ module QubeSync
       #   or `list_id` every match comes back in one answer, so leave `iterator` out.
       # - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`. Choose at most
-      #   one of: `list_id`, or `full_name`, or the set (`active_status`, `class_filter`,
-      #   `from_modified_date`, `max_returned`, `name_filter`, `name_range_filter`,
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
+      #   Choose at most one of: `list_id`, or `full_name`, or the set (`active_status`,
+      #   `class_filter`, `from_modified_date`, `max_returned`, `name_filter`, `name_range_filter`,
       #   `to_modified_date`). Members of a set combine with each other, not with the other choices.
       # - `max_returned` (Integer): Limits the number of objects that a query returns. (To get a
       #   count of how many objects could possibly be returned, use the `meta_data` query
@@ -231,8 +232,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `asset_desc` (String): Description of the asset—maker, brand, and so on.
       # - `asset_number` (String): The number used by the QuickBooks Fixed Asset Manager to identify
       #   this asset.
@@ -251,8 +252,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `cost_basis` (Numeric): The total cost of the fixed asset. This can include the cost of
       #   improvements or repairs. This amount is used to figure depreciation.
       # - `edit_sequence` (String, required): `edit_sequence` is a server-generated revision token.
@@ -277,8 +278,8 @@ module QubeSync
       #   QuickBooks. The default value is true.
       # - `list_id` (String, required): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
       # - `location` (String): Where the asset is located or has been placed into service.
       # - `name` (String): Name is the case-insensitive short name of a list object (without
       #   ancestors). It must be unique within its hierarchy scope. Hierarchical lists can reuse the

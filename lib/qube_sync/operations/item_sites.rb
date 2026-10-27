@@ -38,8 +38,9 @@ module QubeSync
       #       `full_name_with_children` is exactly the same as `full_name`.
       #     - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #       QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #       within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #       are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       within a list family, not across the company file: customers, vendors, employees and
+      #       other names share one sequence, every item type shares another, and each other list
+      #       has its own.
       #     - `list_id_with_children` (String): Allows you to filter for data that relates to the
       #       specified object and its descendants.
       #   - `site_filter` (Hash): Allows you to report on Sites.
@@ -49,8 +50,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #       QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #       within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #       are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       within a list family, not across the company file: customers, vendors, employees and
+      #       other names share one sequence, every item type shares another, and each other list
+      #       has its own.
       # - `item_type_filter` (one of "AllExceptFixedAsset", "Assembly", "Discount", "FixedAsset",
       #   "Inventory", "InventoryAndAssembly", "NonInventory", "OtherCharge", "Payment", "Sales",
       #   "SalesTax", "Service"): Allows you to report on a specific item type. Choose at most one
@@ -63,10 +65,10 @@ module QubeSync
       #   alone (at most that many, in one answer).
       # - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`. Choose at most
-      #   one of: `list_id`, or the set (`item_site_filter`, `item_type_filter`). Members of a set
-      #   combine with each other, not with the other choices.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
+      #   Choose at most one of: `list_id`, or the set (`item_site_filter`, `item_type_filter`).
+      #   Members of a set combine with each other, not with the other choices.
       # - `max_returned` (Integer): Limits the number of objects that a query returns. (To get a
       #   count of how many objects could possibly be returned, use the `meta_data` query
       #   attribute.) If you include a `max_returned` value, it must be at least 1. The page size,

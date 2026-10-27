@@ -38,8 +38,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #     other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #     QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -60,8 +61,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       #
       # @param connection_id [String]
       # @param params [Hash] the fields above
@@ -108,11 +109,11 @@ module QubeSync
       #   or `list_id` every match comes back in one answer, so leave `iterator` out.
       # - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`. Choose at most
-      #   one of: `list_id`, or `full_name`, or the set (`active_status`, `from_modified_date`,
-      #   `max_returned`, `name_filter`, `name_range_filter`, `to_modified_date`). Members of a set
-      #   combine with each other, not with the other choices.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
+      #   Choose at most one of: `list_id`, or `full_name`, or the set (`active_status`,
+      #   `from_modified_date`, `max_returned`, `name_filter`, `name_range_filter`,
+      #   `to_modified_date`). Members of a set combine with each other, not with the other choices.
       # - `max_returned` (Integer): Limits the number of objects that a query returns. (To get a
       #   count of how many objects could possibly be returned, use the `meta_data` query
       #   attribute.) If you include a `max_returned` value, it must be at least 1. The page size,
@@ -210,8 +211,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #     other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #     QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -221,8 +223,8 @@ module QubeSync
       #     single unit of measure per item, this must be the base unit!
       # - `list_id` (String, required): `list_id` and `full_name` both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
       # - `name` (String): Name is the case-insensitive short name of a list object (without
       #   ancestors). It must be unique within its hierarchy scope. Hierarchical lists can reuse the
       #   same Name in different branches because `full_name` remains distinct.
@@ -236,8 +238,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       #
       # @param connection_id [String]
       # @param params [Hash] the fields above
