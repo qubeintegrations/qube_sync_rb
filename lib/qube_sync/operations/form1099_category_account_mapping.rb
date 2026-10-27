@@ -54,8 +54,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `force_mapping` (Boolean): In some circumstances, changing the account mapping could
       #       result in the displaying of a user dialog in the QuickBooks UI prompting the user to
       #       confirm, which would prevent the SDK request from completing. Setting this property to

@@ -1,0 +1,59 @@
+module QubeSync
+  module WorkflowTypes
+    class Error < QubeSync::Error
+    end
+
+    interface _TypesClient
+      def base_url: () -> String
+      def workflow_types: (?include_drafts: bool, ?etag: String?) -> (Hash[String, untyped] | :not_modified)
+    end
+
+    COMMAND: String
+    WIDTH: Integer
+    DEFAULT_CLIENT: String
+
+    class Files
+      attr_accessor ruby: String
+      attr_accessor rbs: String
+      attr_accessor digest: String
+      attr_accessor drafts: bool
+      attr_accessor warnings: Array[String]
+    end
+
+    class Header
+      attr_accessor digest: String
+      attr_accessor drafts: bool
+    end
+
+    class Check
+      attr_accessor status: :current | :stale | :unreachable | :error
+      attr_accessor message: String
+      attr_accessor changes: Array[String]
+      attr_accessor warnings: Array[String]
+
+      def exit_status: () -> Integer
+    end
+
+    def self.render: (Hash[String, untyped] document, source: String, ?drafts: bool, ?command: String, ?client: String) -> Files
+    def self.select: (Hash[String, untyped] document, bool drafts) -> Hash[String, Hash[String, untyped]]
+    def self.header: (String? source) -> Header?
+    def self.changes: (String before, String after) -> Array[String]
+    def self.check: (String existing, client: _TypesClient, source: String, path: String, ?command: String, ?client_expression: String) -> Check
+    def self.wrap: (String? text, String first, String rest) -> Array[String]
+
+    class CLI
+      interface _Env
+        def []: (String name) -> String?
+      end
+
+      interface _Puts
+        def puts: (*untyped) -> untyped
+      end
+
+      USAGE: String
+
+      def initialize: (?env: _Env, ?out: _Puts, ?err: _Puts, ?client_factory: (^(api_key: String, base_url: String) -> _TypesClient)?) -> void
+      def run: (Array[String] argv) -> Integer
+    end
+  end
+end

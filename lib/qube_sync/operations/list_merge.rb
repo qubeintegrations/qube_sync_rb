@@ -23,8 +23,9 @@ module QubeSync
       #     prevent overwriting newer changes.
       #   - `list_id` (String, required): `list_id` and `full_name` both identify a list object.
       #     QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #     within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #     supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     within a list family, not across the company file: customers, vendors, employees and
+      #     other names share one sequence, every item type shares another, and each other list has
+      #     its own.
       # - `merge_to` (Hash, required): The object into which you are merging another object.
       #   - `edit_sequence` (String, required): `edit_sequence` is a server-generated revision
       #     token. It changes each time the object is updated. To modify an existing object, you
@@ -32,8 +33,9 @@ module QubeSync
       #     prevent overwriting newer changes.
       #   - `list_id` (String, required): `list_id` and `full_name` both identify a list object.
       #     QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #     within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #     supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     within a list family, not across the company file: customers, vendors, employees and
+      #     other names share one sequence, every item type shares another, and each other list has
+      #     its own.
       # - `request_id` (String): Your own label for the request, sent to QuickBooks as its qbXML
       #   `requestID` and echoed in the raw answer (`response_xml`); optional, since the answer's
       #   webhook already carries the request's `id`.

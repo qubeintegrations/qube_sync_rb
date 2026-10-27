@@ -22,8 +22,8 @@ module QubeSync
       #   being deleted.
       # - `list_id` (String, required): `list_id` and FullName both identify a list object.
       #   QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #   within a list type, not globally across all lists. If both FullName and `list_id` are
-      #   supplied in a request, QuickBooks uses `list_id` and ignores FullName.
+      #   within a list family, not across the company file: customers, vendors, employees and other
+      #   names share one sequence, every item type shares another, and each other list has its own.
       # - `request_id` (String): Your own label for the request, sent to QuickBooks as its qbXML
       #   `requestID` and echoed in the raw answer (`response_xml`); optional, since the answer's
       #   webhook already carries the request's `id`.

@@ -50,7 +50,7 @@ module QubeSync
     def inspect: () -> String
     def to_s: () -> String
 
-    def create_connection: (webhook_url: String, ?name: String?) -> data
+    def create_connection: (webhook_url: String, ?name: String?, ?type: String?) -> data
     def get_connection: (String id) -> data
     def list_connections: () -> Array[data]
     def update_connection: (String id, ?webhook_url: String?, ?name: String?) -> data
@@ -61,9 +61,12 @@ module QubeSync
 
     def start_run: (String connection_id, String workflow, Hash[untyped, untyped]? input, reference: String, webhook_url: String, ?version: Integer?) -> data
     def get_run: (String run_url_or_connection_id, ?String? run_id) -> data
+    def redeliver_run: (String connection_id, String run_id) -> data
     def list_runs: (String connection_id, ?reference: String?, ?state: String?, ?outcome: String?) -> Array[data]
     def cancel_run: (String cancel_url, ?reason: String?) -> data
     def run_events: (String connection_id, String run_id, ?after: Integer?, ?limit: Integer?) -> data
+
+    def workflow_types: (?include_drafts: bool, ?etag: String?) -> (data | :not_modified)
 
     def answer: (String decisions_url, choice: String, ?data: Hash[untyped, untyped]?) -> data
     def search: (String search_url, field: String, q: String) -> Array[data]

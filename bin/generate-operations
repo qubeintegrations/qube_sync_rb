@@ -6,6 +6,8 @@
 #
 #   lib/qube_sync/operations.rb              the index, the entity accessors and an autoload per entity
 #   lib/qube_sync/operations/<entity>.rb     one class per entity, its actions documented with YARD
+#   lib/qube_sync/operations/fields.rb       each operation's top-level params' RBS types, for
+#                                            QubeSync::WorkflowTypes (loaded only by it)
 #   sig/qube_sync/operations.rbs             the index's and the accessors' signatures
 #   sig/qube_sync/operations/<entity>.rbs    the entity's methods and its params as RBS records
 #   sig/qube_sync/operations/types.rbs       nested records used by more than one entity
@@ -15,6 +17,7 @@
 #
 # Re-running gives byte-identical output.
 
+require "digest"
 require "json"
 require "set"
 
@@ -25,6 +28,7 @@ module GenerateOperations
   HEADER = "# Generated from operations.json by #{SCRIPT}: don't edit."
   WIDTH = 100
   SUPPORTED_VERSION = 1
+  FIELDS_FILE = "lib/qube_sync/operations/fields.rb"
   # Entities whose natural accessor would replace a method every Ruby object has.
   RESERVED = {"class" => "class_"}.freeze
   # Schema keys that don't change a field's type.
@@ -42,7 +46,7 @@ module GenerateOperations
       abort "#{SCRIPT}: operations.json is version #{manifest["version"].inspect}; this generator reads version #{SUPPORTED_VERSION}"
     end
 
-    files = Generator.new(manifest).files
+    files = Generator.new(manifest, digest: digest(File.binread(MANIFEST))).files
     existing = generated_on_disk
     stale = files.select { |path, content| !File.exist?(File.join(ROOT, path)) || File.read(File.join(ROOT, path), encoding: "UTF-8") != content }.keys
     orphans = existing - files.keys
@@ -64,6 +68,12 @@ module GenerateOperations
     end
     orphans.each { |path| File.delete(File.join(ROOT, path)) }
     puts "#{SCRIPT}: #{files.size} files, #{stale.size} written, #{orphans.size} removed"
+  end
+
+  # The manifest's digest as QuBe Sync gives it (`operations_digest` in GET /workflows/types): of
+  # its bytes, as served.
+  def digest(bytes)
+    "sha256:#{Digest::SHA256.hexdigest(bytes)}"
   end
 
   def generated_on_disk
@@ -96,10 +106,11 @@ module GenerateOperations
   end
 
   class Generator
-    attr_reader :manifest, :operations, :entities
+    attr_reader :manifest, :digest, :operations, :entities
 
-    def initialize(manifest)
+    def initialize(manifest, digest:)
       @manifest = manifest
+      @digest = digest
       @operations = manifest["operations"].sort_by { |op| op["id"] }
       @entities = @operations.group_by { |op| op["entity"] }.sort.to_h
       name_types
@@ -110,6 +121,7 @@ module GenerateOperations
       out["lib/qube_sync/operations.rb"] = index_rb
       out["sig/qube_sync/operations.rbs"] = index_rbs
       out["sig/qube_sync/operations/types.rbs"] = types_rbs
+      out["lib/qube_sync/operations/fields.rb"] = fields_rb
       @entities.each do |entity, ops|
         out["lib/qube_sync/operations/#{entity}.rb"] = entity_rb(entity, ops)
         out["sig/qube_sync/operations/#{entity}.rbs"] = entity_rbs(entity, ops)
@@ -132,6 +144,8 @@ module GenerateOperations
     # types.rbs, any other in its entity's own file. Structurally equal objects (descriptions
     # aside) share a name.
     def name_types
+      raise "an entity named fields would overwrite #{FIELDS_FILE}" if @entities.key?("fields")
+
       uses = Hash.new { |h, k| h[k] = {fields: [], entities: Set.new, schema: nil} }
       @operations.each do |op|
         each_nested(op["params"]) do |field, schema|
@@ -313,6 +327,7 @@ module GenerateOperations
       lines = [HEADER, "", "module QubeSync", "  module Operations"]
       lines << "    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }"
       lines << ""
+      lines << "    DIGEST: String"
       lines << "    INDEX: Hash[String, entry]"
       lines << "    ENTITIES: Hash[String, Symbol]"
       lines << ""
@@ -335,6 +350,49 @@ module GenerateOperations
       lines.join("\n")
     end
 
+    # The RBS type of a params field, its nested records named in full, as a file outside the
+    # entity's class (sig/qube_workflows.rbs) names them.
+    def qualified_type(schema, entity)
+      if schema["type"] == "array"
+        "Array[#{qualified_type(schema["items"] || {}, entity)}]"
+      elsif object?(schema)
+        key = structure(schema)
+        if (shared = @shared[key])
+          "::QubeSync::Operations::Types::#{shared[:name]}"
+        else
+          "::QubeSync::Operations::#{const(entity)}::#{@local[entity].fetch(key)[:name]}"
+        end
+      else
+        rbs_type(schema, entity)
+      end
+    end
+
+    # Each operation's top-level params, as RBS: QubeSync::WorkflowTypes writes a body record
+    # with the fields a workflow sets itself made optional, which an alias can't express.
+    def fields_rb
+      lines = [HEADER, "# frozen_string_literal: true", "", "module QubeSync", "  module Operations"]
+      lines << "    # Operation id => {field => [its RBS type, required]}, the params' own fields. Only"
+      lines << "    # QubeSync::WorkflowTypes loads it."
+      lines << "    FIELDS = {"
+      @operations.each do |op|
+        req = required(op["params"])
+        fields = object_fields(op["params"])
+        if fields.empty?
+          lines << "      #{op["id"].inspect} => {}.freeze,"
+          next
+        end
+        lines << "      #{op["id"].inspect} => {"
+        fields.each do |name, sub|
+          lines << "        #{name.inspect} => [#{qualified_type(sub, op["entity"]).inspect}, #{req.include?(name)}].freeze,"
+        end
+        lines[-1] = lines[-1].chomp(",")
+        lines << "      }.freeze,"
+      end
+      lines[-1] = lines[-1].chomp(",")
+      lines.concat(["    }.freeze", "  end", "end", ""])
+      lines.join("\n")
+    end
+
     # -- Ruby -------------------------------------------------------------------------------
 
     def index_rb
@@ -342,6 +400,10 @@ module GenerateOperations
       lines << "  # QuickBooks operations, one class per entity, each loaded on first use. A client reaches"
       lines << "  # them through its entity accessors: `client.customer.create(...)`."
       lines << "  module Operations"
+      lines << "    # The digest of the operations.json these were generated from. A workflow types document"
+      lines << "    # names the one its `$operation` ids refer to (`operations_digest`)."
+      lines << "    DIGEST = #{@digest.inspect}"
+      lines << ""
       lines << "    # Operation id => how it's sent. `path` is relative to the connection."
       lines << "    INDEX = {"
       @operations.each do |op|

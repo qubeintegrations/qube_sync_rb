@@ -41,7 +41,9 @@ redirect_to connection["links"]["onboarding"], allow_other_host: true
 
 QuBe Sync sends `connection.connected` to the connection's `webhook_url` once the customer's Web
 Connector first checks in. `regenerate_onboarding(id)` makes a fresh onboarding link, and
-`update_connection(id, webhook_url:, name:)` changes either. `get_connection`,
+`update_connection(id, webhook_url:, name:)` changes either. `create_connection(webhook_url:,
+type: "simulated")` makes a connection to a simulated QuickBooks company file instead, connected
+as it's made, for testing without a Windows computer. `get_connection`,
 `list_connections`, `delete_connection`, `set_password(id, password: nil)` and `get_qwc(id)` (the
 QWC file's XML) are there for setup without hosted onboarding.
 
@@ -63,11 +65,65 @@ end
 ```
 
 `get_run(run_url)` or `get_run(connection_id, run_id)` reads a run, `list_runs(connection_id,
-reference:, state:, outcome:)` finds runs, `cancel_run(cancel_url, reason: nil)` cancels one, and
+reference:, state:, outcome:)` finds runs, `cancel_run(cancel_url, reason: nil)` cancels one,
+`redeliver_run(connection_id, run_id)` has QuBe Sync send its latest event again (after an
+outage longer than the webhook retries), and
 `run_events(connection_id, run_id, after:, limit:)` returns a page of its event log whole
 (`{"data" => [...], "next_after" => ...}`). A method that takes a link takes it from a webhook's
 or a run's `links`, or a path under `/api/v2`. A link on any other scheme, host or port raises
 `ArgumentError` before a request is made, so the API key only ever goes to QuBe Sync.
+
+### Typed workflow starts
+
+`qube_sync workflows` fetches your app's workflow input types (`GET /api/v2/workflows/types`) and
+writes them as Ruby and RBS you check in: a start method per workflow, and per branch of its
+input, whose operation bodies have the same types and field docs as the operation methods below.
+
+```sh
+QUBE_API_KEY=... bundle exec qube_sync workflows             # lib/qube_workflows.rb, sig/qube_workflows.rbs
+QUBE_API_KEY=... bundle exec qube_sync workflows --check     # in CI: exits 1 when the files are out of date
+```
+
+```ruby
+require_relative "qube_workflows"
+QubeWorkflows.client = QUBE # once, at boot
+
+QubeWorkflows.add_transaction.invoice(connection_id, {
+  customer_ref: {list_id: "80000001-1700000000"},
+  invoice_line_add: [{item_ref: {full_name: "Consulting"}, amount: "100.00"}]
+}, adds: [{kind: "customer", add: {name: "Acme Ltd"}}],
+  reference: "invoice-#{invoice.id}", webhook_url: "https://myapp.example/qube/runs")
+
+# The input alone, for start or a QubeRails::Operation's input:
+QubeWorkflows.add_transaction.invoice_input(params, adds: adds)
+```
+
+- A workflow whose input has branches (add_transaction's `operation`, upsert's `kind`) gets one
+  method per branch, named by the branch: the discriminator is filled in and the inputs are
+  keywords (required ones without defaults), except a workflow's one operation body (add_transaction's
+  `params`), which every branch takes positionally; a workflow with two (upsert's `add` and
+  `update`) takes both as keywords. `start(connection_id, input, ...)` takes any branch's input. A workflow without
+  branches gets `start(connection_id, <inputs as keywords>, reference:, webhook_url:)` and
+  `input(...)`. Each `*_input` leaves out nil values. `connection_id` may be anything with a
+  `qube_id` (a QubeRails::Connection).
+- Each start takes `reference:`, `webhook_url:`, `version: nil` and `client:` (QubeWorkflows.client
+  unless given), and returns the run as `start_run` does.
+- The RBS gives each input a type alias (`QubeWorkflows::AddTransaction::invoice_input`), each
+  operation body that operation's params record (`::QubeSync::Operations::Invoice::create_params`)
+  and a nested entry with branches (an `adds` item) a union of a record per branch. An operation
+  newer than your qube_sync is a plain Hash, with a warning when the served operations aren't the
+  gem's. A field the workflow sets itself (QuBe Sync lists them as `set_by_workflow`: upsert's
+  `list_id` and `edit_sequence`) is optional in that body, which then gets a record of its own
+  (`payment_body`, `customer_update_body`), and its docs say a value given for it is overwritten.
+- QuBe Sync still checks every start: a field the operation doesn't take is a 422 at the call, its
+  error's `path` the body (`input.params`) and its `message` naming the field (`unknown parameter:
+  "customer_rf"`).
+- `--drafts` types each workflow's draft where it has one, so you can build against a workflow
+  before publishing it. The header records the digest and the flag, and `--check` fetches with the
+  same flag. When QuBe Sync can't be reached or answers 5xx, `--check` warns and exits 0; a 401
+  exits 1.
+- `--output PATH` and `--sig PATH` choose the files; `QUBE_BASE_URL` another host.
+- In Rails, `bin/rails g qube_rails:workflows` (qube_rails) writes the same file into `app/qube/`.
 
 ### Queueing an operation
 

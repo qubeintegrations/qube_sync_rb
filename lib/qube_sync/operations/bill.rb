@@ -20,8 +20,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `def_macro` (String): `def_macro` lets you assign a reusable name to a returned `txn_id`
       #   or `txn_line_id` so later requests can reference it with `useMacro`. This feature requires
       #   SDK 2.0+.
@@ -42,8 +42,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `amount` (Numeric): A monetary amount.
       #   - `billable_status` (one of "Billable", "HasBeenBilled", "NotBillable"): The billing
       #     status of this item line or expense line.
@@ -57,8 +58,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `customer_ref` (Hash): `customer_ref` identifies a customer or customer job. If both
       #     `full_name` and `list_id` are provided, `full_name` is ignored. In SalesReceipt and
       #     ReceivePayment, it identifies who receives credit. In TimeTracking, it identifies who
@@ -68,8 +70,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `data_ext` (Array<Hash>)
       #     - `data_ext_name` (String, required): The name of the data extension. If this is a
       #       custom field, `data_ext_name` will be visible as a label in the QuickBooks user
@@ -100,8 +103,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `sales_tax_code_ref` (Hash): `sales_tax_code_ref` points to the sales-tax code used for
       #     an item or customer context. QuickBooks includes default TAX and NON codes, and a code
       #     can be deleted only when nothing references it. If sales tax is disabled, QuickBooks
@@ -112,8 +116,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `tax_amount` (Numeric)
       # - `external_guid` (String): Allows for the attachment of a user defined GUID value.
       # - `include_ret_element` (Array<one of "APAccountRef", "AmountDue",
@@ -150,16 +155,18 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `inventory_site_ref` (Hash): Site where inventory is located.
       #     - `full_name` (String): `full_name` (along with `list_id`) is a way to identify a list
       #       object. The `full_name` is the name prefixed by the names of each ancestor, for
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `item_group_ref` (Hash, required): ItemGroup objects represent items that are grouped
       #     together for fast entry, and an `item_group_ref` aggregate refers to one of these item
       #     groups. In a request, if an `item_group_ref` aggregate includes both `full_name` and
@@ -170,8 +177,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #     other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #     QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -198,8 +206,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `cost` (Numeric): If both Quantity and Amount are specified, QuickBooks will use them to
       #     calculate Cost. Likewise, if both Quantity and Cost are specified, QuickBooks will use
       #     them to calculate the total Amount.
@@ -212,8 +221,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `data_ext` (Array<Hash>)
       #     - `data_ext_name` (String, required): The name of the data extension. If this is a
       #       custom field, `data_ext_name` will be visible as a label in the QuickBooks user
@@ -237,16 +247,18 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `inventory_site_ref` (Hash): Site where inventory is located.
       #     - `full_name` (String): `full_name` (along with `list_id`) is a way to identify a list
       #       object. The `full_name` is the name prefixed by the names of each ancestor, for
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `item_ref` (Hash): `item_ref` may accept all item types or a restricted subset,
       #     depending on the request. Examples: PurchaseOrder and Bill do not allow discount or
       #     sales-tax items; VehicleMileageAdd requires a service or other-charge item;
@@ -257,8 +269,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `link_to_txn` (Hash): When used with InvoiceAdd, the transaction you are linking to via
       #     this field must be a SalesOrder; links to other transactions, such as to estimates,
       #     aren’t currently supported. When used with BillAdd or ItemReceiptAdd, the transaction
@@ -281,8 +294,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #     other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #     QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -297,8 +311,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `sales_tax_code_ref` (Hash): `sales_tax_code_ref` points to the sales-tax code used for
       #     an item or customer context. QuickBooks includes default TAX and NON codes, and a code
       #     can be deleted only when nothing references it. If sales tax is disabled, QuickBooks
@@ -309,8 +324,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `serial_number` (String): The serial number of the asset. Choose at most one of:
       #     `serial_number`, or `lot_number`.
       #   - `tax_amount` (Numeric)
@@ -336,8 +352,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `terms_ref` (Hash): Refers to the payment terms associated with this entity. (This will be
       #   an item on the DateDrivenTerms or StandardTerms list.) If a `terms_ref` aggregate includes
       #   both `full_name` and `list_id`, `full_name` will be ignored.
@@ -346,8 +362,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `txn_date` (String): The date of the transaction. In some cases, if you leave `txn_date`
       #   out of an -Add message, QuickBooks will prefill `txn_date` with the date of the last-saved
       #   transaction of the same type.
@@ -377,8 +393,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       #
       # @param connection_id [String]
       # @param params [Hash] the fields above
@@ -415,8 +431,9 @@ module QubeSync
       #     `full_name_with_children` is exactly the same as `full_name`.
       #   - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #     QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #     within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #     supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     within a list family, not across the company file: customers, vendors, employees and
+      #     other names share one sequence, every item type shares another, and each other list has
+      #     its own.
       #   - `list_id_with_children` (String): Allows you to filter for data that relates to the
       #     specified object and its descendants.
       # - `currency_filter` (Hash): Filters by the specified currency. Choose at most one of:
@@ -430,8 +447,9 @@ module QubeSync
       #     example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #     QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #     within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #     supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     within a list family, not across the company file: customers, vendors, employees and
+      #     other names share one sequence, every item type shares another, and each other list has
+      #     its own.
       # - `entity_filter` (Hash): An entity refers to a person on the QuickBooks Customer list,
       #   Vendor list, Employee list, or Other Names list. You can use an EntityQuery request to get
       #   information about all the entities that are set up in the QuickBooks file. In an
@@ -450,8 +468,9 @@ module QubeSync
       #     `full_name_with_children` is exactly the same as `full_name`.
       #   - `list_id` (Array<String>): `list_id` and `full_name` both identify a list object.
       #     QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #     within a list type, not globally across all lists. If both `full_name` and `list_id` are
-      #     supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     within a list family, not across the company file: customers, vendors, employees and
+      #     other names share one sequence, every item type shares another, and each other list has
+      #     its own.
       #   - `list_id_with_children` (String): Allows you to filter for data that relates to the
       #     specified object and its descendants.
       # - `include_line_items` (Boolean): This filter allows you to omit line items from a query
@@ -613,8 +632,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `clear_expense_lines` (Boolean): Set `clear_expense_lines` to true to clear all the
       #   expense lines. To modify individual lines, use `expense_line_mod`.
       # - `clear_item_lines` (Boolean): Set `clear_item_lines` to true to clear all the item lines.
@@ -640,8 +659,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `amount` (Numeric): A monetary amount.
       #   - `billable_status` (one of "Billable", "HasBeenBilled", "NotBillable"): The billing
       #     status of this item line or expense line.
@@ -655,8 +675,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `customer_ref` (Hash): `customer_ref` identifies a customer or customer job. If both
       #     `full_name` and `list_id` are provided, `full_name` is ignored. In SalesReceipt and
       #     ReceivePayment, it identifies who receives credit. In TimeTracking, it identifies who
@@ -666,8 +687,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `memo` (String): Appears in the A/P register and in reports that include this bill.
       #   - `sales_rep_ref` (Hash): A sales representative must be on the Employee, Vendor, or Other
       #     Names list within QuickBooks. Sales representative’s names and initials appear on the
@@ -679,8 +701,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `sales_tax_code_ref` (Hash): `sales_tax_code_ref` points to the sales-tax code used for
       #     an item or customer context. QuickBooks includes default TAX and NON codes, and a code
       #     can be deleted only when nothing references it. If sales tax is disabled, QuickBooks
@@ -691,8 +714,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `tax_amount` (Numeric)
       #   - `txn_line_id` (String, required): Identification number of the transaction line.
       #     (`txn_line_id` is supported as of v2.0 of the SDK. With qbXML v1.0 and v1.1,
@@ -719,8 +743,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `item_line_mod` (Array<Hash>): An ItemLine is used to track any portion of a transaction
       #     that represents the purchase of an “item.” If ItemLineAdd doesn’t specify an Amount,
       #     Cost, or Quantity, then QuickBooks will calculate Amount based on a Quantity of 1 and
@@ -738,8 +763,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `cost` (Numeric): If both Quantity and Amount are specified, QuickBooks will use them
       #       to calculate Cost. Likewise, if both Quantity and Cost are specified, QuickBooks will
       #       use them to calculate the total Amount.
@@ -752,8 +778,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `desc` (String): A descriptive text field.
       #     - `inventory_site_location_ref` (Hash): Location within the Inventory Site
       #       - `full_name` (String): `full_name` (along with `list_id`) is a way to identify a list
@@ -761,16 +788,18 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `inventory_site_ref` (Hash): Site where inventory is located.
       #       - `full_name` (String): `full_name` (along with `list_id`) is a way to identify a list
       #         object. The `full_name` is the name prefixed by the names of each ancestor, for
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `item_ref` (Hash): `item_ref` may accept all item types or a restricted subset,
       #       depending on the request. Examples: PurchaseOrder and Bill do not allow discount or
       #       sales-tax items; VehicleMileageAdd requires a service or other-charge item;
@@ -781,8 +810,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `lot_number` (String): The lot number of the asset. Choose at most one of:
       #       `serial_number`, or `lot_number`.
       #     - `override_item_account_ref` (Hash): Refers to a QuickBooks account. If an
@@ -793,8 +823,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `override_uom_set_ref` (Hash): When you modify a transaction line to change the unit
       #       of measure used in that line, you use this aggregate to specify the UOM set within
       #       which you are choosing an available unit of measure. The “override” here refers to the
@@ -805,8 +836,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #       other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #       QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -821,8 +853,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `sales_tax_code_ref` (Hash): `sales_tax_code_ref` points to the sales-tax code used
       #       for an item or customer context. QuickBooks includes default TAX and NON codes, and a
       #       code can be deleted only when nothing references it. If sales tax is disabled,
@@ -833,8 +866,9 @@ module QubeSync
       #         example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #       - `list_id` (String): `list_id` and `full_name` both identify a list object.
       #         QuickBooks assigns `list_id` when the object is created. `list_id` values are unique
-      #         within a list type, not globally across all lists. If both `full_name` and `list_id`
-      #         are supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #         within a list family, not across the company file: customers, vendors, employees and
+      #         other names share one sequence, every item type shares another, and each other list
+      #         has its own.
       #     - `serial_number` (String): The serial number of the asset. Choose at most one of:
       #       `serial_number`, or `lot_number`.
       #     - `tax_amount` (Numeric)
@@ -855,8 +889,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #     other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #     QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -887,8 +922,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `cost` (Numeric): If both Quantity and Amount are specified, QuickBooks will use them to
       #     calculate Cost. Likewise, if both Quantity and Cost are specified, QuickBooks will use
       #     them to calculate the total Amount.
@@ -901,8 +937,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `desc` (String): A descriptive text field.
       #   - `inventory_site_location_ref` (Hash): Location within the Inventory Site
       #     - `full_name` (String): `full_name` (along with `list_id`) is a way to identify a list
@@ -910,16 +947,18 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `inventory_site_ref` (Hash): Site where inventory is located.
       #     - `full_name` (String): `full_name` (along with `list_id`) is a way to identify a list
       #       object. The `full_name` is the name prefixed by the names of each ancestor, for
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `item_ref` (Hash): `item_ref` may accept all item types or a restricted subset,
       #     depending on the request. Examples: PurchaseOrder and Bill do not allow discount or
       #     sales-tax items; VehicleMileageAdd requires a service or other-charge item;
@@ -930,8 +969,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `lot_number` (String): The lot number of the asset. Choose at most one of:
       #     `serial_number`, or `lot_number`.
       #   - `override_item_account_ref` (Hash): Refers to a QuickBooks account. If an
@@ -942,8 +982,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `override_uom_set_ref` (Hash): When you modify a transaction line to change the unit of
       #     measure used in that line, you use this aggregate to specify the UOM set within which
       #     you are choosing an available unit of measure. The “override” here refers to the unit
@@ -954,8 +995,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `quantity` (Numeric): On transaction lines, QuickBooks can derive one value from the
       #     other two among Quantity, Rate, and Amount. If you supply Quantity and Amount,
       #     QuickBooks calculates Rate. If you supply Quantity and Rate, QuickBooks calculates
@@ -970,8 +1012,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `sales_tax_code_ref` (Hash): `sales_tax_code_ref` points to the sales-tax code used for
       #     an item or customer context. QuickBooks includes default TAX and NON codes, and a code
       #     can be deleted only when nothing references it. If sales tax is disabled, QuickBooks
@@ -982,8 +1025,9 @@ module QubeSync
       #       example Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #     - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #       assigns `list_id` when the object is created. `list_id` values are unique within a
-      #       list type, not globally across all lists. If both `full_name` and `list_id` are
-      #       supplied in a request, QuickBooks uses `list_id` and ignores `full_name`.
+      #       list family, not across the company file: customers, vendors, employees and other
+      #       names share one sequence, every item type shares another, and each other list has its
+      #       own.
       #   - `serial_number` (String): The serial number of the asset. Choose at most one of:
       #     `serial_number`, or `lot_number`.
       #   - `tax_amount` (Numeric)
@@ -1012,8 +1056,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `terms_ref` (Hash): Refers to the payment terms associated with this entity. (This will be
       #   an item on the DateDrivenTerms or StandardTerms list.) If a `terms_ref` aggregate includes
       #   both `full_name` and `list_id`, `full_name` will be ignored.
@@ -1022,8 +1066,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       # - `txn_date` (String): The date of the transaction. In some cases, if you leave `txn_date`
       #   out of an -Add message, QuickBooks will prefill `txn_date` with the date of the last-saved
       #   transaction of the same type.
@@ -1056,8 +1100,8 @@ module QubeSync
       #     Jones:Kitchen:Cabinets. `full_name` values aren’t case-sensitive.
       #   - `list_id` (String): `list_id` and `full_name` both identify a list object. QuickBooks
       #     assigns `list_id` when the object is created. `list_id` values are unique within a list
-      #     type, not globally across all lists. If both `full_name` and `list_id` are supplied in a
-      #     request, QuickBooks uses `list_id` and ignores `full_name`.
+      #     family, not across the company file: customers, vendors, employees and other names share
+      #     one sequence, every item type shares another, and each other list has its own.
       #
       # @param connection_id [String]
       # @param params [Hash] the fields above

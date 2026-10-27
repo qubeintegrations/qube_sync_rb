@@ -159,8 +159,10 @@ module QubeSync
 
     # -- Connections ------------------------------------------------------------------------
 
-    def create_connection(webhook_url:, name: nil)
-      call(:post, "/connections", compact(webhook_url: webhook_url, name: name))
+    # type: "simulated" makes a connection to a simulated QuickBooks company file, connected as
+    # it's made (connection.connected comes at once), for testing with no Windows computer.
+    def create_connection(webhook_url:, name: nil, type: nil)
+      call(:post, "/connections", compact(webhook_url: webhook_url, name: name, type: type))
     end
 
     def get_connection(id)
@@ -223,10 +225,37 @@ module QubeSync
       call(:post, cancel_url, compact(reason: reason))
     end
 
+    # Asks QuBe Sync to send the run's latest event again (its ending, or the question it's
+    # waiting on) to the run's webhook URL, signed, with the revision it carries, so a receiver
+    # that missed it, or was down for longer than the retries, catches up. Returns
+    # `{"run_id", "event", "revision", "webhook_url"}`. A run with nothing to send yet answers
+    # 409 (APIError), and one asked again too soon 429.
+    def redeliver_run(connection_id, run_id)
+      call(:post, "/connections/#{segment(connection_id)}/workflow-runs/#{segment(run_id)}/redeliver")
+    end
+
     # Returns the whole body: `{"data" => [...], "next_after" => ...}`.
     def run_events(connection_id, run_id, after: nil, limit: nil)
       request(:get, "/connections/#{segment(connection_id)}/workflow-runs/#{segment(run_id)}/events",
         query: {after: after, limit: limit})
+    end
+
+    # -- Workflow types ---------------------------------------------------------------------
+
+    # The input types of the app's workflows, which `qube_sync workflows` renders into a typed
+    # file (QubeSync::WorkflowTypes). Returns the document (the response's data): `digest`,
+    # `operations_digest`, `include_drafts`, `workflows` (each published workflow at its
+    # published version) and, with `include_drafts: true`, `drafts` (each workflow whose working
+    # copy differs from it). With `etag:` (a document's `digest`, or the ETag it came with),
+    # returns :not_modified when the document is still that one.
+    def workflow_types(include_drafts: false, etag: nil)
+      headers = {}
+      headers["If-None-Match"] = entity_tag(etag) unless etag.nil? || etag.to_s.empty?
+      call(:get, "/workflows/types", query: {include: include_drafts ? "drafts" : nil}, headers: headers)
+    rescue APIError => e
+      raise unless e.status == 304
+
+      :not_modified
     end
 
     # -- Questions --------------------------------------------------------------------------
@@ -240,9 +269,10 @@ module QubeSync
       call(:post, decisions_url, compact(choice: choice, data: data), retry_safe: prompt_token?(decisions_url))
     end
 
-    # `search_url` is the run's `links.search`. Returns the matches, an Array.
-    def search(search_url, field:, q:)
-      call(:get, search_url, query: {field: field, q: q})
+    # `search_url` is the run's `links.search`. Returns the matches, an Array. `row` names the
+    # row of a rows field whose column's kind depends on it (`field: "records.list_id"`).
+    def search(search_url, field:, q:, row: nil)
+      call(:get, search_url, query: compact(field: field, q: q, row: row))
     end
 
     # -- Queued requests --------------------------------------------------------------------
@@ -561,6 +591,11 @@ module QubeSync
       raise ArgumentError, "expected an operation such as \"customers\"" if parts.empty?
 
       parts.map { |part| segment(part) }.join("/")
+    end
+
+    def entity_tag(value)
+      text = value.to_s
+      (text.start_with?("\"") || text.start_with?("W/")) ? text : "\"#{text}\""
     end
 
     def key_for(idempotency_key)

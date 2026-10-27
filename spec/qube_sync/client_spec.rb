@@ -198,6 +198,12 @@ RSpec.describe QubeSync::Client do
       expect(server.last.headers).not_to have_key("idempotency-key")
     end
 
+    it "create_connection sends type for a simulated connection" do
+      server.respond(data({"id" => "c3", "type" => "simulated"}, 201))
+      client.create_connection(webhook_url: "https://app.test/hook", type: "simulated")
+      expect(server.last.json).to eq({"webhook_url" => "https://app.test/hook", "type" => "simulated"})
+    end
+
     it "get_connection" do
       server.respond(data({"id" => "c1"}))
       expect(client.get_connection("c1")).to eq({"id" => "c1"})
@@ -293,12 +299,53 @@ RSpec.describe QubeSync::Client do
       expect(server.last.json).to eq({})
     end
 
+    it "redeliver_run posts to the run's redeliver route and returns what was sent" do
+      sent = {"run_id" => "r1", "event" => "workflow_run.completed", "revision" => 7,
+              "webhook_url" => "https://app.test/hooks/runs/1"}
+      server.respond(data(sent, 202))
+      expect(client.redeliver_run("c1", "r1")).to eq(sent)
+      expect([server.last.method, server.last.path]).to eq(["POST", "/api/v2/connections/c1/workflow-runs/r1/redeliver"])
+    end
+
     it "run_events returns the whole body" do
       body = {"data" => [{"seq" => 1}], "next_after" => 1}
       server.respond(json(200, body))
       expect(client.run_events("c1", "r1", after: 0, limit: 50)).to eq(body)
       expect(server.last.path).to eq("/api/v2/connections/c1/workflow-runs/r1/events")
       expect(server.last.query_hash).to eq({"after" => "0", "limit" => "50"})
+    end
+  end
+
+  describe "workflow types" do
+    let(:document) { {"digest" => "sha256:#{"a" * 64}", "operations_digest" => "sha256:#{"b" * 64}", "include_drafts" => false, "workflows" => {}} }
+
+    it "GETs /workflows/types and returns the document, its data" do
+      server.respond(json(200, {"data" => document}, "ETag" => %("#{document["digest"]}")))
+      expect(client.workflow_types).to eq(document)
+      expect(server.last.method).to eq("GET")
+      expect(server.last.path).to eq("/api/v2/workflows/types")
+      expect(server.last.query).to be_nil
+      expect(server.last.headers).not_to have_key("if-none-match")
+    end
+
+    it "asks for drafts with include=drafts" do
+      server.respond(data(document.merge("include_drafts" => true, "drafts" => {})))
+      expect(client.workflow_types(include_drafts: true)["drafts"]).to eq({})
+      expect(server.last.query_hash).to eq({"include" => "drafts"})
+    end
+
+    it "sends a digest as If-None-Match and returns :not_modified on a 304" do
+      server.respond([304, {}, ""], [304, {}, ""])
+      expect(client.workflow_types(etag: document["digest"])).to eq(:not_modified)
+      expect(server.last.headers["if-none-match"]).to eq(%("#{document["digest"]}"))
+
+      client.workflow_types(etag: %("#{document["digest"]}"))
+      expect(server.last.headers["if-none-match"]).to eq(%("#{document["digest"]}"))
+    end
+
+    it "raises APIError for a 401" do
+      server.respond(json(401, {"errors" => "unauthorized"}))
+      expect { client.workflow_types }.to raise_error(QubeSync::APIError) { |e| expect(e.status).to eq(401) }
     end
   end
 
@@ -324,6 +371,13 @@ RSpec.describe QubeSync::Client do
       expect(server.last.method).to eq("GET")
       expect(server.last.query_pairs).to eq([["prompt_token", "tok"], ["field", "customer"], ["q", "Ac me"]])
       expect(server.last.query).to start_with("prompt_token=tok&")
+    end
+
+    it "search sends a rows field's row" do
+      server.respond(data([]))
+      client.search(search_link, field: "records.list_id", q: "Riv", row: "customer_ref")
+      expect(server.last.query_pairs).to eq([["prompt_token", "tok"], ["field", "records.list_id"], ["q", "Riv"],
+                                             ["row", "customer_ref"]])
     end
   end
 

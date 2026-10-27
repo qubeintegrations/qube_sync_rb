@@ -18,7 +18,7 @@ RSpec.describe QubeSync do
   end
 
   it "has a version number" do
-    expect(QubeSync::VERSION).to eq("0.4.0")
+    expect(QubeSync::VERSION).to eq("0.5.0")
   end
 
   describe "#verify_and_build_webhook!" do
