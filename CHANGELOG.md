@@ -1,29 +1,43 @@
 ## [Unreleased]
 
-- `search(search_url, field:, q:, row: nil)`: `row` names the row of a question's rows field whose
-  column's kind depends on it.
-- `Client#redeliver_run(connection_id, run_id)`: `POST .../workflow-runs/{id}/redeliver`, which
-  has QuBe Sync send the run's latest event again (after an outage longer than the retries).
-- `Client#create_connection(webhook_url:, name: nil, type: nil)`: `type: "simulated"` makes a
-  connection to a simulated QuickBooks company file, connected as it's made.
-- Typed workflow starts: `qube_sync workflows [--drafts] [--check] [--output lib/qube_workflows.rb]
-  [--sig sig/qube_workflows.rbs]` (exe/qube_sync, with QUBE_API_KEY) fetches the app's workflow
-  input types and writes a QubeWorkflows module and its RBS: a start and an `*_input` method per
-  branch of a workflow's input, each operation body typed as that operation's params
-  (`QubeSync::Operations::<Entity>::<action>_params`) with its YARD reference. The same document
-  gives byte-identical files, which load on Ruby 2.7 too. `--check` exits 1 when the file's digest
-  isn't the served one (naming the workflows that changed) or on a 401, and warns and exits 0 when
-  QuBe Sync can't be reached or answers 5xx. `QubeSync::WorkflowTypes.render` and `.check` do the
-  same from code (qube_rails' generator uses them). A body whose workflow sets some of its
-  required fields itself (`set_by_workflow`) gets its own record, those fields optional, from
-  `lib/qube_sync/operations/fields.rb` (`Operations::FIELDS`, each operation's top-level params as
-  RBS, written by bin/generate-operations and loaded only by the renderer).
+## [0.5.0] - 2026-10-27
+
+Typed workflow starts, simulated connections, resending a run's latest event, and per-row search. Nothing
+existing changes: every 0.4.0 call works as it did.
+
+### New
+
+- **Typed workflow starts.** `bundle exec qube_sync workflows` (with `QUBE_API_KEY` set) fetches
+  your app's workflow input types from QuBe Sync and writes `lib/qube_workflows.rb` and its RBS
+  (`sig/qube_workflows.rbs`): a start method and an `*_input` builder for each branch of each
+  workflow's input, with every operation body typed as that operation's params
+  (`QubeSync::Operations::<Entity>::<action>_params`) and linked to its YARD reference. Fields a
+  workflow sets itself (`set_by_workflow`) are optional in its bodies. Options: `--drafts`,
+  `--output`, `--sig`, and `--check`, which exits 1 when your file no longer matches what QuBe
+  Sync serves (naming the workflows that changed) or on a 401, and warns but exits 0 when QuBe
+  Sync can't be reached. The same input always gives byte-identical files, and the generated
+  file loads on Ruby 2.7 too. `QubeSync::WorkflowTypes.render` and `.check` do the same from
+  code; qube_rails' generator uses them.
 - `Client#workflow_types(include_drafts: false, etag: nil)`: `GET /workflows/types`, returning
   `:not_modified` on a 304.
-- `QubeSync::Operations::DIGEST`: the sha256 of the operations manifest the operation methods were
-  generated from; `qube_sync workflows` warns when QuBe Sync's `operations_digest` differs.
-- Releases publish through RubyGems trusted publishing, from `release.yml`'s OIDC token; no
-  API key is stored.
+- `Client#create_connection(webhook_url:, name: nil, type: nil)`: `type: "simulated"` makes a
+  connection to a simulated QuickBooks company file, connected as soon as it's made, for trying
+  an integration without QuickBooks Desktop.
+- `Client#redeliver_run(connection_id, run_id)`: `POST .../workflow-runs/{id}/redeliver` has
+  QuBe Sync send the run's latest event to your webhook again, for when your endpoint was down
+  longer than QuBe Sync's retries.
+- `search(search_url, field:, q:, row: nil)`: `row` names the row of a question's rows field,
+  for a search whose kind depends on that row (the missing-records question's per-record search).
+- `QubeSync::Operations::DIGEST`: the sha256 of the QuickBooks operations manifest this version
+  was generated from. `qube_sync workflows` warns when QuBe Sync's operations differ from it,
+  since operations this version doesn't know are typed as a plain Hash.
+
+### Changed
+
+- The per-operation docs now say a QuickBooks `list_id` is unique within a list family, not
+  across the company file: customers, vendors, employees and other names share one sequence,
+  every item type shares another, and each other list has its own. Key stored ids by
+  connection and record kind, never by `list_id` alone.
 
 ## [0.4.0] - 2026-10-25
 
