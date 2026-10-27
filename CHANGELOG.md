@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- `search(search_url, field:, q:, row: nil)`: `row` names the row of a question's rows field whose
+  column's kind depends on it.
 - `Client#redeliver_run(connection_id, run_id)`: `POST .../workflow-runs/{id}/redeliver`, which
   has QuBe Sync send the run's latest event again (after an outage longer than the retries).
 - `Client#create_connection(webhook_url:, name: nil, type: nil)`: `type: "simulated"` makes a

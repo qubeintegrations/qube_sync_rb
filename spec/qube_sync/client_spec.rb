@@ -372,6 +372,13 @@ RSpec.describe QubeSync::Client do
       expect(server.last.query_pairs).to eq([["prompt_token", "tok"], ["field", "customer"], ["q", "Ac me"]])
       expect(server.last.query).to start_with("prompt_token=tok&")
     end
+
+    it "search sends a rows field's row" do
+      server.respond(data([]))
+      client.search(search_link, field: "records.list_id", q: "Riv", row: "customer_ref")
+      expect(server.last.query_pairs).to eq([["prompt_token", "tok"], ["field", "records.list_id"], ["q", "Riv"],
+                                             ["row", "customer_ref"]])
+    end
   end
 
   describe "links" do

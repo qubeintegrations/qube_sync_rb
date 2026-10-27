@@ -269,9 +269,10 @@ module QubeSync
       call(:post, decisions_url, compact(choice: choice, data: data), retry_safe: prompt_token?(decisions_url))
     end
 
-    # `search_url` is the run's `links.search`. Returns the matches, an Array.
-    def search(search_url, field:, q:)
-      call(:get, search_url, query: {field: field, q: q})
+    # `search_url` is the run's `links.search`. Returns the matches, an Array. `row` names the
+    # row of a rows field whose column's kind depends on it (`field: "records.list_id"`).
+    def search(search_url, field:, q:, row: nil)
+      call(:get, search_url, query: compact(field: field, q: q, row: row))
     end
 
     # -- Queued requests --------------------------------------------------------------------
