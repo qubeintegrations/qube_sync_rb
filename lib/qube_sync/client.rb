@@ -317,8 +317,24 @@ module QubeSync
         query: {webhook_url: webhook_url}, headers: {"Idempotency-Key" => key_for(idempotency_key)})
     end
 
-    def get_request(connection_id, id)
-      call(:get, "/connections/#{segment(connection_id)}/queued-requests/#{segment(id)}")
+    # `get_request(connection_id, id)`, or `get_request(link)` for a link such as a request
+    # webhook's `links.self` (`event.self_link`), sent when its `response_xml` was omitted.
+    def get_request(connection_id_or_link, id = nil)
+      if id.nil?
+        call(:get, connection_id_or_link)
+      else
+        call(:get, "/connections/#{segment(connection_id_or_link)}/queued-requests/#{segment(id)}")
+      end
+    end
+
+    # A request webhook's `response_xml`: the event's own, or, when it was omitted for size,
+    # the one fetched from its `links.self`. nil when the request has none.
+    def response_xml_for(event)
+      return event.response_xml unless event.response_xml_omitted?
+
+      link = event.self_link or raise ArgumentError, "response_xml was omitted but the event has no links.self"
+      request = get_request(link)
+      request.is_a?(Hash) ? request["response_xml"] : nil
     end
 
     def request_pages(connection_id, id)

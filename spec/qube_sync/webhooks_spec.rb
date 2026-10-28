@@ -205,6 +205,50 @@ RSpec.describe QubeSync::Webhooks do
       expect(event.to_h).to include("delivery_id" => "d")
     end
 
+    describe "request answers QuickBooks may have applied" do
+      def request_event(state, error_type = nil)
+        body = {"id" => "q1", "page_request_id" => "q1", "state" => state}
+        body["error"] = {"error_type" => error_type, "user_message" => "Check QuickBooks."} if error_type
+        parse(body)
+      end
+
+      it "is perhaps_applied? for timed_out and for an outcome_unknown error" do
+        expect(request_event("timed_out", "timed_out")).to be_perhaps_applied
+        expect(request_event("timed_out")).to be_perhaps_applied
+        expect(request_event("error", "outcome_unknown")).to be_perhaps_applied
+        expect(request_event("error", "outcome_unknown").error_type).to eq("outcome_unknown")
+      end
+
+      it "isn't for other errors or answers" do
+        expect(request_event("error", "unexpected_error")).not_to be_perhaps_applied
+        expect(request_event("retryable", "retryable")).not_to be_perhaps_applied
+        expect(request_event("response_received")).not_to be_perhaps_applied
+        expect(request_event("response_received").error_type).to be_nil
+        expect(parse({"page_request_id" => "q1", "error" => "text"}).error_type).to be_nil
+      end
+    end
+
+    describe "a request answer over 1 MB" do
+      let(:link) { "https://qubesync.com/api/v2/connections/c1/queued-requests/q1" }
+
+      it "comes without response_xml, with response_xml_omitted and links.self" do
+        event = parse({"page_request_id" => "q1", "state" => "response_received", "response_xml" => nil,
+                       "response_xml_omitted" => true, "links" => {"self" => link},
+                       "response_json" => {"customers" => []}})
+        expect(event).to be_response_xml_omitted
+        expect(event.response_xml).to be_nil
+        expect(event.self_link).to eq(link)
+        expect(event.response_json).to eq({"customers" => []})
+      end
+
+      it "otherwise carries response_xml and no self link" do
+        event = parse({"page_request_id" => "q1", "state" => "response_received", "response_xml" => "<QBXML/>"})
+        expect(event).not_to be_response_xml_omitted
+        expect(event.response_xml).to eq("<QBXML/>")
+        expect(event.self_link).to be_nil
+      end
+    end
+
     it "builds from JSON with Event.from_json" do
       expect(QubeSync::Webhooks::Event.from_json(body)).to eq(described_class.parse(body))
     end
