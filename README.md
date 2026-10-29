@@ -166,7 +166,7 @@ QUBE.queue_qbxml(connection_id, request_xml, webhook_url: hook)
 - A query string repeats an array's key (`list_id=1&list_id=2`) and brackets nested Hashes
   (`name_range_filter[from_name]=A`, `currency_filter[list_id][]=1`), as the API reads them.
 
-The answer comes to `webhook_url` (see Webhooks below). `get_request(connection_id, id)`,
+The answer comes to `webhook_url` (see Webhooks below). `get_request(connection_id, id)` (or `get_request(link)`),
 `request_pages(connection_id, id)` and `discard_request(connection_id, id)` act on one request.
 `list_requests(connection_id, page:, page_size:, state:, ...)` returns a page whole (`{"data" =>
 [...], "meta" => {"page" => 1, "total_pages" => 3}}`), and `each_request(connection_id, **filters)`
@@ -242,7 +242,11 @@ def handle_qube_webhook(raw_body, header)
   case event.type
   when "request"
     # A queued request's answer. Deduplicate on event.dedupe_key ("<page_request_id>:<state>").
-    # event.response_json, event.error, event.page, event.iteration_state
+    # event.response_json, event.error, event.error_type, event.page, event.iteration_state
+    # event.perhaps_applied?: timed_out, or a write's outcome_unknown error. QuickBooks may have
+    # applied it: query the record before sending a write again.
+    # event.response_xml_omitted?: the body was over 1 MB, so response_xml is nil;
+    # client.response_xml_for(event) fetches it from event.self_link.
   when "workflow_run"
     # A run is waiting for an answer, or has ended. Skip it unless event.newer_than?(stored)
     # for the revision stored with event.reference: deliveries can arrive out of order.
@@ -273,6 +277,15 @@ end
   another window, and `now:` (unix seconds or a `Time`) sets the clock, for tests.
 - Every event has `type`, `event`, `timestamp`, `app_id`, `sandbox`, `dedupe_key` and `to_h`
   (the whole body). A missing key reads as `nil`, and `event["any_key"]` reads any other key.
+- A request event is `perhaps_applied?` when it `timed_out`, or ended in an `error` whose
+  `error_type` is `outcome_unknown` (the Web Connector reported an error mid-write). QuickBooks
+  may have saved it, so look before you send a create or an update again; a query is safe to
+  resend. Other errors, such as a read's `unexpected_error`, are not.
+- A request event whose body would be over 1 MB comes with `response_xml` nil,
+  `response_xml_omitted?` true and `self_link` (its `links.self`, a v1 or v2 URL as the request
+  was queued). `response_json` always comes. `client.response_xml_for(event)` returns the
+  event's `response_xml`, or fetches it from `self_link` when it was omitted;
+  `client.get_request(event.self_link)` returns the whole request.
 - `QubeSync::Webhooks.parse(raw_body)` builds the event without verifying it, for tests or for
   code that verified the delivery elsewhere.
 

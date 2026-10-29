@@ -124,10 +124,35 @@ module QubeSync
     class RequestEvent < Event
       TYPE = "request"
 
-      fields :id, :page_request_id, :state, :page, :iteration_state, :response_json, :error
+      fields :id, :page_request_id, :state, :page, :iteration_state, :response_json, :response_xml, :error, :links
 
       def dedupe_key
         "#{page_request_id}:#{state}"
+      end
+
+      # `error.error_type` ("timed_out", "outcome_unknown", "retryable", ...), nil without an error.
+      def error_type
+        error.is_a?(Hash) ? error["error_type"] : nil
+      end
+
+      # True when QuickBooks may have applied the request though no answer says so: it
+      # `timed_out`, or a write ended in an `error` with `error_type` `outcome_unknown`. Look in
+      # QuickBooks (query the record) before sending a write again; a query is safe to resend.
+      def perhaps_applied?
+        state == "timed_out" || error_type == "timed_out" || error_type == "outcome_unknown"
+      end
+
+      # True when the body would have been over 1 MB, so it came without `response_xml` (nil).
+      # `response_json` still came; fetch `self_link` (`Client#get_request(event.self_link)`) for
+      # the request with `response_xml`.
+      def response_xml_omitted?
+        @body["response_xml_omitted"] == true
+      end
+
+      # `links.self`, the request's URL (v1 or v2, as it was queued). Sent with an omitted
+      # `response_xml`; nil otherwise.
+      def self_link
+        links.is_a?(Hash) ? links["self"] : nil
       end
     end
 

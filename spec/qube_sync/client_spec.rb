@@ -578,6 +578,32 @@ RSpec.describe QubeSync::Client do
       expect([server.last.method, server.last.path]).to eq(["POST", "/api/v2/connections/c1/queued-requests/q1/discard"])
     end
 
+    it "get_request takes a link, such as a webhook's links.self" do
+      server.respond(data({"id" => "q1"}), data({"id" => "q1"}))
+      client.get_request("#{server.url}/api/v2/connections/c1/queued-requests/q1")
+      expect([server.last.method, server.last.path]).to eq(["GET", "/api/v2/connections/c1/queued-requests/q1"])
+      client.get_request("#{server.url}/api/v1/connections/c1/queued_requests/q1")
+      expect(server.last.path).to eq("/api/v1/connections/c1/queued_requests/q1")
+      expect { client.get_request("https://elsewhere.test/api/v2/connections/c1/queued-requests/q1") }
+        .to raise_error(ArgumentError, /refusing a link/)
+    end
+
+    it "response_xml_for fetches links.self only when response_xml was omitted" do
+      inline = QubeSync::Webhooks.parse(JSON.generate({"page_request_id" => "q1", "response_xml" => "<QBXML/>"}))
+      expect(client.response_xml_for(inline)).to eq("<QBXML/>")
+      expect(server.recorded).to be_empty
+
+      link = "#{server.url}/api/v2/connections/c1/queued-requests/q1"
+      omitted = QubeSync::Webhooks.parse(JSON.generate({"page_request_id" => "q1", "response_xml" => nil,
+                                                        "response_xml_omitted" => true, "links" => {"self" => link}}))
+      server.respond(data({"id" => "q1", "response_xml" => "<QBXML>big</QBXML>"}))
+      expect(client.response_xml_for(omitted)).to eq("<QBXML>big</QBXML>")
+      expect(server.last.path).to eq("/api/v2/connections/c1/queued-requests/q1")
+
+      no_link = QubeSync::Webhooks.parse(JSON.generate({"page_request_id" => "q1", "response_xml_omitted" => true}))
+      expect { client.response_xml_for(no_link) }.to raise_error(ArgumentError, /links.self/)
+    end
+
     it "list_requests returns the whole body" do
       body = {"data" => [{"id" => "q1"}], "meta" => {"page" => 2, "total_pages" => 3}}
       server.respond(json(200, body))
