@@ -243,8 +243,9 @@ def handle_qube_webhook(raw_body, header)
   when "request"
     # A queued request's answer. Deduplicate on event.dedupe_key ("<page_request_id>:<state>").
     # event.response_json, event.error, event.error_type, event.page, event.iteration_state
-    # event.perhaps_applied?: timed_out, or a write's outcome_unknown error. QuickBooks may have
-    # applied it: query the record before sending a write again.
+    # event.perhaps_applied?: timed_out, outcome_unknown or response_too_large. QuickBooks may
+    # have applied it: query the record before sending a write again. A query is safe to resend;
+    # page a response_too_large one (iterator, smaller max_returned) or narrow it.
     # event.response_xml_omitted?: the body was over 1 MB, so response_xml is nil;
     # client.response_xml_for(event) fetches it from event.self_link.
   when "workflow_run"
@@ -279,9 +280,12 @@ end
 - Every event has `type`, `event`, `timestamp`, `app_id`, `sandbox`, `dedupe_key` and `to_h`
   (the whole body). A missing key reads as `nil`, and `event["any_key"]` reads any other key.
 - A request event is `perhaps_applied?` when it `timed_out`, or ended in an `error` whose
-  `error_type` is `outcome_unknown` (the Web Connector reported an error mid-write). QuickBooks
-  may have saved it, so look before you send a create or an update again; a query is safe to
-  resend. Other errors, such as a read's `unexpected_error`, are not.
+  `error_type` is `outcome_unknown` (the Web Connector reported an error mid-write) or
+  `response_too_large` (QuickBooks ran it, but its answer was too big to keep). QuickBooks may
+  have saved it, so look before you send a create or an update again. A query is safe to
+  resend; page a `response_too_large` one (`iterator` and a smaller `max_returned`), or narrow
+  it when QuickBooks doesn't page it. Other errors, such as `quickbooks_business_error`,
+  `xml_error` or a read's `unexpected_error`, are not, and neither is a `discarded` request.
 - A request event whose body would be over 1 MB comes with `response_xml` nil,
   `response_xml_omitted?` true and `self_link` (its `links.self`, a v1 or v2 URL as the request
   was queued). `response_json` always comes. `client.response_xml_for(event)` returns the

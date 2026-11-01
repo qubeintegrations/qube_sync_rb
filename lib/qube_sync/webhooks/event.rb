@@ -135,11 +135,14 @@ module QubeSync
         error.is_a?(Hash) ? error["error_type"] : nil
       end
 
-      # True when QuickBooks may have applied the request though no answer says so: it
-      # `timed_out`, or a write ended in an `error` with `error_type` `outcome_unknown`. Look in
-      # QuickBooks (query the record) before sending a write again; a query is safe to resend.
+      PERHAPS_APPLIED_ERROR_TYPES = %w[timed_out outcome_unknown response_too_large].freeze
+
+      # True when QuickBooks may have applied the request though no answer says so (`timed_out`,
+      # `outcome_unknown`, `response_too_large`). Look in QuickBooks before sending a write again;
+      # a query is safe to resend, and a `response_too_large` one should be paged (`iterator`,
+      # smaller `max_returned`) or narrowed.
       def perhaps_applied?
-        state == "timed_out" || error_type == "timed_out" || error_type == "outcome_unknown"
+        state == "timed_out" || PERHAPS_APPLIED_ERROR_TYPES.include?(error_type)
       end
 
       # True when the body would have been over 1 MB, so it came without `response_xml` (nil).
