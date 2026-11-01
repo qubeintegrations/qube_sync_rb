@@ -270,14 +270,19 @@ RSpec.describe QubeSync::Webhooks do
         parse(body)
       end
 
-      it "is perhaps_applied? for timed_out and for an outcome_unknown error" do
+      it "is perhaps_applied? for timed_out and for an outcome_unknown or response_too_large error" do
         expect(request_event("timed_out", "timed_out")).to be_perhaps_applied
         expect(request_event("timed_out")).to be_perhaps_applied
         expect(request_event("error", "outcome_unknown")).to be_perhaps_applied
         expect(request_event("error", "outcome_unknown").error_type).to eq("outcome_unknown")
+        expect(request_event("error", "response_too_large")).to be_perhaps_applied
       end
 
       it "isn't for other errors or answers" do
+        expect(request_event("error", "quickbooks_business_error")).not_to be_perhaps_applied
+        expect(request_event("error", "xml_error")).not_to be_perhaps_applied
+        expect(request_event("discarded", "discarded")).not_to be_perhaps_applied
+        expect(request_event("discarded")).not_to be_perhaps_applied
         expect(request_event("error", "unexpected_error")).not_to be_perhaps_applied
         expect(request_event("retryable", "retryable")).not_to be_perhaps_applied
         expect(request_event("response_received")).not_to be_perhaps_applied

@@ -50,6 +50,7 @@ module QubeSync
 
     class RequestEvent < Event
       TYPE: String
+      PERHAPS_APPLIED_ERROR_TYPES: Array[String]
       def id: () -> String?
       def page_request_id: () -> String?
       def state: () -> String?

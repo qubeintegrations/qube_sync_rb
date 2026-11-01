@@ -28,8 +28,11 @@ it (`event.error.upcase`) needs `event.error.message`.
 - RBS for `QubeSync::Webhooks` and its event classes (`sig/qube_sync/webhooks.rbs`).
 
 - `RequestEvent#perhaps_applied?`: true for a `timed_out` request and for an `error` with
-  `error_type` `outcome_unknown`, QuBe Sync's new type for a write the Web Connector reported an
-  error on mid-request. QuickBooks may have applied either, so look before sending a write again.
+  `error_type` `outcome_unknown` (QuBe Sync's new type for a write the Web Connector reported an
+  error on mid-request) or `response_too_large` (QuickBooks ran it, but its answer was too big
+  to keep). QuickBooks may have applied any of them, so look before sending a write again. A
+  query is safe to resend; page a `response_too_large` one (`iterator`, a smaller
+  `max_returned`) or narrow it.
   `RequestEvent#error_type` reads `error.error_type`.
 - A request webhook whose body would be over 1 MB now comes with `response_xml` nil,
   `response_xml_omitted: true` and `links.self`. `RequestEvent#response_xml`,
