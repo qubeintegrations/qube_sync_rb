@@ -1,6 +1,31 @@
-## [Unreleased]
+## [0.6.0] - Unreleased
+
+For QuBe Sync's new workflow webhook shape. One read changes: `WorkflowRunEvent#error` returns
+a `WorkflowRunError` instead of the body's raw value. It's a minor version because, before 1.0,
+a change to what a reader returns goes in the minor number; code that called String methods on
+it (`event.error.upcase`) needs `event.error.message`.
+
+### Changed
+
+- `WorkflowRunEvent#error` returns a `QubeSync::Webhooks::WorkflowRunError` (`code`, `type`,
+  `message`, `quickbooks_message`, `hint`), nil when there's none. QuBe Sync now sends `error` as
+  an object; a String from an older server reads as one with only `message`, without raising.
+  `error["message"]` and `error.to_s` still work, and `event["error"]` returns the raw value.
+  It serializes to JSON with every field (`to_json`, `as_json`), so it can be stored as it is.
+  What stops working is treating it as a String: `event.error == "text"`, `"..." + event.error`,
+  `include?` and the like; use `event.error.message`.
 
 ### New
+
+- `WorkflowRunEvent#headline` and `NotificationEvent#headline`: one plain sentence saying what
+  happened, for a person. Never parse it.
+- `WorkflowRunEvent#workflow_id`.
+- The vendored webhook test vectors are QuBe Sync's new ones: `error` an object, `headline` on
+  every workflow event, `summary.changes` in place of `summary.side_effects`, `links` only while
+  they work, and no `prompt.options`. The library passes `output`, `summary` and `prompt` through
+  as they come, so `push_records`' `pushed` / `pushed_with_errors` outcomes and their `items` and
+  `counts` need no change here; `output.outcome` is gone, so read `event.outcome`.
+- RBS for `QubeSync::Webhooks` and its event classes (`sig/qube_sync/webhooks.rbs`).
 
 - `RequestEvent#perhaps_applied?`: true for a `timed_out` request and for an `error` with
   `error_type` `outcome_unknown`, QuBe Sync's new type for a write the Web Connector reported an

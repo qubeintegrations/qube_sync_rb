@@ -250,7 +250,8 @@ def handle_qube_webhook(raw_body, header)
   when "workflow_run"
     # A run is waiting for an answer, or has ended. Skip it unless event.newer_than?(stored)
     # for the revision stored with event.reference: deliveries can arrive out of order.
-    # event.awaiting_input? / completed? / failed? / cancelled?, event.prompt, event.output
+    # event.awaiting_input? / completed? / failed? / cancelled?, event.headline, event.prompt,
+    # event.outcome, event.output, event.summary["changes"], and on failed? event.error.message
   when "notification"
     # Data a running workflow sent. Deduplicate on event.dedupe_key (the delivery_id), and
     # never skip one by revision. event.name, event.data
@@ -286,6 +287,18 @@ end
   was queued). `response_json` always comes. `client.response_xml_for(event)` returns the
   event's `response_xml`, or fetches it from `self_link` when it was omitted;
   `client.get_request(event.self_link)` returns the whole request.
+- Workflow run and notification events have `headline`, one plain sentence for a person (a log
+  line, a status on your page). Never parse it: branch on `event`, `outcome`, `output` and `error`.
+- A failed run's `error` is a `QubeSync::Webhooks::WorkflowRunError` with `code` (QuickBooks'
+  status code, such as 3100), `type` (a stable name to branch on, such as `name_in_use`),
+  `message` (safe to show), `quickbooks_message` and `hint`; all but `message` may be nil.
+  `error["message"]` and `error.to_s` read the message too. An error from an older server, a
+  String, reads as one with only `message`; `event["error"]` is the raw value.
+- Each outcome has its own `output`, with only the keys that ending sets. `push_records` ends
+  `pushed` or `pushed_with_errors`, with `output["items"]` (one per record, a failed one with its
+  own `error` object) and `output["counts"]`. `summary["changes"]` lists what the run changed in
+  QuickBooks. `links` holds only the links that work: `decisions` and `search` only while the run
+  is `awaiting_input`, `cancel` until it ends.
 - `QubeSync::Webhooks.parse(raw_body)` builds the event without verifying it, for tests or for
   code that verified the delivery elsewhere.
 

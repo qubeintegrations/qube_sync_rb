@@ -154,7 +154,7 @@ RSpec.describe QubeSync::Webhooks do
       accessors = %i[
         id page_request_id state page iteration_state response_json error run_id reference revision run_state
         workflow connection_id prompt outcome output summary cancel_reason links delivery_id seq name from data
-        connection stall_reason name_index timestamp app_id sandbox
+        connection stall_reason name_index timestamp app_id sandbox headline workflow_id
       ]
       events.each do |event|
         accessors.select { |a| event.respond_to?(a) }.each do |accessor|
@@ -195,6 +195,64 @@ RSpec.describe QubeSync::Webhooks do
     it "answers predicates for the workflow run's event" do
       expect(described_class.parse(body)).to be_completed
       expect(described_class.parse(body)).not_to be_awaiting_input
+    end
+
+    it "reads every workflow run event's and notification's headline" do
+      cases = vectors["events"].select { |c| c["name"].start_with?("workflow_run.") }
+      expect(cases.size).to eq(5)
+      cases.each do |c|
+        event = described_class.parse(c["body"])
+        expect(event.headline).to be_a(String).and(eq(JSON.parse(c["body"])["headline"])), c["name"]
+      end
+    end
+
+    describe "a failed run's error" do
+      let(:failed) { described_class.parse(vectors["events"].find { |c| c["name"] == "workflow_run.failed" }["body"]) }
+
+      it "is a WorkflowRunError with the object's fields" do
+        error = failed.error
+        expect(error).to be_a(QubeSync::Webhooks::WorkflowRunError)
+        expect(error.message).to start_with("Five renames were tried")
+        expect([error.code, error.type, error.quickbooks_message, error.hint]).to eq([nil, nil, nil, nil])
+        expect(error.to_h).to eq(failed["error"].transform_keys(&:to_sym))
+        expect(error["message"]).to eq(error.message)
+        expect(error[:hint]).to be_nil
+        expect(error["anything"]).to be_nil
+        expect(error.to_s).to eq(error.message)
+      end
+
+      it "reads QuickBooks' code, type, text and hint" do
+        event = parse("event" => "workflow_run.failed", "error" => {
+          "code" => 3100, "type" => "name_in_use", "message" => "That name is already in use.",
+          "quickbooks_message" => "The name \"Acme\" of the list element is already in use.", "hint" => "Pick another name."
+        })
+        expect(event.error).to have_attributes(code: 3100, type: "name_in_use", message: "That name is already in use.",
+                                               hint: "Pick another name.")
+        expect(event.error.quickbooks_message).to include("already in use")
+      end
+
+      it "serializes to JSON with every field, so it can be stored as it is" do
+        error = parse("event" => "workflow_run.failed", "error" => {
+          "code" => 3100, "type" => "name_in_use", "message" => "That name is already in use.", "hint" => "Pick another name."
+        }).error
+        expect(JSON.parse(JSON.generate("error" => error))).to eq("error" => {
+          "code" => 3100, "type" => "name_in_use", "message" => "That name is already in use.",
+          "quickbooks_message" => nil, "hint" => "Pick another name."
+        })
+        expect(error.as_json).to eq(JSON.parse(error.to_json))
+      end
+
+      it "reads an older server's String error as one with only a message, without raising" do
+        error = parse("event" => "workflow_run.failed", "error" => "Riverbend failed").error
+        expect(error).to have_attributes(message: "Riverbend failed", code: nil, type: nil, quickbooks_message: nil, hint: nil)
+        expect(error.to_s).to eq("Riverbend failed")
+      end
+
+      it "is nil when there's none, or it's neither an object nor a String" do
+        expect(parse("event" => "workflow_run.completed").error).to be_nil
+        expect(parse("event" => "workflow_run.failed", "error" => 42).error).to be_nil
+        expect(parse("event" => "workflow_run.failed", "error" => 42)["error"]).to eq(42)
+      end
     end
 
     it "keeps an event this library doesn't know, including a new workflow_run event" do

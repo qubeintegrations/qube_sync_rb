@@ -1,0 +1,146 @@
+module QubeSync
+  module Webhooks
+    type body = Hash[String, untyped]
+
+    HEADER: String
+    RACK_HEADER: String
+    DEFAULT_TOLERANCE: Integer
+    REASONS: Array[Symbol]
+
+    class SignatureError < QubeSync::Error
+      attr_reader reason: Symbol
+      def initialize: (Symbol reason, ?String? message) -> void
+    end
+
+    class ParseError < QubeSync::Error
+    end
+
+    def self.verify: (String raw_body, String? header, secrets: String | Array[String], ?tolerance: Integer, ?now: Integer | Time) -> Event
+    def self.parse: (String raw_body) -> Event
+
+    class Event
+      WORKFLOW_RUN_EVENTS: Array[String]
+      NOTIFICATION_EVENT: String
+
+      def self.build: (body body) -> Event
+      def self.from_json: (String raw_body) -> Event
+
+      def initialize: (body body) -> void
+      def event: () -> String?
+      def timestamp: () -> Integer?
+      def app_id: () -> String?
+      def sandbox: () -> bool?
+      def type: () -> String
+      def dedupe_key: () -> String?
+      def reference: () -> String?
+      def revision: () -> Integer?
+      def []: (String | Symbol key) -> untyped
+      def dig: (*untyped keys) -> untyped
+      def to_h: () -> body
+      def ==: (untyped other) -> bool
+      def eql?: (untyped other) -> bool
+      def hash: () -> Integer
+      def inspect: () -> String
+
+      module Revisioned
+        def revision: () -> Integer?
+        def newer_than?: (Integer? stored_revision) -> bool
+      end
+    end
+
+    class RequestEvent < Event
+      TYPE: String
+      def id: () -> String?
+      def page_request_id: () -> String?
+      def state: () -> String?
+      def page: () -> Integer?
+      def iteration_state: () -> untyped
+      def response_json: () -> untyped
+      def response_xml: () -> String?
+      def error: () -> untyped
+      def links: () -> Hash[String, String]?
+      def error_type: () -> String?
+      def perhaps_applied?: () -> bool
+      def response_xml_omitted?: () -> bool
+      def self_link: () -> String?
+    end
+
+    class WorkflowRunEvent < Event
+      include Event::Revisioned
+
+      TYPE: String
+      def run_id: () -> String?
+      def run_state: () -> String?
+      def workflow: () -> String?
+      def workflow_id: () -> String?
+      def connection_id: () -> String?
+      # One plain sentence for a person; never parse it.
+      def headline: () -> String?
+      def prompt: () -> Hash[String, untyped]?
+      def outcome: () -> String?
+      def output: () -> Hash[String, untyped]?
+      def error: () -> WorkflowRunError?
+      def summary: () -> Hash[String, untyped]?
+      def cancel_reason: () -> String?
+      def links: () -> Hash[String, String]?
+      def awaiting_input?: () -> bool
+      def completed?: () -> bool
+      def failed?: () -> bool
+      def cancelled?: () -> bool
+    end
+
+    class WorkflowRunError < Data
+      attr_reader code: Integer?
+      attr_reader type: String?
+      attr_reader message: String?
+      attr_reader quickbooks_message: String?
+      attr_reader hint: String?
+
+      def self.from: (untyped value) -> WorkflowRunError?
+      def self.new: (code: Integer?, type: String?, message: String?, quickbooks_message: String?, hint: String?) -> WorkflowRunError
+      def initialize: (code: Integer?, type: String?, message: String?, quickbooks_message: String?, hint: String?) -> void
+      def []: (String | Symbol key) -> untyped
+      def to_h: () -> Hash[Symbol, untyped]
+      def members: () -> Array[Symbol]
+      def to_s: () -> String
+      def as_json: (*untyped) -> Hash[String, untyped]
+      def to_json: (*untyped) -> String
+    end
+
+    class NotificationEvent < Event
+      TYPE: String
+      def run_id: () -> String?
+      def delivery_id: () -> String?
+      def seq: () -> Integer?
+      def name: () -> String?
+      def state: () -> String?
+      def from: () -> Hash[String, untyped]?
+      def data: () -> untyped
+      def headline: () -> String?
+    end
+
+    class ConnectionEvent < Event
+      include Event::Revisioned
+
+      TYPE: String
+      def delivery_id: () -> String?
+      def connection: () -> Hash[String, untyped]?
+      def connection_id: () -> String?
+      def stall_reason: () -> String?
+      def connected?: () -> bool
+      def setup_cancelled?: () -> bool
+      def stalled?: () -> bool
+      def resumed?: () -> bool
+    end
+
+    class NameIndexEvent < Event
+      TYPE: String
+      def connection_id: () -> String?
+      def name_index: () -> Hash[String, untyped]?
+    end
+
+    class UnknownEvent < Event
+      TYPE: String
+    end
+  end
+end

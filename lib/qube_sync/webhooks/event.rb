@@ -163,8 +163,14 @@ module QubeSync
 
       TYPE = "workflow_run"
 
-      fields :run_id, :reference, :run_state, :workflow, :connection_id, :prompt, :outcome, :output,
-             :error, :summary, :cancel_reason, :links
+      fields :run_id, :reference, :run_state, :workflow, :workflow_id, :connection_id, :headline, :prompt,
+             :outcome, :output, :summary, :cancel_reason, :links
+
+      # What failed the run (on `workflow_run.failed`), as a WorkflowRunError; nil otherwise.
+      # An older server's String error reads as one with only `message`. `self["error"]` is the raw value.
+      def error
+        WorkflowRunError.from(@body["error"])
+      end
 
       def awaiting_input?
         event == "workflow_run.awaiting_input"
@@ -183,11 +189,45 @@ module QubeSync
       end
     end
 
+    # What failed a workflow run: QuickBooks' status `code` and a stable `type` to branch on, a
+    # plain `message` safe to show, QuickBooks' own text and a `hint`. All but `message` may be nil.
+    WorkflowRunError = Data.define(:code, :type, :message, :quickbooks_message, :hint) do
+      # From the body's `error`: an object, or an older server's String. nil for anything else.
+      def self.from(value)
+        case value
+        when Hash
+          new(code: value["code"], type: value["type"], message: value["message"],
+              quickbooks_message: value["quickbooks_message"], hint: value["hint"])
+        when String
+          new(code: nil, type: nil, message: value, quickbooks_message: nil, hint: nil)
+        end
+      end
+
+      # Reads a field by name, as the Hash did: error["message"].
+      def [](key)
+        name = key.to_sym
+        members.include?(name) ? public_send(name) : nil
+      end
+
+      def to_s
+        message.to_s
+      end
+
+      # JSON keeps every field, with the wire's keys; Data alone would serialize as its to_s.
+      def as_json(*)
+        to_h.transform_keys(&:to_s)
+      end
+
+      def to_json(*args)
+        as_json.to_json(*args)
+      end
+    end
+
     # Data a running workflow sent along. Deduplicate on `delivery_id`; never skip one by revision.
     class NotificationEvent < Event
       TYPE = "notification"
 
-      fields :run_id, :reference, :revision, :delivery_id, :seq, :name, :state, :from, :data
+      fields :run_id, :reference, :revision, :delivery_id, :seq, :name, :state, :from, :data, :headline
 
       def dedupe_key
         delivery_id
