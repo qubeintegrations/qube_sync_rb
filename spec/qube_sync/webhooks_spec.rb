@@ -231,6 +231,17 @@ RSpec.describe QubeSync::Webhooks do
         expect(event.error.quickbooks_message).to include("already in use")
       end
 
+      it "serializes to JSON with every field, so it can be stored as it is" do
+        error = parse("event" => "workflow_run.failed", "error" => {
+          "code" => 3100, "type" => "name_in_use", "message" => "That name is already in use.", "hint" => "Pick another name."
+        }).error
+        expect(JSON.parse(JSON.generate("error" => error))).to eq("error" => {
+          "code" => 3100, "type" => "name_in_use", "message" => "That name is already in use.",
+          "quickbooks_message" => nil, "hint" => "Pick another name."
+        })
+        expect(error.as_json).to eq(JSON.parse(error.to_json))
+      end
+
       it "reads an older server's String error as one with only a message, without raising" do
         error = parse("event" => "workflow_run.failed", "error" => "Riverbend failed").error
         expect(error).to have_attributes(message: "Riverbend failed", code: nil, type: nil, quickbooks_message: nil, hint: nil)

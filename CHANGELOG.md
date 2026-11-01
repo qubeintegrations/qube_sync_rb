@@ -11,6 +11,9 @@ it (`event.error.upcase`) needs `event.error.message`.
   `message`, `quickbooks_message`, `hint`), nil when there's none. QuBe Sync now sends `error` as
   an object; a String from an older server reads as one with only `message`, without raising.
   `error["message"]` and `error.to_s` still work, and `event["error"]` returns the raw value.
+  It serializes to JSON with every field (`to_json`, `as_json`), so it can be stored as it is.
+  What stops working is treating it as a String: `event.error == "text"`, `"..." + event.error`,
+  `include?` and the like; use `event.error.message`.
 
 ### New
 

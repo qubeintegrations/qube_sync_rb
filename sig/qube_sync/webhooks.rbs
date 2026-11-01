@@ -103,6 +103,8 @@ module QubeSync
       def to_h: () -> Hash[Symbol, untyped]
       def members: () -> Array[Symbol]
       def to_s: () -> String
+      def as_json: (*untyped) -> Hash[String, untyped]
+      def to_json: (*untyped) -> String
     end
 
     class NotificationEvent < Event

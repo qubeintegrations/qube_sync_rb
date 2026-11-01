@@ -212,6 +212,15 @@ module QubeSync
       def to_s
         message.to_s
       end
+
+      # JSON keeps every field, with the wire's keys; Data alone would serialize as its to_s.
+      def as_json(*)
+        to_h.transform_keys(&:to_s)
+      end
+
+      def to_json(*args)
+        as_json.to_json(*args)
+      end
     end
 
     # Data a running workflow sent along. Deduplicate on `delivery_id`; never skip one by revision.
