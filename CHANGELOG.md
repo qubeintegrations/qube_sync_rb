@@ -19,8 +19,9 @@ it (`event.error.upcase`) needs `event.error.message`.
 
 - `ConnectionEvent#company_file_changed?` for QuBe Sync's `connection.company_file_changed`
   event: the customer switched the connection to another company file. Every ListID and TxnID
-  stored for the connection belongs to the old file, so drop them and match records again by
-  name; the connection isn't connected until `connection.connected` arrives again. A v2
+  stored for the connection belongs to the old file: set them aside, check them on the new file
+  once it's connected (a renamed or copied file keeps most), and match the rest by name; the
+  connection isn't connected until `connection.connected` arrives again. A v2
   connection's `links["company_file"]` is the page to switch from (nil for a simulated
   connection); `regenerate_onboarding` renews it with `links["onboarding"]`. The vendored test
   vectors have the new event, and the workflow vectors' bodies as QuBe Sync now sends them
