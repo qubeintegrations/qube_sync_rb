@@ -237,8 +237,8 @@ module QubeSync
       end
     end
 
-    # A connection was set up, cancelled, stalled or resumed. Deduplicate on `delivery_id`, and
-    # skip it unless `newer_than?` the connection's stored revision.
+    # A connection was set up, cancelled, stalled, resumed or switched to another company file.
+    # Deduplicate on `delivery_id`, and skip it unless `newer_than?` the connection's stored revision.
     class ConnectionEvent < Event
       include Event::Revisioned
 
@@ -272,6 +272,12 @@ module QubeSync
 
       def resumed?
         event == "connection.resumed"
+      end
+
+      # The customer chose another company file: drop every ListID/TxnID stored for this
+      # connection, match records again by name, and wait for `connected?` again.
+      def company_file_changed?
+        event == "connection.company_file_changed"
       end
 
       private

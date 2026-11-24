@@ -17,6 +17,14 @@ it (`event.error.upcase`) needs `event.error.message`.
 
 ### New
 
+- `ConnectionEvent#company_file_changed?` for QuBe Sync's `connection.company_file_changed`
+  event: the customer switched the connection to another company file. Every ListID and TxnID
+  stored for the connection belongs to the old file, so drop them and match records again by
+  name; the connection isn't connected until `connection.connected` arrives again. A v2
+  connection's `links["company_file"]` is the page to switch from (nil for a simulated
+  connection); `regenerate_onboarding` renews it with `links["onboarding"]`. The vendored test
+  vectors have the new event, and the workflow vectors' bodies as QuBe Sync now sends them
+  (each prompt choice has a `role`).
 - `WorkflowRunEvent#headline` and `NotificationEvent#headline`: one plain sentence saying what
   happened, for a person. Never parse it.
 - `WorkflowRunEvent#workflow_id`.
