@@ -325,7 +325,7 @@ module GenerateOperations
 
     def index_rbs
       lines = [HEADER, "", "module QubeSync", "  module Operations"]
-      lines << "    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }"
+      lines << "    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String, id_param: String? }"
       lines << ""
       lines << "    DIGEST: String"
       lines << "    INDEX: Hash[String, entry]"
@@ -395,6 +395,14 @@ module GenerateOperations
 
     # -- Ruby -------------------------------------------------------------------------------
 
+    # The id list a query takes: "list_id" or "txn_id", else nil (and nil for any other action).
+    def id_param(op)
+      return nil unless op["action"] == "query"
+
+      props = (op["params"] || {})["properties"] || {}
+      %w[list_id txn_id].find { |name| props.dig(name, "type") == "array" }
+    end
+
     def index_rb
       lines = [HEADER, "# frozen_string_literal: true", "", "module QubeSync"]
       lines << "  # QuickBooks operations, one class per entity, each loaded on first use. A client reaches"
@@ -404,11 +412,12 @@ module GenerateOperations
       lines << "    # names the one its `$operation` ids refer to (`operations_digest`)."
       lines << "    DIGEST = #{@digest.inspect}"
       lines << ""
-      lines << "    # Operation id => how it's sent. `path` is relative to the connection."
+      lines << "    # Operation id => how it's sent. `path` is relative to the connection. `id_param` is the"
+      lines << "    # param a query looks records up by (\"list_id\" or \"txn_id\", a list of ids), else nil."
       lines << "    INDEX = {"
       @operations.each do |op|
         path = op["path"].delete_prefix("/connections/{connection_id}/")
-        lines << "      #{op["id"].inspect} => {method: #{op["method"].inspect}, path: #{path.inspect}, params_in: :#{op["params_in"]}, paged: #{op["paged"]}, entity: #{op["entity"].inspect}}.freeze,"
+        lines << "      #{op["id"].inspect} => {method: #{op["method"].inspect}, path: #{path.inspect}, params_in: :#{op["params_in"]}, paged: #{op["paged"]}, entity: #{op["entity"].inspect}, id_param: #{id_param(op).inspect}}.freeze,"
       end
       lines[-1] = lines[-1].chomp(",")
       lines << "    }.freeze"

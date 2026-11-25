@@ -274,8 +274,8 @@ module QubeSync
         event == "connection.resumed"
       end
 
-      # The customer chose another company file: drop every ListID/TxnID stored for this
-      # connection, match records again by name, and wait for `connected?` again.
+      # The customer chose another company file: stop using the ListIDs/TxnIDs stored for this
+      # connection until they're checked on the new file, and wait for `connected?` again.
       def company_file_changed?
         event == "connection.company_file_changed"
       end
