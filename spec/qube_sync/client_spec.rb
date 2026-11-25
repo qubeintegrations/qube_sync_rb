@@ -469,6 +469,15 @@ RSpec.describe QubeSync::Client do
       expect(server.recorded.size).to eq(261)
     end
 
+    it "says which id list each query looks records up by" do
+      index = QubeSync::Operations::INDEX
+      expect(index.values_at("customer.query", "item_service.query", "invoice.query", "journal_entry.query")
+                  .map { |e| e[:id_param] }).to eq(%w[list_id list_id txn_id txn_id])
+      expect(index.values_at("company.query", "preferences.query", "customer.create").map { |e| e[:id_param] })
+        .to eq([nil, nil, nil])
+      expect(index.values.map { |e| e[:id_param] }.uniq).to contain_exactly("list_id", "txn_id", nil)
+    end
+
     it "has one accessor per entity, memoized, with class as class_" do
       entities = QubeSync::Operations::INDEX.values.map { |e| e[:entity] }.uniq
       expect(QubeSync::Operations::ENTITIES.keys).to eq(entities.sort)

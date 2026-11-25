@@ -176,6 +176,22 @@ RSpec.describe QubeSync::Webhooks do
       expect(parse("event" => "connection.stalled", "connection" => "not an object").connection_id).to be_nil
     end
 
+    it "says which connection event it is" do
+      changed = vectors["events"].find { |c| c["name"] == "connection.company_file_changed" }
+      event = described_class.parse(changed["body"])
+      expect(event.type).to eq("connection")
+      expect(event.connection_id).to eq("0196a1c0-0000-7000-8000-00000000c001")
+      expect(event.revision).to eq(5)
+      expect(event).to be_company_file_changed
+      expect(event).not_to be_connected
+
+      %w[connected setup_cancelled stalled resumed].each do |name|
+        other = parse("event" => "connection.#{name}")
+        expect(other).to public_send(:"be_#{name}")
+        expect(other).not_to be_company_file_changed
+      end
+    end
+
     it "compares revisions with newer_than?" do
       event = described_class.parse(body) # revision 9
       expect(event.newer_than?(nil)).to be(true)

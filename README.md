@@ -47,6 +47,16 @@ as it's made, for testing without a Windows computer. `get_connection`,
 `list_connections`, `delete_connection`, `set_password(id, password: nil)` and `get_qwc(id)` (the
 QWC file's XML) are there for setup without hosted onboarding.
 
+A connection's `links["company_file"]` is a page where the customer switches the connection to
+another company file (nil for a simulated connection). Offer it as "Use a different company
+file" beside your set-up-again link. It expires with
+`links["onboarding"]`, and `regenerate_onboarding(id)` renews both. After a switch QuBe Sync
+sends `connection.company_file_changed`: stop using every ListID and TxnID you stored for that
+connection (they belong to the old file) and treat it as not connected until
+`connection.connected` arrives again. Then query the new file by those ids: keep each found under
+the same name (a renamed, moved or copied file keeps most of them), ask your customer about each
+found under another name, and treat the rest as not in QuickBooks.
+
 ### Starting a run and answering its question
 
 ```ruby
@@ -257,8 +267,11 @@ def handle_qube_webhook(raw_body, header)
     # Data a running workflow sent. Deduplicate on event.dedupe_key (the delivery_id), and
     # never skip one by revision. event.name, event.data
   when "connection"
-    # Connected, setup cancelled, stalled or resumed. Deduplicate on event.dedupe_key, and skip
-    # it unless event.newer_than?(the revision stored for event.connection_id).
+    # Connected, setup cancelled, stalled, resumed or company file changed. Deduplicate on
+    # event.dedupe_key, and skip it unless event.newer_than?(the revision stored for
+    # event.connection_id). event.connected? / setup_cancelled? / stalled? / resumed?
+    # event.company_file_changed?: set aside the connection's ListIDs/TxnIDs, check them on the
+    # new file once connected? arrives again: keep those found under the same name.
   when "name_index"
     # event.connection_id, event.name_index
   else

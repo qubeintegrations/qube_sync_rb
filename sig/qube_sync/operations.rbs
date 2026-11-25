@@ -2,7 +2,7 @@
 
 module QubeSync
   module Operations
-    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String }
+    type entry = { method: String, path: String, params_in: :body | :query, paged: bool, entity: String, id_param: String? }
 
     DIGEST: String
     INDEX: Hash[String, entry]
