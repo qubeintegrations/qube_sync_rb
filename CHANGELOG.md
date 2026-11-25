@@ -20,7 +20,8 @@ it (`event.error.upcase`) needs `event.error.message`.
 - `ConnectionEvent#company_file_changed?` for QuBe Sync's `connection.company_file_changed`
   event: the customer switched the connection to another company file. Every ListID and TxnID
   stored for the connection belongs to the old file: set them aside, check them on the new file
-  once it's connected (a renamed or copied file keeps most), and match the rest by name; the
+  once it's connected (a renamed or copied file keeps most), keep those found under the same
+  name and ask your customer about those found under another; the
   connection isn't connected until `connection.connected` arrives again. A v2
   connection's `links["company_file"]` is the page to switch from (nil for a simulated
   connection); `regenerate_onboarding` renews it with `links["onboarding"]`. The vendored test

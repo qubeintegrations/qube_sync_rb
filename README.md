@@ -49,12 +49,13 @@ QWC file's XML) are there for setup without hosted onboarding.
 
 A connection's `links["company_file"]` is a page where the customer switches the connection to
 another company file (nil for a simulated connection). Offer it as "Use a different company
-file" beside your set-up-again link, and beside a company file mismatch error. It expires with
+file" beside your set-up-again link. It expires with
 `links["onboarding"]`, and `regenerate_onboarding(id)` renews both. After a switch QuBe Sync
 sends `connection.company_file_changed`: stop using every ListID and TxnID you stored for that
 connection (they belong to the old file) and treat it as not connected until
-`connection.connected` arrives again. Then query the new file by those ids: keep each that names
-the same record (a renamed, moved or copied file keeps most of them), and match the rest by name.
+`connection.connected` arrives again. Then query the new file by those ids: keep each found under
+the same name (a renamed, moved or copied file keeps most of them), ask your customer about each
+found under another name, and treat the rest as not in QuickBooks.
 
 ### Starting a run and answering its question
 
@@ -270,7 +271,7 @@ def handle_qube_webhook(raw_body, header)
     # event.dedupe_key, and skip it unless event.newer_than?(the revision stored for
     # event.connection_id). event.connected? / setup_cancelled? / stalled? / resumed?
     # event.company_file_changed?: set aside the connection's ListIDs/TxnIDs, check them on the
-    # new file once connected? arrives again, and match the rest by name.
+    # new file once connected? arrives again: keep those found under the same name.
   when "name_index"
     # event.connection_id, event.name_index
   else
