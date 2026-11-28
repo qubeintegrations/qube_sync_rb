@@ -1,4 +1,4 @@
-## [0.6.0] - Unreleased
+## [0.6.0] - 2026-11-27
 
 For QuBe Sync's new workflow webhook shape. One read changes: `WorkflowRunEvent#error` returns
 a `WorkflowRunError` instead of the body's raw value. It's a minor version because, before 1.0,
